@@ -1,0 +1,113 @@
+﻿<Page
+    x:Class="Files.Views.Properties"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Windows10version1903="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 8)"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:Files"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    d:DesignHeight="700"
+    d:DesignWidth="400"
+    KeyDown="Page_KeyDown"
+    Loaded="Properties_Loaded"
+    Unloaded="Properties_Unloaded"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="Transparent" />
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            x:Uid="PropertiesTitleSecondary"
+            Margin="14,0,0,0"
+            VerticalAlignment="Center"
+            Text="Properties" />
+
+        <NavigationView
+            x:Name="NavigationView"
+            Grid.Row="1"
+            AllowDrop="False"
+            IsBackButtonVisible="Collapsed"
+            IsPaneOpen="False"
+            IsPaneToggleButtonVisible="False"
+            IsSettingsVisible="False"
+            PaneDisplayMode="Top"
+            SelectedItem="{x:Bind TabGeneral}"
+            SelectionChanged="NavigationView_SelectionChanged"
+            SelectionFollowsFocus="Enabled">
+
+            <!--  Tabs  -->
+            <NavigationView.MenuItems>
+                <NavigationViewItem
+                    x:Name="TabGeneral"
+                    x:Uid="PropertiesDialogTabGeneral"
+                    Content="General"
+                    Tag="General">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource FluentUIGlyphs}" Glyph="&#xea00;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem
+                    x:Name="TabShorcut"
+                    x:Uid="PropertiesDialogTabShortcut"
+                    Content="Shortcut"
+                    Tag="Shortcut"
+                    Visibility="Collapsed">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource CustomGlyph}" Glyph="&#xF10A;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem
+                    x:Name="TabDetails"
+                    x:Uid="PropertiesDialogTabDetails"
+                    Content="Details"
+                    Tag="Details"
+                    Visibility="Collapsed">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource FluentUIGlyphs}" Glyph="&#xea8d;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <Frame
+                x:Name="contentFrame"
+                Grid.Row="1"
+                IsNavigationStackEnabled="False" />
+        </NavigationView>
+
+        <Grid Grid.Row="2" Padding="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button
+                x:Name="OKButton"
+                x:Uid="PropertiesDialogOKButton"
+                Grid.Column="1"
+                MinWidth="100"
+                Margin="0,0,10,0"
+                HorizontalAlignment="Right"
+                Click="OKButton_Click"
+                Content="OK"
+                Style="{StaticResource AccentButtonStyle}" />
+            <Button
+                x:Name="CancelButton"
+                x:Uid="PropertiesDialogCancelButton"
+                Grid.Column="2"
+                MinWidth="100"
+                HorizontalAlignment="Right"
+                Click="CancelButton_Click"
+                Content="Cancel" />
+        </Grid>
+    </Grid>
+</Page>

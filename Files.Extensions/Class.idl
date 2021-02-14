@@ -1,0 +1,9 @@
+namespace Files_Extensions
+{
+    [default_interface]
+    runtimeclass Class
+    {
+        Class();
+        Int32 MyProperty;
+    }
+}
