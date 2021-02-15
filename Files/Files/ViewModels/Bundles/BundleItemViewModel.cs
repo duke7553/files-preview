@@ -111,9 +111,9 @@ namespace Files.ViewModels.Bundles
             await associatedInstance.InteractionOperations.OpenPath(Path, TargetType);
         }
 
-        private async void OpenInNewTab()
+        private void OpenInNewTab()
         {
-            await MainPage.AddNewTabByPath(typeof(PaneHolderPage), Path);
+            MainPage.AddNewTabByPath(typeof(PaneHolderPage), Path);
         }
 
         private async void OpenItemLocation()

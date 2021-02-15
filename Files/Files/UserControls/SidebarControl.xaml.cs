@@ -291,22 +291,23 @@ namespace Files.UserControls
 
         private void NavigationViewItem_DragEnter(object sender, DragEventArgs e)
         {
-            VisualStateManager.GoToState(sender as Microsoft.UI.Xaml.Controls.NavigationViewItem, "DragEnter", false);
+            // TODO: Fix when debounce extension is added
+            //VisualStateManager.GoToState(sender as Microsoft.UI.Xaml.Controls.NavigationViewItem, "DragEnter", false);
 
-            if ((sender as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext is INavigationControlItem)
-            {
-                dragOverItem = sender;
-                dragOverTimer.Stop();
-                dragOverTimer.Debounce(() =>
-                {
-                    if (dragOverItem != null)
-                    {
-                        dragOverTimer.Stop();
-                        SidebarItemInvoked?.Invoke(this, new SidebarItemInvokedEventArgs(dragOverItem as Microsoft.UI.Xaml.Controls.NavigationViewItem));
-                        dragOverItem = null;
-                    }
-                }, TimeSpan.FromMilliseconds(1000), false);
-            }
+            //if ((sender as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext is INavigationControlItem)
+            //{
+            //    dragOverItem = sender;
+            //    dragOverTimer.Stop();
+            //    dragOverTimer.Debounce(() =>
+            //    {
+            //        if (dragOverItem != null)
+            //        {
+            //            dragOverTimer.Stop();
+            //            SidebarItemInvoked?.Invoke(this, new SidebarItemInvokedEventArgs(dragOverItem as Microsoft.UI.Xaml.Controls.NavigationViewItem));
+            //            dragOverItem = null;
+            //        }
+            //    }, TimeSpan.FromMilliseconds(1000), false);
+            //}
         }
 
         private void NavigationViewItem_DragLeave(object sender, DragEventArgs e)

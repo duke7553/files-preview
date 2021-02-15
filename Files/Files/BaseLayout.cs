@@ -901,17 +901,19 @@ namespace Files
 
             if (dragOverItem != item)
             {
-                dragOverItem = item;
-                dragOverTimer.Stop();
-                dragOverTimer.Debounce(() =>
-                {
-                    if (dragOverItem != null && !InstanceViewModel.IsPageTypeSearchResults)
-                    {
-                        dragOverItem = null;
-                        dragOverTimer.Stop();
-                        ParentShellPageInstance.InteractionOperations.OpenItem_Click(null, null);
-                    }
-                }, TimeSpan.FromMilliseconds(1000), false);
+                // TODO: Add debounce when extension is reimplemented
+
+                //dragOverItem = item;
+                //dragOverTimer.Stop();
+                //dragOverTimer.Debounce(() =>
+                //{
+                //    if (dragOverItem != null && !InstanceViewModel.IsPageTypeSearchResults)
+                //    {
+                //        dragOverItem = null;
+                //        dragOverTimer.Stop();
+                //        ParentShellPageInstance.InteractionOperations.OpenItem_Click(null, null);
+                //    }
+                //}, TimeSpan.FromMilliseconds(1000), false);
             }
 
             if (e.DataView.Contains(StandardDataFormats.StorageItems))

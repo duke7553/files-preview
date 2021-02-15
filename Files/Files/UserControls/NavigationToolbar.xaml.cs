@@ -744,64 +744,64 @@ namespace Files.UserControls
             {
                 return;
             }
+            // TODO: Fix when debounce extension is added back
+            //if (dragOverPath != pathBoxItem.Path)
+            //{
+            //    dragOverPath = pathBoxItem.Path;
+            //    dragOverTimer.Stop();
+            //    if (dragOverPath != (this as INavigationToolbar).PathComponents.LastOrDefault()?.Path)
+            //    {
+            //        dragOverTimer.Debounce(() =>
+            //        {
+            //            if (dragOverPath != null)
+            //            {
+            //                dragOverTimer.Stop();
+            //                ItemDraggedOverPathItem?.Invoke(this, new PathNavigationEventArgs()
+            //                {
+            //                    ItemPath = dragOverPath
+            //                });
+            //                dragOverPath = null;
+            //            }
+            //        }, TimeSpan.FromMilliseconds(1000), false);
+            //    }
+            //}
 
-            if (dragOverPath != pathBoxItem.Path)
-            {
-                dragOverPath = pathBoxItem.Path;
-                dragOverTimer.Stop();
-                if (dragOverPath != (this as INavigationToolbar).PathComponents.LastOrDefault()?.Path)
-                {
-                    dragOverTimer.Debounce(() =>
-                    {
-                        if (dragOverPath != null)
-                        {
-                            dragOverTimer.Stop();
-                            ItemDraggedOverPathItem?.Invoke(this, new PathNavigationEventArgs()
-                            {
-                                ItemPath = dragOverPath
-                            });
-                            dragOverPath = null;
-                        }
-                    }, TimeSpan.FromMilliseconds(1000), false);
-                }
-            }
+            //if (!e.DataView.Contains(StandardDataFormats.StorageItems))
+            //{
+            //    e.AcceptedOperation = DataPackageOperation.None;
+            //    return;
+            //}
 
-            if (!e.DataView.Contains(StandardDataFormats.StorageItems))
-            {
-                e.AcceptedOperation = DataPackageOperation.None;
-                return;
-            }
+            //e.Handled = true;
+            //var deferral = e.GetDeferral();
 
-            e.Handled = true;
-            var deferral = e.GetDeferral();
+            //IReadOnlyList<IStorageItem> storageItems;
+            //try
+            //{
+            //    storageItems = await e.DataView.GetStorageItemsAsync();
+            //}
+            //catch (Exception ex) when ((uint)ex.HResult == 0x80040064)
+            //{
+            //    e.AcceptedOperation = DataPackageOperation.None;
+            //    deferral.Complete();
+            //    return;
+            //}
 
-            IReadOnlyList<IStorageItem> storageItems;
-            try
-            {
-                storageItems = await e.DataView.GetStorageItemsAsync();
-            }
-            catch (Exception ex) when ((uint)ex.HResult == 0x80040064)
-            {
-                e.AcceptedOperation = DataPackageOperation.None;
-                deferral.Complete();
-                return;
-            }
+            //if (!storageItems.Any(storageItem =>
+            //storageItem.Path.Replace(pathBoxItem.Path, string.Empty).
+            //Trim(Path.DirectorySeparatorChar).
+            //Contains(Path.DirectorySeparatorChar)))
+            //{
+            //    e.AcceptedOperation = DataPackageOperation.None;
+            //}
+            //else
+            //{
+            //    e.DragUIOverride.IsCaptionVisible = true;
+            //    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), pathBoxItem.Title);
+            //    e.AcceptedOperation = DataPackageOperation.Move;
+            //}
 
-            if (!storageItems.Any(storageItem =>
-            storageItem.Path.Replace(pathBoxItem.Path, string.Empty).
-            Trim(Path.DirectorySeparatorChar).
-            Contains(Path.DirectorySeparatorChar)))
-            {
-                e.AcceptedOperation = DataPackageOperation.None;
-            }
-            else
-            {
-                e.DragUIOverride.IsCaptionVisible = true;
-                e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), pathBoxItem.Title);
-                e.AcceptedOperation = DataPackageOperation.Move;
-            }
-
-            deferral.Complete();
+            //deferral.Complete();
         }
 
         private void PathBoxItem_Drop(object sender, DragEventArgs e)

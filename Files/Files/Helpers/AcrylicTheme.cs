@@ -55,14 +55,14 @@ namespace Files.Helpers
 
         public void SetDefaultTheme()
         {
-            if (Application.Current.RequestedTheme == ApplicationTheme.Light)
-            {
+            //if (App.Current.RequestedTheme == ApplicationTheme.Light)
+            //{
                 SetLightTheme();
-            }
-            else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
-            {
-                SetDarkTheme();
-            }
+            //}
+            //else if (App.Current.RequestedTheme == ApplicationTheme.Dark)
+            //{
+            //    SetDarkTheme();
+            //}
         }
 
         public void SetLightTheme()

@@ -5,25 +5,27 @@
     xmlns:fsvm="using:Files.ViewModels">
     <Application.Resources>
         <ResourceDictionary>
-            <fsvm:FolderLayoutInformation x:Key="DetailsInfo" Mode="DetailsView" />
-            <fsvm:FolderLayoutInformation x:Key="TilesInfo" Mode="TilesView" />
-            <fsvm:FolderLayoutInformation
-                x:Key="SmallGridInfo"
-                Mode="GridView"
-                SizeKind="Small" />
-            <fsvm:FolderLayoutInformation
-                x:Key="MediumGridInfo"
-                Mode="GridView"
-                SizeKind="Medium" />
-            <fsvm:FolderLayoutInformation
-                x:Key="LargeGridInfo"
-                Mode="GridView"
-                SizeKind="Large" />
             <FontFamily x:Key="FluentUIGlyphs">/Assets/Custom Glyphs/fluentui.ttf#fluentui</FontFamily>
             <FontFamily x:Key="CustomGlyph">/Assets/Custom Glyphs/Custom-Glyphs.ttf#Custom-Glyphs</FontFamily>
             <FontFamily x:Key="RecycleBinIcons">/Assets/Custom Glyphs/recyclebin-fabric-glyph.ttf#Fabric MDL2 Assets</FontFamily>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary>
+                    <fsvm:FolderLayoutInformation x:Key="DetailsInfo" Mode="DetailsView" />
+                    <fsvm:FolderLayoutInformation x:Key="TilesInfo" Mode="TilesView" />
+                    <fsvm:FolderLayoutInformation
+                        x:Key="SmallGridInfo"
+                        Mode="GridView"
+                        SizeKind="Small" />
+                    <fsvm:FolderLayoutInformation
+                        x:Key="MediumGridInfo"
+                        Mode="GridView"
+                        SizeKind="Medium" />
+                    <fsvm:FolderLayoutInformation
+                        x:Key="LargeGridInfo"
+                        Mode="GridView"
+                        SizeKind="Large" />
+                </ResourceDictionary>
                 <ResourceDictionary Source="/ResourceDictionaries/CustomHeaderStyle.xaml" />
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>

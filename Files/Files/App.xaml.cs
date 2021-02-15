@@ -33,6 +33,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using LaunchActivatedEventArgs = Microsoft.UI.Xaml.LaunchActivatedEventArgs;
+using Microsoft.System;
 
 namespace Files
 {
@@ -170,10 +171,10 @@ namespace Files
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             base.OnLaunched(args);
-        
+
             //start tracking app usage
             //SystemInformation.Instance.TrackAppUse(args.);
 
@@ -181,9 +182,9 @@ namespace Files
 
             //bool canEnablePrelaunch = ApiInformation.IsMethodPresent("Windows.ApplicationModel.Core.CoreApplication", "EnablePrelaunch");
 
-            await EnsureSettingsAndConfigurationAreBootstrapped();
 
             mainWindow = new MainWindow();
+            mainWindow.Activated += MainWindow_Activated;
             mainWindow.Activate();
         }
 
@@ -214,11 +215,133 @@ namespace Files
             }
         }
 
-        protected override async void OnActivated(IActivatedEventArgs args)
+        //protected override async void OnActivated(IActivatedEventArgs args)
+        //{
+        //    Logger.Info("App activated");
+
+        //    await EnsureSettingsAndConfigurationAreBootstrapped();
+
+        //    // Window management
+        //    if (!(mainWindow.Content is Frame rootFrame))
+        //    {
+        //        rootFrame = new Frame();
+        //        rootFrame.CacheSize = 1;
+        //        mainWindow.Content = rootFrame;
+        //    }
+
+        //    //var currentView = SystemNavigationManager.GetForCurrentView();
+        //    switch (args.Kind)
+        //    {
+        //        case ActivationKind.Protocol:
+        //            var eventArgs = args as ProtocolActivatedEventArgs;
+
+        //            if (eventArgs.Uri.AbsoluteUri == "files-uwp:")
+        //            {
+        //                rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
+        //            }
+        //            else
+        //            {
+        //                var parsedArgs = eventArgs.Uri.Query.TrimStart('?').Split('=');
+        //                var unescapedValue = Uri.UnescapeDataString(parsedArgs[1]);
+        //                switch (parsedArgs[0])
+        //                {
+        //                    case "tab":
+        //                        rootFrame.Navigate(typeof(MainPage), TabItemArguments.Deserialize(unescapedValue), new SuppressNavigationTransitionInfo());
+        //                        break;
+
+        //                    case "folder":
+        //                        rootFrame.Navigate(typeof(MainPage), unescapedValue, new SuppressNavigationTransitionInfo());
+        //                        break;
+        //                }
+        //            }
+
+        //            // Ensure the current window is active.
+        //            mainWindow.Activate();
+        //            mainWindow.Activated += MainWindow_Activated;
+        //            return;
+
+        //        case ActivationKind.CommandLineLaunch:
+        //            var cmdLineArgs = args as CommandLineActivatedEventArgs;
+        //            var operation = cmdLineArgs.Operation;
+        //            var cmdLineString = operation.Arguments;
+        //            var activationPath = operation.CurrentDirectoryPath;
+
+        //            var parsedCommands = CommandLineParser.ParseUntrustedCommands(cmdLineString);
+
+        //            if (parsedCommands != null && parsedCommands.Count > 0)
+        //            {
+        //                foreach (var command in parsedCommands)
+        //                {
+        //                    switch (command.Type)
+        //                    {
+        //                        case ParsedCommandType.OpenDirectory:
+        //                            rootFrame.Navigate(typeof(MainPage), command.Payload, new SuppressNavigationTransitionInfo());
+
+        //                            // Ensure the current window is active.
+        //                            mainWindow.Activate();
+        //                            mainWindow.Activated += MainWindow_Activated;
+        //                            return;
+
+        //                        case ParsedCommandType.OpenPath:
+
+        //                            try
+        //                            {
+        //                                var det = await StorageFolder.GetFolderFromPathAsync(command.Payload);
+
+        //                                rootFrame.Navigate(typeof(MainPage), command.Payload, new SuppressNavigationTransitionInfo());
+
+        //                                // Ensure the current window is active.
+        //                                mainWindow.Activate();
+        //                                mainWindow.Activated += MainWindow_Activated;
+
+        //                                return;
+        //                            }
+        //                            catch (System.IO.FileNotFoundException ex)
+        //                            {
+        //                                //Not a folder
+        //                                Debug.WriteLine($"File not found exception App.xaml.cs\\OnActivated with message: {ex.Message}");
+        //                            }
+        //                            catch (Exception ex)
+        //                            {
+        //                                Debug.WriteLine($"Exception in App.xaml.cs\\OnActivated with message: {ex.Message}");
+        //                            }
+
+        //                            break;
+
+        //                        case ParsedCommandType.Unknown:
+        //                            rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
+        //                            // Ensure the current window is active.
+        //                            mainWindow.Activate();
+        //                            mainWindow.Activated += MainWindow_Activated;
+
+        //                            return;
+        //                    }
+        //                }
+        //            }
+        //            break;
+
+        //        case ActivationKind.ToastNotification:
+        //            var eventArgsForNotification = args as ToastNotificationActivatedEventArgs;
+        //            if (eventArgsForNotification.Argument == "report")
+        //            {
+        //                // Launch the URI and open log files location
+        //                //SettingsViewModel.OpenLogLocation();
+        //                SettingsViewModel.ReportIssueOnGitHub();
+        //            }
+        //            break;
+        //    }
+
+        //    rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
+
+        //    // Ensure the current window is active.
+        //    mainWindow.Activate();
+        //    mainWindow.Activated += MainWindow_Activated;
+        //}
+
+        private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
             Logger.Info("App activated");
-
-            await EnsureSettingsAndConfigurationAreBootstrapped();
+            mainWindow.Activated -= MainWindow_Activated;
 
             // Window management
             if (!(mainWindow.Content is Frame rootFrame))
@@ -227,118 +350,18 @@ namespace Files
                 rootFrame.CacheSize = 1;
                 mainWindow.Content = rootFrame;
             }
-
-            //var currentView = SystemNavigationManager.GetForCurrentView();
-            switch (args.Kind)
+            DispatcherQueue.GetForCurrentThread().TryEnqueue(async () =>
             {
-                case ActivationKind.Protocol:
-                    var eventArgs = args as ProtocolActivatedEventArgs;
+                await EnsureSettingsAndConfigurationAreBootstrapped();
+                rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
+            });
+            
 
-                    if (eventArgs.Uri.AbsoluteUri == "files-uwp:")
-                    {
-                        rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
-                    }
-                    else
-                    {
-                        var parsedArgs = eventArgs.Uri.Query.TrimStart('?').Split('=');
-                        var unescapedValue = Uri.UnescapeDataString(parsedArgs[1]);
-                        switch (parsedArgs[0])
-                        {
-                            case "tab":
-                                rootFrame.Navigate(typeof(MainPage), TabItemArguments.Deserialize(unescapedValue), new SuppressNavigationTransitionInfo());
-                                break;
+            
 
-                            case "folder":
-                                rootFrame.Navigate(typeof(MainPage), unescapedValue, new SuppressNavigationTransitionInfo());
-                                break;
-                        }
-                    }
 
-                    // Ensure the current window is active.
-                    mainWindow.Activate();
-                    mainWindow.Activated += MainWindow_Activated;
-                    return;
 
-                case ActivationKind.CommandLineLaunch:
-                    var cmdLineArgs = args as CommandLineActivatedEventArgs;
-                    var operation = cmdLineArgs.Operation;
-                    var cmdLineString = operation.Arguments;
-                    var activationPath = operation.CurrentDirectoryPath;
 
-                    var parsedCommands = CommandLineParser.ParseUntrustedCommands(cmdLineString);
-
-                    if (parsedCommands != null && parsedCommands.Count > 0)
-                    {
-                        foreach (var command in parsedCommands)
-                        {
-                            switch (command.Type)
-                            {
-                                case ParsedCommandType.OpenDirectory:
-                                    rootFrame.Navigate(typeof(MainPage), command.Payload, new SuppressNavigationTransitionInfo());
-
-                                    // Ensure the current window is active.
-                                    mainWindow.Activate();
-                                    mainWindow.Activated += MainWindow_Activated;
-                                    return;
-
-                                case ParsedCommandType.OpenPath:
-
-                                    try
-                                    {
-                                        var det = await StorageFolder.GetFolderFromPathAsync(command.Payload);
-
-                                        rootFrame.Navigate(typeof(MainPage), command.Payload, new SuppressNavigationTransitionInfo());
-
-                                        // Ensure the current window is active.
-                                        mainWindow.Activate();
-                                        mainWindow.Activated += MainWindow_Activated;
-
-                                        return;
-                                    }
-                                    catch (System.IO.FileNotFoundException ex)
-                                    {
-                                        //Not a folder
-                                        Debug.WriteLine($"File not found exception App.xaml.cs\\OnActivated with message: {ex.Message}");
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Debug.WriteLine($"Exception in App.xaml.cs\\OnActivated with message: {ex.Message}");
-                                    }
-
-                                    break;
-
-                                case ParsedCommandType.Unknown:
-                                    rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
-                                    // Ensure the current window is active.
-                                    mainWindow.Activate();
-                                    mainWindow.Activated += MainWindow_Activated;
-
-                                    return;
-                            }
-                        }
-                    }
-                    break;
-
-                case ActivationKind.ToastNotification:
-                    var eventArgsForNotification = args as ToastNotificationActivatedEventArgs;
-                    if (eventArgsForNotification.Argument == "report")
-                    {
-                        // Launch the URI and open log files location
-                        //SettingsViewModel.OpenLogLocation();
-                        SettingsViewModel.ReportIssueOnGitHub();
-                    }
-                    break;
-            }
-
-            rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
-
-            // Ensure the current window is active.
-            mainWindow.Activate();
-            mainWindow.Activated += MainWindow_Activated;
-        }
-
-        private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
-        {
             if (args.WindowActivationState == WindowActivationState.CodeActivated ||
                             args.WindowActivationState == WindowActivationState.PointerActivated)
             {
@@ -455,12 +478,9 @@ namespace Files
             }
         }
 
-        public static async void CloseApp()
+        public static void CloseApp()
         {
-            if (!await ApplicationView.GetForCurrentView().TryConsolidateAsync())
-            {
-                Application.Current.Exit();
-            }
+            Application.Current.Exit();
         }
     }
 

@@ -1887,7 +1887,7 @@ namespace Files.ViewModels
 
                 if (matchingItem != null)
                 {
-                    await RemoveFileOrFolderAsync(matchingItem);
+                    RemoveFileOrFolderAsync(matchingItem);
                 }
             }
             finally

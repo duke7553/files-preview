@@ -185,12 +185,13 @@ namespace Files.Views
 
             DisplayFilesystemConsentDialog();
 
-            var flowDirectionSetting = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
+            // TODO: Add RTL layout flow when implemented
+            //var flowDirectionSetting = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
 
-            if (flowDirectionSetting == "RTL")
-            {
-                FlowDirection = FlowDirection.RightToLeft;
-            }
+            //if (flowDirectionSetting == "RTL")
+            //{
+            //    FlowDirection = FlowDirection.RightToLeft;
+            //}
 
             NavigationToolbar.EditModeEnabled += NavigationToolbar_EditModeEnabled;
             NavigationToolbar.PathBoxQuerySubmitted += NavigationToolbar_QuerySubmitted;
@@ -959,7 +960,7 @@ namespace Files.Views
             }
         }
 
-        private async void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
+        private void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
         {
             ContentPage = GetContentOrNullAsync();
             NavigationToolbar.ClearSearchBoxQueryText(true);

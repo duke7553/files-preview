@@ -68,12 +68,13 @@ namespace Files.UserControls
             PlayBannerAddedVisualAnimation();
         }
 
-        public async void PlayBannerAddedVisualAnimation()
+        public void PlayBannerAddedVisualAnimation()
         {
-            StatusCenterPulseVisualPlayer.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-            await StatusCenterPulseVisualPlayer.PlayAsync(0, 1, false);
-            await StatusCenterPulseVisualPlayer.PlayAsync(0, 1, false);
-            StatusCenterPulseVisualPlayer.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            // TODO: Reimplement Lottie
+            //StatusCenterPulseVisualPlayer.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+            //await StatusCenterPulseVisualPlayer.PlayAsync(0, 1, false);
+            //await StatusCenterPulseVisualPlayer.PlayAsync(0, 1, false);
+            //StatusCenterPulseVisualPlayer.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -12,11 +12,12 @@
 
     <Grid>
         <ScrollViewer HorizontalScrollMode="Auto">
-            <controls:MarkdownTextBlock
+            <!--<controls:MarkdownTextBlock
                 x:Name="TextPreviewControl"
                 Background="Transparent"
                 CodeBackground="Transparent"
-                Text="{x:Bind ViewModel.TextValue, Mode=OneWay}" />
+                Text="{x:Bind ViewModel.TextValue, Mode=OneWay}" />-->
+            <TextBlock Text="ERROR: MarkdownTextBlock removed until supported."/>
         </ScrollViewer>
     </Grid>
 </UserControl>

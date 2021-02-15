@@ -530,14 +530,17 @@ namespace Files.ViewModels
             set => SetProperty(ref isSelectedItemShortcut, value);
         }
 
-        public async void CheckFileExtension()
+        public void CheckFileExtension()
         {
             // Set properties to false
             IsSelectedItemImage = false;
             IsSelectedItemShortcut = false;
-
+            string ItemExtension = null;
             //check if the selected item is an image file
-            string ItemExtension = await CoreApplication.MainView.ExecuteOnUIThreadAsync(() => contentPage?.SelectedItem?.FileExtension);
+            MainWindow.Current.DispatcherQueue.TryEnqueue(() => {
+                ItemExtension = contentPage?.SelectedItem?.FileExtension;
+            });
+
             if (!string.IsNullOrEmpty(ItemExtension) && SelectedItemsCount == 1)
             {
                 if (ItemExtension.Equals(".png", StringComparison.OrdinalIgnoreCase)

@@ -284,15 +284,17 @@ namespace Files.Views.LayoutModes
                 }
                 else
                 {
-                    // We have an edit due to the first tap in the double-click mode
-                    // Let's wait to see if there is another tap (double click).
-                    tapDebounceTimer.Debounce(() =>
-                    {
-                        tapDebounceTimer.Stop();
+                    // TODO: Add debounce when extension is reimplemented
 
-                        // EditingEventArgs will be null allowing us to know this edit is not originated by tap
-                        AllView.BeginEdit();
-                    }, TimeSpan.FromMilliseconds(700), false);
+                    //// We have an edit due to the first tap in the double-click mode
+                    //// Let's wait to see if there is another tap (double click).
+                    //tapDebounceTimer.Debounce(() =>
+                    //{
+                    //    tapDebounceTimer.Stop();
+
+                    //    // EditingEventArgs will be null allowing us to know this edit is not originated by tap
+                    //    AllView.BeginEdit();
+                    //}, TimeSpan.FromMilliseconds(700), false);
                 }
             }
             else

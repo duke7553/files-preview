@@ -57,16 +57,17 @@ namespace Files.Views
         {
             this.InitializeComponent();
 
-            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
-            var CoreTitleBar = CoreApplication.GetCurrentView().TitleBar;
-            CoreTitleBar.ExtendViewIntoTitleBar = true;
+            //ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
+            //var CoreTitleBar = CoreApplication.GetCurrentView().TitleBar;
+            App.mainWindow.ExtendsContentIntoTitleBar = true;
 
-            var flowDirectionSetting = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
+            // TODO: Add Layout RTL when implemented
+            //var flowDirectionSetting = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
 
-            if (flowDirectionSetting == "RTL")
-            {
-                FlowDirection = FlowDirection.RightToLeft;
-            }
+            //if (flowDirectionSetting == "RTL")
+            //{
+            //    FlowDirection = FlowDirection.RightToLeft;
+            //}
             AllowDrop = true;
 
             dispatcherQueue = DispatcherQueue;

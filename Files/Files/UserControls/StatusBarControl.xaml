@@ -7,7 +7,6 @@
     xmlns:fsvm="using:Files.ViewModels"
     xmlns:local="using:Files.UserControls"
     xmlns:local1="using:Files"
-    xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     d:DesignHeight="40"
@@ -225,12 +224,12 @@
             </Button>
 
             <Grid x:Name="StatusCenterGrid" Visibility="{x:Bind ShowStatusCenter, Mode=OneWay}">
-                <muxc:AnimatedVisualPlayer
+                <!--<muxc:AnimatedVisualPlayer
                     x:Name="StatusCenterPulseVisualPlayer"
                     AutoPlay="False"
                     Visibility="Collapsed">
                     <lottie:LottieVisualSource x:Name="StatusCenterPulseVisualSource" UriSource="ms-appx:///Assets/AnimatedVisuals/LottiePulseStatusCenter.json" />
-                </muxc:AnimatedVisualPlayer>
+                </muxc:AnimatedVisualPlayer>-->
                 <Button
                     x:Name="StatusCenter"
                     x:Uid="StatusCenter"

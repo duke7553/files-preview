@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files.UserControls.MultitaskingControl
 {
@@ -63,9 +62,9 @@ namespace Files.UserControls.MultitaskingControl
             RemoveTab(args.Item as TabItem);
         }
 
-        protected async void TabView_AddTabButtonClick(TabView sender, object args)
+        protected void TabView_AddTabButtonClick(TabView sender, object args)
         {
-            await MainPage.AddNewTab();
+            MainPage.AddNewTab();
         }
 
         public void MultitaskingControl_Loaded(object sender, RoutedEventArgs e)

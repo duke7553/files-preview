@@ -11,7 +11,7 @@
     mc:Ignorable="d">
 
     <Grid>
-        <MediaPlayerElement
+        <!--<MediaPlayerElement
             AreTransportControlsEnabled="True"
             Foreground="Transparent"
             Source="{x:Bind ViewModel.Source, Mode=OneWay}">
@@ -21,6 +21,7 @@
                     IsPlaybackRateButtonVisible="False"
                     IsZoomButtonVisible="False" />
             </MediaPlayerElement.TransportControls>
-        </MediaPlayerElement>
+        </MediaPlayerElement>-->
+        <TextBlock Text="ERROR: MediaPlayer for preview is unsupported in WinUI"/>
     </Grid>
 </UserControl>

@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Shapes;
 using Windows.UI.Input;
+using Microsoft.UI.Input.Experimental;
 
 namespace Files.UserControls.Selection
 {
@@ -69,7 +70,7 @@ namespace Files.UserControls.Selection
             Active
         }
 
-        protected void DrawRectangle(PointerPoint currentPoint, Point originDragPointShifted)
+        protected void DrawRectangle(ExpPointerPoint currentPoint, Point originDragPointShifted)
         {
             // Redraw selection rectangle according to the new point
             if (currentPoint.Position.X >= originDragPointShifted.X)

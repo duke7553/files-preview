@@ -37,16 +37,16 @@ namespace Files.ViewModels.Properties
                 var listedItem = np.navParameter as ListedItem;
                 if (listedItem.PrimaryItemAttribute == StorageItemTypes.File)
                 {
-                    BaseProperties = new FileProperties(ViewModel, np.tokenSource, Dispatcher, ItemMD5HashProgress, listedItem, AppInstance);
+                    BaseProperties = new FileProperties(ViewModel, np.tokenSource, DispatcherQueue, ItemMD5HashProgress, listedItem, AppInstance);
                 }
                 else if (listedItem.PrimaryItemAttribute == StorageItemTypes.Folder)
                 {
-                    BaseProperties = new FolderProperties(ViewModel, np.tokenSource, Dispatcher, listedItem, AppInstance);
+                    BaseProperties = new FolderProperties(ViewModel, np.tokenSource, DispatcherQueue, listedItem, AppInstance);
                 }
             }
             else if (np.navParameter is List<ListedItem>)
             {
-                BaseProperties = new CombinedProperties(ViewModel, np.tokenSource, Dispatcher, np.navParameter as List<ListedItem>, AppInstance);
+                BaseProperties = new CombinedProperties(ViewModel, np.tokenSource, DispatcherQueue, np.navParameter as List<ListedItem>, AppInstance);
             }
             else if (np.navParameter is DriveItem)
             {

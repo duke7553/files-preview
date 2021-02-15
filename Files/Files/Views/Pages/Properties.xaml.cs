@@ -61,21 +61,23 @@ namespace Files.Views
         {
             AppSettings.ThemeModeChanged += AppSettings_ThemeModeChanged;
             AppSettings.PropertyChanged += AppSettings_PropertyChanged;
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                // Set window size in the loaded event to prevent flickering
-                ApplicationView.GetForCurrentView().TryResizeView(new Windows.Foundation.Size(400, 550));
-                ApplicationView.GetForCurrentView().Consolidated += Properties_Consolidated;
-                TitleBar = ApplicationView.GetForCurrentView().TitleBar;
-                TitleBar.ButtonBackgroundColor = Colors.Transparent;
-                TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-                MainPage.dispatcherQueue.TryEnqueue(() => AppSettings.UpdateThemeElements.Execute(null));
-            }
-            else
-            {
+
+            // TODO: Fix this when Windowing is added
+            //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            //{
+            //    // Set window size in the loaded event to prevent flickering
+            //    ApplicationView.GetForCurrentView().TryResizeView(new Windows.Foundation.Size(400, 550));
+            //    ApplicationView.GetForCurrentView().Consolidated += Properties_Consolidated;
+            //    TitleBar = ApplicationView.GetForCurrentView().TitleBar;
+            //    TitleBar.ButtonBackgroundColor = Colors.Transparent;
+            //    TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+            //    MainPage.dispatcherQueue.TryEnqueue(() => AppSettings.UpdateThemeElements.Execute(null));
+            //}
+            //else
+            //{
                 propertiesDialog = Interaction.FindParent<ContentDialog>(this);
                 propertiesDialog.Closed += PropertiesDialog_Closed;
-            }
+            //}
         }
 
         private void AppSettings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -123,13 +125,14 @@ namespace Files.Views
         {
             AppSettings.ThemeModeChanged -= AppSettings_ThemeModeChanged;
             AppSettings.PropertyChanged -= AppSettings_PropertyChanged;
-            ApplicationView.GetForCurrentView().Consolidated -= Properties_Consolidated;
-            if (tokenSource != null && !tokenSource.IsCancellationRequested)
-            {
-                tokenSource.Cancel();
-                tokenSource.Dispose();
-                tokenSource = null;
-            }
+            // TODO: Replace this when windowing support is added
+            //ApplicationView.GetForCurrentView().Consolidated -= Properties_Consolidated;
+            //if (tokenSource != null && !tokenSource.IsCancellationRequested)
+            //{
+            //    tokenSource.Cancel();
+            //    tokenSource.Dispose();
+            //    tokenSource = null;
+            //}
         }
 
         private void PropertiesDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args)
@@ -194,41 +197,43 @@ namespace Files.Views
                     return;
                 }
             }
-
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                await ApplicationView.GetForCurrentView().TryConsolidateAsync();
-            }
-            else
-            {
+            // TODO: Addsupport for closing alongside the window itself
+            //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            //{
+            //    await ApplicationView.GetForCurrentView().TryConsolidateAsync();
+            //}
+            //else
+            //{
                 propertiesDialog?.Hide();
-            }
+            //}
         }
 
-        private async void CancelButton_Click(object sender, RoutedEventArgs e)
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                await ApplicationView.GetForCurrentView().TryConsolidateAsync();
-            }
-            else
-            {
-                propertiesDialog?.Hide();
-            }
+            // TODO: Addsupport for closing alongside the window itself
+            //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            //{
+            //    await ApplicationView.GetForCurrentView().TryConsolidateAsync();
+            //}
+            //else
+            //{
+            propertiesDialog?.Hide();
+            //}
         }
 
         private async void Page_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key.Equals(VirtualKey.Escape))
             {
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                {
-                    await ApplicationView.GetForCurrentView().TryConsolidateAsync();
-                }
-                else
-                {
-                    propertiesDialog?.Hide();
-                }
+                // TODO: Add support for closing alongside the window itself
+                //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                //{
+                //    await ApplicationView.GetForCurrentView().TryConsolidateAsync();
+                //}
+                //else
+                //{
+                     propertiesDialog?.Hide();
+                //}
             }
         }
 

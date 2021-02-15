@@ -7,7 +7,6 @@ using System;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -109,7 +108,7 @@ namespace Files.UserControls.MultitaskingControl
             HorizontalTabView.CanReorderTabs = true;
         }
 
-        private async void TabStrip_TabStripDrop(object sender, DragEventArgs e)
+        private void TabStrip_TabStripDrop(object sender, DragEventArgs e)
         {
             HorizontalTabView.CanReorderTabs = true;
             if (!(sender is TabView tabStrip))
@@ -137,7 +136,7 @@ namespace Files.UserControls.MultitaskingControl
 
             var tabViewItemArgs = TabItemArguments.Deserialize(tabViewItemString);
             ApplicationData.Current.LocalSettings.Values[TabDropHandledIdentifier] = true;
-            await MainPage.AddNewTabByParam(tabViewItemArgs.InitialPageType, tabViewItemArgs.NavigationArg, index);
+            MainPage.AddNewTabByParam(tabViewItemArgs.InitialPageType, tabViewItemArgs.NavigationArg, index);
         }
 
         private void TabStrip_TabDragCompleted(TabView sender, TabViewTabDragCompletedEventArgs args)

@@ -104,16 +104,16 @@ namespace Files.ViewModels
 
         public async void DetectQuickLook()
         {
-            // Detect QuickLook
-            try
-            {
-                ApplicationData.Current.LocalSettings.Values["Arguments"] = "StartupTasks";
-                await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
-            }
-            catch (Exception ex)
-            {
-                NLog.LogManager.GetCurrentClassLogger().Warn(ex, ex.Message);
-            }
+            // TODO: Detect QuickLook with in-project code
+            //try
+            //{
+            //    ApplicationData.Current.LocalSettings.Values["Arguments"] = "StartupTasks";
+            //    await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
+            //}
+            //catch (Exception ex)
+            //{
+            //    NLog.LogManager.GetCurrentClassLogger().Warn(ex, ex.Message);
+            //}
         }
 
         private void DetectRecycleBinPreference()

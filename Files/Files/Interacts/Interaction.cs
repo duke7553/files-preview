@@ -121,9 +121,9 @@ namespace Files.Interacts
 
         public RelayCommand AddNewTabToMultitaskingControl => new RelayCommand(() => OpenNewTab());
 
-        private async void OpenNewTab()
+        private void OpenNewTab()
         {
-            await MainPage.AddNewTabByPath(typeof(PaneHolderPage), "NewTab".GetLocalized());
+            MainPage.AddNewTabByPath(typeof(PaneHolderPage), "NewTab".GetLocalized());
         }
 
         public async void OpenInNewWindowItem_Click()
@@ -157,9 +157,9 @@ namespace Files.Interacts
         {
             foreach (ListedItem listedItem in AssociatedInstance.ContentPage.SelectedItems)
             {
-                DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.Low, async () =>
+                DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.Low, () =>
                 {
-                    await MainPage.AddNewTabByPath(typeof(PaneHolderPage), (listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
+                    MainPage.AddNewTabByPath(typeof(PaneHolderPage), (listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
                 });
             }
         }
@@ -182,9 +182,9 @@ namespace Files.Interacts
             }
         }
 
-        public static async void OpenPathInNewTab(string path)
+        public static void OpenPathInNewTab(string path)
         {
-            await MainPage.AddNewTabByPath(typeof(PaneHolderPage), path);
+            MainPage.AddNewTabByPath(typeof(PaneHolderPage), path);
         }
 
         public static async Task<bool> OpenPathInNewWindowAsync(string path)
@@ -696,9 +696,10 @@ namespace Files.Interacts
 
         public void ShareItem_Click(object sender, RoutedEventArgs e)
         {
-            DataTransferManager manager = DataTransferManager.GetForCurrentView();
-            manager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(Manager_DataRequested);
-            DataTransferManager.ShowShareUI();
+            // TODO: Add support for ShareUI
+            //DataTransferManager manager = DataTransferManager.GetForCurrentView();
+            //manager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(Manager_DataRequested);
+            //DataTransferManager.ShowShareUI();
         }
 
         private async void ShowProperties()
@@ -731,38 +732,38 @@ namespace Files.Interacts
 
         public async Task OpenPropertiesWindowAsync(object item)
         {
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                Window newWindow = new Window();
-                ApplicationView newView = null;
+            // TODO: Implement actual Window here
+            //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            //{
+            //    Window newWindow = new Window();
 
-                newWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
-                {
-                    Frame frame = new Frame();
-                    frame.Navigate(typeof(Properties), new PropertiesPageNavigationArguments()
-                    {
-                        Item = item,
-                        AppInstanceArgument = AssociatedInstance
-                    }, new SuppressNavigationTransitionInfo());
-                    App.mainWindow.Content = frame;
-                    App.mainWindow.Activate();
+            //    newWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
+            //    {
+            //        Frame frame = new Frame();
+            //        frame.Navigate(typeof(Properties), new PropertiesPageNavigationArguments()
+            //        {
+            //            Item = item,
+            //            AppInstanceArgument = AssociatedInstance
+            //        }, new SuppressNavigationTransitionInfo());
+            //        App.mainWindow.Content = frame;
+            //        App.mainWindow.Activate();
 
-                    newView = ApplicationView.GetForCurrentView();
-                    //newWindow.TitleBar.ExtendViewIntoTitleBar = true;
-                    newView.Title = "PropertiesTitle".GetLocalized();
-                    newView.PersistedStateId = "Properties";
-                    newView.SetPreferredMinSize(new Size(400, 550));
-                    newView.Consolidated += delegate
-                    {
-                        newWindow.Close();
-                    };
-                });
-                bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newView.Id);
-                // Set window size again here as sometimes it's not resized in the page Loaded event
-                newView.TryResizeView(new Size(400, 550));
-            }
-            else
-            {
+            //        newView = ApplicationView.GetForCurrentView();
+            //        //newWindow.TitleBar.ExtendViewIntoTitleBar = true;
+            //        newView.Title = "PropertiesTitle".GetLocalized();
+            //        newView.PersistedStateId = "Properties";
+            //        newView.SetPreferredMinSize(new Size(400, 550));
+            //        newView.Consolidated += delegate
+            //        {
+            //            newWindow.Close();
+            //        };
+            //    });
+            //    bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newView.Id);
+            //    // Set window size again here as sometimes it's not resized in the page Loaded event
+            //    newView.TryResizeView(new Size(400, 550));
+            //}
+            //else
+            //{
                 var propertiesDialog = new PropertiesDialog();
                 propertiesDialog.propertiesFrame.Tag = propertiesDialog;
                 propertiesDialog.propertiesFrame.Navigate(typeof(Properties), new PropertiesPageNavigationArguments()
@@ -771,7 +772,7 @@ namespace Files.Interacts
                     AppInstanceArgument = AssociatedInstance
                 }, new SuppressNavigationTransitionInfo());
                 await propertiesDialog.ShowAsync(ContentDialogPlacement.Popup);
-            }
+            //}
         }
 
         public void ShowPropertiesButton_Click(object sender, RoutedEventArgs e)
