@@ -3,12 +3,10 @@ using Files.Common;
 using Files.Extensions;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.Helpers;
+using Microsoft.UI.Xaml;
 using System;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Storage;
-using Microsoft.UI.Xaml;
 
 namespace Files.Filesystem
 {
@@ -103,7 +101,7 @@ namespace Files.Filesystem
             Root = root;
             IsRemovable = (Type == DriveType.Removable || Type == DriveType.CDRom);
 
-            MainWindow.Current.DispatcherQueue.TryEnqueue(async () => await UpdatePropertiesAsync());
+            App.mainWindow.DispatcherQueue.TryEnqueue(async () => await UpdatePropertiesAsync());
         }
 
         public async Task UpdateLabelAsync()

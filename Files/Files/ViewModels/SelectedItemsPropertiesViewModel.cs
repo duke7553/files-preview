@@ -4,12 +4,10 @@ using Files.ViewModels.Properties;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.Helpers;
-using System;
-using System.Collections.ObjectModel;
-using Windows.ApplicationModel.Core;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using System;
+using System.Collections.ObjectModel;
 
 namespace Files.ViewModels
 {
@@ -537,7 +535,8 @@ namespace Files.ViewModels
             IsSelectedItemShortcut = false;
             string ItemExtension = null;
             //check if the selected item is an image file
-            MainWindow.Current.DispatcherQueue.TryEnqueue(() => {
+            MainWindow.Current.DispatcherQueue.TryEnqueue(() =>
+            {
                 ItemExtension = contentPage?.SelectedItem?.FileExtension;
             });
 

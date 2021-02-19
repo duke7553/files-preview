@@ -1,6 +1,8 @@
 ﻿using Files.Filesystem;
 using Files.ViewModels;
 using Files.Views;
+using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml.Media;
 
 namespace Files.DataModels
 {
@@ -183,14 +184,18 @@ namespace Files.DataModels
             {
                 int insertIndex = MainPage.SideBarItems.IndexOf(MainPage.SideBarItems.Last(x => x.ItemType == NavigationControlItemType.Location
                 && !x.Path.Equals(App.AppSettings.RecycleBinPath))) + 1;
-                var locationItem = new LocationItem
+                LocationItem locationItem = null;
+                await App.mainWindow.DispatcherQueue.EnqueueAsync(() =>
                 {
-                    Font = App.Current.Resources["FluentUIGlyphs"] as FontFamily,
-                    Path = path,
-                    Glyph = GetItemIcon(path),
-                    IsDefaultLocation = false,
-                    Text = res.Result?.DisplayName ?? Path.GetFileName(path.TrimEnd('\\'))
-                };
+                    locationItem = new LocationItem
+                    {
+                        Font = App.Current.Resources["FluentUIGlyphs"] as FontFamily,
+                        Path = path,
+                        Glyph = GetItemIcon(path),
+                        IsDefaultLocation = false,
+                        Text = res.Result?.DisplayName ?? Path.GetFileName(path.TrimEnd('\\'))
+                    };
+                });
 
                 if (!MainPage.SideBarItems.Contains(locationItem))
                 {

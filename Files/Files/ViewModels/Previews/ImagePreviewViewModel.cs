@@ -1,11 +1,11 @@
 ﻿using Files.Filesystem;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Files.ViewModels.Previews
 {

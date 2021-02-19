@@ -1,12 +1,10 @@
 ﻿using Microsoft.Toolkit.Uwp.UI.Controls;
-using System;
-using Windows.Foundation;
-using Microsoft.UI.Input;
+using Microsoft.UI.Input.Experimental;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Shapes;
-using Windows.UI.Input;
-using Microsoft.UI.Input.Experimental;
+using System;
+using Windows.Foundation;
 
 namespace Files.UserControls.Selection
 {

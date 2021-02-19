@@ -3,16 +3,16 @@ using Files.Enums;
 using Files.Extensions;
 using Files.Filesystem;
 using Files.Helpers;
+using Microsoft.System;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.Storage;
-using Microsoft.UI.Xaml;
-using Microsoft.System;
 
 namespace Files.ViewModels.Properties
 {

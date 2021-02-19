@@ -1,10 +1,10 @@
 ﻿using Files.Views;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.UI.Xaml;
 
 namespace Files.UserControls.MultitaskingControl
 {

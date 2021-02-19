@@ -2,6 +2,10 @@
 using Files.UserControls.FilePreviews;
 using Files.ViewModels.Previews;
 using Files.ViewModels.Properties;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Markup;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,10 +13,6 @@ using System.Diagnostics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Collections;
 using Windows.Storage;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Markup;
 using static Files.App;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236

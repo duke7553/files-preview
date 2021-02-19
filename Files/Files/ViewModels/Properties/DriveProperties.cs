@@ -1,8 +1,8 @@
 ﻿using Files.Filesystem;
+using Microsoft.UI.Xaml;
 using System;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Microsoft.UI.Xaml;
 
 namespace Files.ViewModels.Properties
 {

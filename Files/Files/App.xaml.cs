@@ -1,5 +1,4 @@
-﻿using Files.CommandLine;
-using Files.Controllers;
+﻿using Files.Controllers;
 using Files.Filesystem;
 using Files.Filesystem.FilesystemHistory;
 using Files.Helpers;
@@ -11,8 +10,9 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.Helpers;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json.Linq;
 using NLog;
 using System;
@@ -22,18 +22,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Notifications;
-using Windows.UI.ViewManagement;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
 using LaunchActivatedEventArgs = Microsoft.UI.Xaml.LaunchActivatedEventArgs;
-using Microsoft.System;
 
 namespace Files
 {
@@ -77,52 +69,6 @@ namespace Files
             AppData.FilePreviewExtensionManager.Initialize(); // The extension manager can update UI, so pass it the UI dispatcher to use for UI updates
 
             StartAppCenter();
-        }
-
-        internal static async Task EnsureSettingsAndConfigurationAreBootstrapped()
-        {
-            if (AppSettings == null)
-            {
-                //We can't create AppSettings at the same time as everything else as other dependencies depend on AppSettings
-                AppSettings = await SettingsViewModel.CreateInstance();
-                if (App.AppSettings?.AcrylicTheme == null)
-                {
-                    Helpers.ThemeHelper.Initialize();
-                }
-            }
-
-            if (CloudDrivesManager == null)
-            {
-                //Enumerate cloud drives on in the background. It will update the UI itself when finished
-                _ = Files.Filesystem.CloudDrivesManager.Instance.ContinueWith(o =>
-                {
-                    CloudDrivesManager = o.Result;
-                });
-            }
-
-            //Start off a list of tasks we need to run before we can continue startup
-            var tasksToRun = new List<Task>();
-
-            if (SidebarPinnedController == null)
-            {
-                tasksToRun.Add(Files.Controllers.SidebarPinnedController.CreateInstance().ContinueWith(o => SidebarPinnedController = o.Result));
-            }
-
-            if (DrivesManager == null)
-            {
-                tasksToRun.Add(Files.Filesystem.DrivesManager.Instance.ContinueWith(o => DrivesManager = o.Result));
-            }
-
-            if (InteractionViewModel == null)
-            {
-                InteractionViewModel = new InteractionViewModel();
-            }
-
-            if (tasksToRun.Any())
-            {
-                //Only proceed when all tasks are completed
-                await Task.WhenAll(tasksToRun);
-            }
         }
 
         private async void StartAppCenter()
@@ -182,10 +128,11 @@ namespace Files
 
             //bool canEnablePrelaunch = ApiInformation.IsMethodPresent("Windows.ApplicationModel.Core.CoreApplication", "EnablePrelaunch");
 
-
             mainWindow = new MainWindow();
-            mainWindow.Activated += MainWindow_Activated;
             mainWindow.Activate();
+            ShowErrorNotification = true;
+            ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = Process.GetCurrentProcess().Id;
+            Clipboard_ContentChanged(null, null);
         }
 
         private void Clipboard_ContentChanged(object sender, object e)
@@ -337,39 +284,6 @@ namespace Files
         //    mainWindow.Activate();
         //    mainWindow.Activated += MainWindow_Activated;
         //}
-
-        private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
-        {
-            Logger.Info("App activated");
-            mainWindow.Activated -= MainWindow_Activated;
-
-            // Window management
-            if (!(mainWindow.Content is Frame rootFrame))
-            {
-                rootFrame = new Frame();
-                rootFrame.CacheSize = 1;
-                mainWindow.Content = rootFrame;
-            }
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(async () =>
-            {
-                await EnsureSettingsAndConfigurationAreBootstrapped();
-                rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
-            });
-            
-
-            
-
-
-
-
-            if (args.WindowActivationState == WindowActivationState.CodeActivated ||
-                            args.WindowActivationState == WindowActivationState.PointerActivated)
-            {
-                ShowErrorNotification = true;
-                ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = Process.GetCurrentProcess().Id;
-                Clipboard_ContentChanged(null, null);
-            }
-        }
 
         private void TryEnablePrelaunch()
         {

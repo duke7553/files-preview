@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
+using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using Microsoft.UI.Xaml;
 
 namespace Files.UserControls.MultitaskingControl
 {

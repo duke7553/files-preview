@@ -2,8 +2,10 @@
 using Files.Extensions;
 using Files.Filesystem;
 using Files.Helpers;
+using Microsoft.System;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json.Linq;
 using System;
@@ -18,8 +20,6 @@ using Windows.Foundation.Collections;
 using Windows.Security.Cryptography.Core;
 using Windows.Services.Maps;
 using Windows.Storage;
-using Microsoft.UI.Xaml;
-using Microsoft.System;
 
 namespace Files.ViewModels.Properties
 {

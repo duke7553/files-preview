@@ -34,6 +34,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="MainWindow.xaml" />
+    <None Remove="Resources\AppCenterKey.txt" />
+    <None Remove="Resources\BingMapsKey.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -257,4 +259,15 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+
+  <ItemGroup>
+    <PRIResource Include="Strings\**\*.resw" />
+    <!-- Strings may be changed to other folder you use, or just **\*.resw -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\AppCenterKey.txt" />
+    <Content Include="Resources\BingMapsKey.txt" />
+  </ItemGroup>
+
 </Project>

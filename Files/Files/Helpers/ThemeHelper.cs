@@ -1,9 +1,7 @@
-﻿using Windows.Storage;
-using Microsoft.UI;
+﻿using Microsoft.System;
 using Microsoft.UI.Xaml;
+using Windows.Storage;
 using Windows.UI.ViewManagement;
-using Microsoft.System;
-using Windows.UI;
 
 namespace Files.Helpers
 {

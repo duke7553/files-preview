@@ -9,6 +9,11 @@ using Files.Views;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Extensions;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Newtonsoft.Json;
 using NLog;
 using System;
@@ -21,9 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Foundation.Metadata;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage;
@@ -33,12 +36,6 @@ using Windows.System;
 using Windows.System.UserProfile;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
 using static Files.Views.Properties;
 
 namespace Files.Interacts
@@ -764,14 +761,14 @@ namespace Files.Interacts
             //}
             //else
             //{
-                var propertiesDialog = new PropertiesDialog();
-                propertiesDialog.propertiesFrame.Tag = propertiesDialog;
-                propertiesDialog.propertiesFrame.Navigate(typeof(Properties), new PropertiesPageNavigationArguments()
-                {
-                    Item = item,
-                    AppInstanceArgument = AssociatedInstance
-                }, new SuppressNavigationTransitionInfo());
-                await propertiesDialog.ShowAsync(ContentDialogPlacement.Popup);
+            var propertiesDialog = new PropertiesDialog();
+            propertiesDialog.propertiesFrame.Tag = propertiesDialog;
+            propertiesDialog.propertiesFrame.Navigate(typeof(Properties), new PropertiesPageNavigationArguments()
+            {
+                Item = item,
+                AppInstanceArgument = AssociatedInstance
+            }, new SuppressNavigationTransitionInfo());
+            await propertiesDialog.ShowAsync(ContentDialogPlacement.Popup);
             //}
         }
 

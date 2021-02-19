@@ -1,9 +1,7 @@
 using Files.Filesystem;
 using Files.ViewModels.Properties;
-using Microsoft.Toolkit.Uwp.Helpers;
 using System;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation.Collections;
 
 namespace Files.Views

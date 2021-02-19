@@ -1,10 +1,10 @@
 ﻿using Files.Dialogs;
 using Files.ViewModels.Properties;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files.Views
 {

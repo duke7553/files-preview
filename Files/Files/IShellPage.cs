@@ -3,9 +3,9 @@ using Files.Interacts;
 using Files.UserControls;
 using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.ApplicationModel.AppService;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files
 {

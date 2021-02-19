@@ -1,10 +1,10 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.ApplicationModel;
 using Windows.System;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files.ViewModels.SettingsViewModels
 {
@@ -36,7 +36,7 @@ namespace Files.ViewModels.SettingsViewModels
                 case "ReleaseNotes":
                     await Launcher.LaunchUriAsync(new Uri(@"https://github.com/files-community/files-uwp/releases"));
                     break;
-                
+
                 case "Documentation":
                     await Launcher.LaunchUriAsync(new Uri(@"https://files-community.github.io/docs"));
                     break;

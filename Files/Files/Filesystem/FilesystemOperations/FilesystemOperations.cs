@@ -4,7 +4,7 @@ using Files.Extensions;
 using Files.Filesystem.FilesystemHistory;
 using Files.Helpers;
 using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.Helpers;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
 using Windows.Storage;
-using Microsoft.UI.Xaml.Controls;
 using FileAttributes = System.IO.FileAttributes;
 
 namespace Files.Filesystem
@@ -276,7 +275,7 @@ namespace Files.Filesystem
 
             if (Path.GetDirectoryName(destination) == associatedInstance.FilesystemViewModel.WorkingDirectory)
             {
-                MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async() =>
+                MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
                 {
                     await Task.Delay(50); // Small delay for the item to appear in the file list
                     List<ListedItem> copiedListedItems = associatedInstance.FilesystemViewModel.FilesAndFolders
@@ -487,7 +486,7 @@ namespace Files.Filesystem
 
             if (Path.GetDirectoryName(destination) == associatedInstance.FilesystemViewModel.WorkingDirectory)
             {
-                MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async() =>
+                MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
                 {
                     await Task.Delay(50); // Small delay for the item to appear in the file list
                     List<ListedItem> movedListedItems = associatedInstance.FilesystemViewModel.FilesAndFolders

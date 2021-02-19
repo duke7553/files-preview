@@ -1,10 +1,10 @@
 ﻿using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Services.Store;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files.Helpers
 {

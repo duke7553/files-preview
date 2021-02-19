@@ -1,13 +1,13 @@
 ﻿using Files.Converters;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Data;
 
 namespace Files.ViewModels.Properties
 {

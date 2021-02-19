@@ -1,10 +1,10 @@
 ﻿using Files.DataModels;
 using Files.Helpers;
 using Microsoft.Toolkit.Uwp.Extensions;
-using System;
-using System.Collections.ObjectModel;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.Collections.ObjectModel;
 
 namespace Files.Dialogs
 {

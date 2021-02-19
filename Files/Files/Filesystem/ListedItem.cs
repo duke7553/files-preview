@@ -3,12 +3,12 @@ using Files.Filesystem.Cloud;
 using Files.ViewModels.Properties;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using Windows.Storage;
-using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Files.Filesystem
 {

@@ -5,25 +5,21 @@ using Files.Interacts;
 using Files.ViewModels;
 using Files.Views;
 using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Storage;
-using Windows.System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Windows.Foundation;
+using Windows.System;
 using static Files.UserControls.INavigationToolbar;
 
 namespace Files.UserControls
@@ -737,7 +733,7 @@ namespace Files.UserControls
             }
         }
 
-        private async void PathBoxItem_DragOver(object sender, DragEventArgs e)
+        private void PathBoxItem_DragOver(object sender, DragEventArgs e)
         {
             if (!((sender as Grid).DataContext is PathBoxItem pathBoxItem) ||
                 pathBoxItem.Path == "Home" || pathBoxItem.Path == "NewTab".GetLocalized())

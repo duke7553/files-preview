@@ -2,19 +2,18 @@
 using Files.Helpers;
 using Files.Interacts;
 using Files.ViewModels;
-using System;
-using System.Threading;
-using Microsoft.ApplicationModel.Resources;
-using Windows.Foundation.Metadata;
-using Windows.System;
 using Microsoft.UI;
-using Windows.UI.ViewManagement;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.Threading;
+using Windows.Foundation.Metadata;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.ViewManagement;
 
 namespace Files.Views
 {
@@ -75,8 +74,8 @@ namespace Files.Views
             //}
             //else
             //{
-                propertiesDialog = Interaction.FindParent<ContentDialog>(this);
-                propertiesDialog.Closed += PropertiesDialog_Closed;
+            propertiesDialog = Interaction.FindParent<ContentDialog>(this);
+            propertiesDialog.Closed += PropertiesDialog_Closed;
             //}
         }
 
@@ -204,7 +203,7 @@ namespace Files.Views
             //}
             //else
             //{
-                propertiesDialog?.Hide();
+            propertiesDialog?.Hide();
             //}
         }
 
@@ -232,7 +231,7 @@ namespace Files.Views
                 //}
                 //else
                 //{
-                     propertiesDialog?.Hide();
+                propertiesDialog?.Hide();
                 //}
             }
         }

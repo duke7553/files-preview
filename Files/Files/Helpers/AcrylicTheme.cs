@@ -1,7 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.UI;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
 using Windows.UI;
 
 namespace Files.Helpers
@@ -57,7 +56,7 @@ namespace Files.Helpers
         {
             //if (App.Current.RequestedTheme == ApplicationTheme.Light)
             //{
-                SetLightTheme();
+            SetLightTheme();
             //}
             //else if (App.Current.RequestedTheme == ApplicationTheme.Dark)
             //{

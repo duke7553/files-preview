@@ -4,7 +4,6 @@ using Files.Extensions;
 using Files.Filesystem;
 using Microsoft.System;
 using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -5,13 +5,13 @@ using Files.UserControls.Widgets;
 using Files.ViewModels;
 using Files.ViewModels.Bundles;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Windows.ApplicationModel.AppService;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 
 namespace Files.Views
 {

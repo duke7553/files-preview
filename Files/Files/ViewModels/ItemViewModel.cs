@@ -8,8 +8,12 @@ using Files.Helpers;
 using Files.Helpers.FileListCache;
 using Files.Views.LayoutModes;
 using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.Helpers;
 using Microsoft.Toolkit.Uwp.UI;
+using Microsoft.UI.Text;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -23,20 +27,14 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.AppService;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.UI.Text;
 using static Files.Helpers.NativeDirectoryChangesHelper;
 using static Files.Helpers.NativeFindStorageItemHelper;
 using FileAttributes = System.IO.FileAttributes;
-using Windows.UI.Text;
 
 namespace Files.ViewModels
 {
@@ -738,7 +736,7 @@ namespace Files.ViewModels
                     {
                         var fileIconInfo = await LoadIconOverlayAsync(item.ItemPath, thumbnailSize);
 
-                        MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async() =>
+                        MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
                         {
                             if (fileIconInfo.IconData != null && !item.IsLinkItem)
                             {
@@ -785,7 +783,7 @@ namespace Files.ViewModels
                     {
                         var fileIconInfo = await LoadIconOverlayAsync(item.ItemPath, thumbnailSize);
 
-                        MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async() =>
+                        MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
                         {
                             if (fileIconInfo.IconData != null && fileIconInfo.IsCustom) // Only set folder icon if it's a custom icon
                             {

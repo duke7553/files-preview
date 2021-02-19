@@ -1,7 +1,7 @@
 ﻿using Files.Enums;
 using Files.ViewModels;
-using System;
 using Microsoft.UI.Xaml.Data;
+using System;
 
 namespace Files.Converters
 {

@@ -2,9 +2,9 @@
 using Files.Helpers;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
-using Microsoft.UI.Xaml;
 
 namespace Files.ViewModels.SettingsViewModels
 {

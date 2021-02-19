@@ -1,20 +1,20 @@
 ﻿using Files.Enums;
 using Files.Filesystem;
 using Files.UserControls.Selection;
+using Microsoft.UI.Input;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Navigation;
-using Interaction = Files.Interacts.Interaction;
 using Windows.UI.Core;
-using Microsoft.UI.Input;
+using Interaction = Files.Interacts.Interaction;
 
 namespace Files.Views.LayoutModes
 {

@@ -1,11 +1,11 @@
 ﻿using Files.Interacts;
 using Files.Views;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
-using Microsoft.UI.Xaml;
 
 namespace Files.UserControls.MultitaskingControl
 {

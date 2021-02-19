@@ -1,9 +1,9 @@
 ﻿using Files.ViewModels;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files.UserControls
 {

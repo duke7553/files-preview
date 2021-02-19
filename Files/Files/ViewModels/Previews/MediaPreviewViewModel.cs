@@ -1,7 +1,7 @@
 ﻿using Files.Filesystem;
+using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using Windows.Media.Core;
-using Microsoft.UI.Xaml;
 
 namespace Files.ViewModels.Previews
 {

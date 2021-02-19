@@ -1,11 +1,11 @@
 ﻿using Files.ViewModels;
 using Microsoft.Toolkit.Uwp.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace Files.UserControls.Widgets
 {

@@ -10,6 +10,12 @@ using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
 using Files.Views.LayoutModes;
 using Microsoft.Toolkit.Uwp.Extensions;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,18 +28,9 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.System;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
 using Windows.UI.Text;
 
 namespace Files.Views
@@ -977,10 +974,11 @@ namespace Files.Views
                 NavigationArg = parameters.IsSearchResultPage ? parameters.SearchPathParam : parameters.NavPathParam
             };
 
-            if(ItemDisplayFrame.CurrentSourcePageType == typeof(YourHome))
+            if (ItemDisplayFrame.CurrentSourcePageType == typeof(YourHome))
             {
                 UpdatePositioning(true);
-            } else
+            }
+            else
             {
                 UpdatePositioning();
             }
@@ -1334,7 +1332,7 @@ namespace Files.Views
             {
                 PreviewPaneRow.Height = new GridLength(0);
                 PreviewPaneColumn.Width = new GridLength(0);
-                if(PreviewPaneGridSplitter != null)
+                if (PreviewPaneGridSplitter != null)
                 {
                     PreviewPaneGridSplitter.Visibility = Visibility.Collapsed;
                 }
