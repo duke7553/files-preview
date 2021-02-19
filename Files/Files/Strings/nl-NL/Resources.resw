@@ -309,22 +309,22 @@
   <data name="EmptyFolder.Text" xml:space="preserve">
     <value>Deze map is leeg.</value>
   </data>
-  <data name="NavBackButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavBackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Terug (Alt + pijl-links)</value>
   </data>
-  <data name="NavForwardButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Volgende (Alt + Pijl-rechts)</value>
   </data>
-  <data name="NavUpButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavUpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Omhoog (Alt + Up Pijl-omhoog)</value>
   </data>
-  <data name="NavRefreshButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavRefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Vernieuwen (F5)</value>
   </data>
-  <data name="NavSearchButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Zoeken</value>
   </data>
-  <data name="NavMoreButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Meer opties</value>
   </data>
   <data name="SidebarDrives" xml:space="preserve">
@@ -384,7 +384,7 @@
   <data name="SettingsNavExperimental.Content" xml:space="preserve">
     <value>Experimenteel</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Bekijk voorbeeldprofielen</value>
   </data>
   <data name="ItemAlreadyExistsDialogContent" xml:space="preserve">
@@ -444,7 +444,7 @@
   <data name="FolderNotFoundDialog.Title" xml:space="preserve">
     <value>Heeft u deze map verwijderd?</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Selectieopties</value>
   </data>
   <data name="FileInUseDeleteDialog.Text" xml:space="preserve">
@@ -510,7 +510,7 @@
   <data name="SettingsAboutOpenLogLocationButton.Content" xml:space="preserve">
     <value>Logboek locatie openen</value>
   </data>
-  <data name="TabStripAddNewTab.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="TabStripAddNewTab.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Nieuw tabblad (Ctrl+T)</value>
   </data>
   <data name="ItemSelected.Text" xml:space="preserve">
@@ -576,7 +576,7 @@
   <data name="RecycleInProgress.Title" xml:space="preserve">
     <value>Bestanden verplaatsen naar de Prullenbak</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Meer informatie over datumnotaties</value>
   </data>
   <data name="BitlockerDialog.PrimaryButtonText" xml:space="preserve">
@@ -822,10 +822,10 @@
   <data name="BaseLayoutContextFlyoutLayoutMode.Text" xml:space="preserve">
     <value>Lay-outmodus</value>
   </data>
-  <data name="NavForwardButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Vooruit gaan</value>
   </data>
-  <data name="SettingsPreferencesAppLanguage.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesAppLanguage.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>App-taal</value>
   </data>
   <data name="SettingsPreferencesAppLanguage.Header" xml:space="preserve">
@@ -1044,10 +1044,10 @@
   <data name="PropertySectionDocument" xml:space="preserve">
     <value>Document</value>
   </data>
-  <data name="NavMoreButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Meer opties</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Selectieopties</value>
   </data>
   <data name="FileItemAutomation" xml:space="preserve">
@@ -1071,7 +1071,7 @@
   <data name="SettingsFilesAndFoldersShowHiddenItems.Header" xml:space="preserve">
     <value>Verborgen bestanden en mappen weergeven</value>
   </data>
-  <data name="SettingsFilesAndFoldersShowHiddenItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersShowHiddenItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Verborgen bestanden en mappen weergeven</value>
   </data>
   <data name="SideBarEjectDevice.Text" xml:space="preserve">
@@ -1083,7 +1083,7 @@
   <data name="HorizontalMultitaskingControlNewTab.Text" xml:space="preserve">
     <value>Nieuw tabblad</value>
   </data>
-  <data name="NavSearchButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Zoeken</value>
   </data>
   <data name="PropertiesDialogReadOnly.Text" xml:space="preserve">
@@ -1113,13 +1113,13 @@
   <data name="PropertyColorSpace_Value65535" xml:space="preserve">
     <value>Niet opgegeven</value>
   </data>
-  <data name="SettingsAboutLicense.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutLicense.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Licentie</value>
   </data>
   <data name="SettingsAboutLicense.Content" xml:space="preserve">
     <value>Licentie</value>
   </data>
-  <data name="SettingsAboutWebsite.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutWebsite.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Website</value>
   </data>
   <data name="SettingsAboutWebsite.Content" xml:space="preserve">
@@ -1146,7 +1146,7 @@
   <data name="SettingsFilesAndFoldersHideSystemItems.Header" xml:space="preserve">
     <value>Beveiligde besturingssysteembestanden verbergen (aanbevolen)</value>
   </data>
-  <data name="SettingsFilesAndFoldersHideSystemItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersHideSystemItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Beveiligde besturingssysteembestanden verbergen (aanbevolen)</value>
   </data>
   <data name="BaseLayoutContextFlyoutNewFile.Text" xml:space="preserve">

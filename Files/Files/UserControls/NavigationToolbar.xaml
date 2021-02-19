@@ -32,7 +32,7 @@
                     <SolidColorBrush x:Key="PathBoxHoverBrush" Color="{ThemeResource SystemColorWindowColor}" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
-            <ResourceDictionary.MergedDictionaries>
+            <!--<ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/ResourceDictionaries/ToolbarButtonStyle.xaml" />
 
                 <ResourceDictionary>
@@ -646,7 +646,7 @@
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
                 </ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>-->
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -753,7 +753,6 @@
                 x:Uid="NavBackButton"
                 Width="36"
                 Height="32"
-                x:FieldModifier="public"
                 AutomationProperties.Name="Navigate backwards"
                 Background="Transparent"
                 Click="Back_Click"
@@ -779,7 +778,6 @@
                 x:Uid="NavForwardButton"
                 Width="36"
                 Height="32"
-                x:FieldModifier="public"
                 AutomationProperties.Name="Navigate forward"
                 Background="Transparent"
                 Click="Forward_Click"
@@ -804,7 +802,6 @@
                 x:Uid="NavUpButton"
                 Width="36"
                 Height="32"
-                x:FieldModifier="public"
                 AutomationProperties.Name="Go up one directory"
                 Background="Transparent"
                 Click="Up_Click"
@@ -827,7 +824,6 @@
                 x:Uid="NavRefreshButton"
                 Width="36"
                 Height="32"
-                x:FieldModifier="public"
                 AutomationProperties.Name="Refresh the directory"
                 Background="Transparent"
                 Click="Refresh_Click"
@@ -977,7 +973,6 @@
                             x:Name="VerticalTabs"
                             Width="275"
                             MaxHeight="300"
-                            x:FieldModifier="public"
                             PointerExited="VerticalTabs_PointerExited" />
                     </Flyout>
                 </Button.Flyout>

@@ -309,22 +309,22 @@
   <data name="EmptyFolder.Text" xml:space="preserve">
     <value>Ten folder jest pusty.</value>
   </data>
-  <data name="NavBackButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavBackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Wstecz (Alt + Strzałka w lewo)</value>
   </data>
-  <data name="NavForwardButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Dalej (Alt + Strzałka w prawo)</value>
   </data>
-  <data name="NavUpButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavUpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>W górę (Alt + Strzałka w górę)</value>
   </data>
-  <data name="NavRefreshButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavRefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Odśwież (F5)</value>
   </data>
-  <data name="NavSearchButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Wyszukaj</value>
   </data>
-  <data name="NavMoreButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Więcej opcji</value>
   </data>
   <data name="SidebarDrives" xml:space="preserve">
@@ -384,7 +384,7 @@
   <data name="SettingsNavExperimental.Content" xml:space="preserve">
     <value>Funkcje Eksperymentalne</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Zobacz przykładowe profile</value>
   </data>
   <data name="ItemAlreadyExistsDialogContent" xml:space="preserve">
@@ -444,7 +444,7 @@
   <data name="FolderNotFoundDialog.Title" xml:space="preserve">
     <value>Czy usunąłeś ten folder?</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Opcje zaznaczeń</value>
   </data>
   <data name="FileInUseDeleteDialog.Text" xml:space="preserve">
@@ -510,7 +510,7 @@
   <data name="SettingsAboutOpenLogLocationButton.Content" xml:space="preserve">
     <value>Otwórz lokalizację dziennika</value>
   </data>
-  <data name="TabStripAddNewTab.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="TabStripAddNewTab.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Nowa karta (Ctrl + T)</value>
   </data>
   <data name="ItemSelected.Text" xml:space="preserve">
@@ -576,7 +576,7 @@
   <data name="RecycleInProgress.Title" xml:space="preserve">
     <value>Przenoszenie plików do Kosza</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Dowiedz się więcej o formatach dat</value>
   </data>
   <data name="BitlockerDialog.PrimaryButtonText" xml:space="preserve">
@@ -870,34 +870,34 @@
   <data name="BaseLayoutContextFlyoutLayoutMode.Text" xml:space="preserve">
     <value>Układ</value>
   </data>
-  <data name="NavBackButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavBackButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Nawiguj do tyłu</value>
   </data>
-  <data name="NavForwardButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Nawiguj do przodu</value>
   </data>
-  <data name="NavResfreshButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavResfreshButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Odśwież katalog</value>
   </data>
-  <data name="NavUpButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavUpButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Przejdź w górę o jeden katalog</value>
   </data>
-  <data name="VerticalTabStrip.AutomationProperties.Name" xml:space="preserve">
+  <data name="VerticalTabStrip.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Pionowy pasek z karami</value>
   </data>
-  <data name="SettingsPreferencesAppLanguage.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesAppLanguage.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Język aplikacji</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplications.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplications.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Aplikacje Terminala</value>
   </data>
-  <data name="SettingsPreferencesEditTerminalApplications.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesEditTerminalApplications.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Edytuj aplikacje terminala</value>
   </data>
-  <data name="SettingsPreferencesEditTerminalApplications.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsPreferencesEditTerminalApplications.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Edytuj aplikacje terminala</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Pokaż przykładowe profile</value>
   </data>
   <data name="SettingsPreferencesAppLanguage.Header" xml:space="preserve">
@@ -939,13 +939,13 @@
   <data name="SettingsShowFileOwnerInProperties.Header" xml:space="preserve">
     <value>Pokazuj właściciela w właściwościach</value>
   </data>
-  <data name="NavMoreButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Więcej opcji</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Opcje zaznaczania</value>
   </data>
-  <data name="StatusCenter.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusCenter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Centrum statusu</value>
   </data>
   <data name="SettingsOpenItemsWithOneclick.Header" xml:space="preserve">
@@ -969,7 +969,7 @@
   <data name="DrivesWidgetDescription.Text" xml:space="preserve">
     <value>Dyski</value>
   </data>
-  <data name="SettingsWidgetsShowLibraryCards.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsWidgetsShowLibraryCards.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Pokaż karty biblioteki na stronie głównej</value>
   </data>
   <data name="SettingsWidgetsShowLibraryCards.Header" xml:space="preserve">
@@ -981,13 +981,13 @@
   <data name="SettingsWidgets.Content" xml:space="preserve">
     <value>Widgety</value>
   </data>
-  <data name="SettingsWidgetsShowDrives.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsWidgetsShowDrives.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Pokaż dyski na stronie głównej</value>
   </data>
   <data name="SettingsWidgetsShowDrives.Header" xml:space="preserve">
     <value>Pokaż dyski na stronie głównej</value>
   </data>
-  <data name="SettingsWidgetsShowRecentFiles.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsWidgetsShowRecentFiles.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Pokaż ostatnie pliki na stronie głównej</value>
   </data>
   <data name="SettingsWidgetsShowRecentFiles.Header" xml:space="preserve">
@@ -996,7 +996,7 @@
   <data name="SettingsFilesAndFoldersShowHiddenItems.Header" xml:space="preserve">
     <value>Pokaż ukryte pliki i foldery</value>
   </data>
-  <data name="SettingsFilesAndFoldersShowHiddenItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersShowHiddenItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Pokaż ukryte pliki i foldery</value>
   </data>
   <data name="EjectNotificationHeader" xml:space="preserve">
@@ -1023,7 +1023,7 @@
   <data name="HorizontalMultitaskingControlNewTab.Text" xml:space="preserve">
     <value>Nowa karta</value>
   </data>
-  <data name="NavSearchButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Wyszukaj</value>
   </data>
   <data name="PropertiesDialogReadOnly.Text" xml:space="preserve">
@@ -1341,19 +1341,19 @@
   <data name="StatusCenterTeachingTip.Title" xml:space="preserve">
     <value>Centrum stanu</value>
   </data>
-  <data name="SettingsAboutLicense.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutLicense.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Licencja</value>
   </data>
   <data name="SettingsAboutLicense.Content" xml:space="preserve">
     <value>Licencja</value>
   </data>
-  <data name="SettingsAboutWebsite.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutWebsite.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Witryna internetowa</value>
   </data>
   <data name="SettingsAboutWebsite.Content" xml:space="preserve">
     <value>Witryna internetowa</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Dowiedz się więcej o formatach dat</value>
   </data>
   <data name="DragDropWindowText" xml:space="preserve">
@@ -1365,16 +1365,16 @@
   <data name="SearchTabHeaderText" xml:space="preserve">
     <value>Wyniki wyszukiwania</value>
   </data>
-  <data name="SettingsAboutContributorsListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutContributorsListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Zobacz, kto współtworzył Files</value>
   </data>
-  <data name="SettingsAboutReleaseNotesListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutReleaseNotesListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Dowiedz się, co nowego w Files</value>
   </data>
-  <data name="SettingsAboutSubmitFeedbackListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutSubmitFeedbackListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Wyślij programistom raport o problemie z dodatkowymi informacjami</value>
   </data>
-  <data name="SettingsAboutSupportUsListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutSupportUsListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Wspomóż nas przez PayPal</value>
   </data>
   <data name="SettingsListAndSortDirectoriesAlongsideFiles.Header" xml:space="preserve">
@@ -1398,7 +1398,7 @@
   <data name="SettingsFilesAndFoldersHideSystemItems.Header" xml:space="preserve">
     <value>Ukryj chronione pliki systemu operacyjnego (zalecane)</value>
   </data>
-  <data name="SettingsFilesAndFoldersHideSystemItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersHideSystemItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Ukryj chronione pliki systemu operacyjnego (zalecane)</value>
   </data>
   <data name="BaseLayoutContextFlyoutNewFile.Text" xml:space="preserve">
@@ -1440,7 +1440,7 @@
   <data name="ItemAlreadyExistsDialogCloseButtonText" xml:space="preserve">
     <value>Anuluj</value>
   </data>
-  <data name="StatusCenter.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusCenter.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Bieżące zadania</value>
   </data>
   <data name="StatusCenterFlyoutTitle.Text" xml:space="preserve">
@@ -1482,19 +1482,19 @@
   <data name="SettingsContextMenuAnimationsSwitch.Header" xml:space="preserve">
     <value>Włącz animacje podczas otwierania i zamykania menu kontekstowego</value>
   </data>
-  <data name="StatusBarControlDetailsView.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlDetailsView.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Widok szczegółów</value>
   </data>
-  <data name="StatusBarControlGridViewLarge.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlGridViewLarge.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Widok siatki (duży)</value>
   </data>
-  <data name="StatusBarControlGridViewMedium.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlGridViewMedium.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Widok siatki (średni)</value>
   </data>
-  <data name="StatusBarControlGridViewSmall.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlGridViewSmall.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Widok siatki (mały)</value>
   </data>
-  <data name="StatusBarControlTilesView.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlTilesView.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Widok kafelków</value>
   </data>
   <data name="StatusBarControlLayoutMode.Text" xml:space="preserve">
@@ -1503,22 +1503,22 @@
   <data name="StatusBarControlDisplayOptions.Text" xml:space="preserve">
     <value>Opcje wyświetlania</value>
   </data>
-  <data name="StatusBarControlDisplayOptionsButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlDisplayOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Opcje wyświetlania</value>
   </data>
-  <data name="StatusBarControlDisplayOptionsButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlDisplayOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Opcje wyświetlania</value>
   </data>
-  <data name="StatusBarControlGridViewLarge.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlGridViewLarge.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Widok siatki (duży)</value>
   </data>
-  <data name="StatusBarControlGridViewMedium.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlGridViewMedium.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Widok siatki (średni)</value>
   </data>
-  <data name="StatusBarControlGridViewSmall.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlGridViewSmall.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Widok siatki (mały)</value>
   </data>
-  <data name="StatusBarControlTilesView.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlTilesView.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Widok kafelków</value>
   </data>
   <data name="StatusBarControlShowFileExtensions.Header" xml:space="preserve">
@@ -1527,7 +1527,7 @@
   <data name="StatusBarControlShowHiddenItems.Header" xml:space="preserve">
     <value>Pokaż ukryte elementy</value>
   </data>
-  <data name="StatusBarControlDetailsView.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlDetailsView.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Widok szczegółów</value>
   </data>
   <data name="BaseLayoutContextFlyoutSortByDateDeleted.Text" xml:space="preserve">

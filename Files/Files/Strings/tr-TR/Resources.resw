@@ -309,22 +309,22 @@
   <data name="EmptyFolder.Text" xml:space="preserve">
     <value>Bu klasör boş.</value>
   </data>
-  <data name="NavBackButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavBackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Geri	Alt+Sol Ok</value>
   </data>
-  <data name="NavForwardButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>İleri	Alt+Sağ Ok</value>
   </data>
-  <data name="NavUpButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavUpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Yukarı (Alt + Yukarı Ok)</value>
   </data>
-  <data name="NavRefreshButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavRefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Yenile (F5)</value>
   </data>
-  <data name="NavSearchButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Ara</value>
   </data>
-  <data name="NavMoreButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Diğer seçenekler</value>
   </data>
   <data name="SidebarDrives" xml:space="preserve">
@@ -381,7 +381,7 @@
   <data name="SettingsNavExperimental.Content" xml:space="preserve">
     <value>Deneysel</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Örnek profilleri görüntüle</value>
   </data>
   <data name="ItemAlreadyExistsDialogContent" xml:space="preserve">
@@ -441,7 +441,7 @@
   <data name="FolderNotFoundDialog.Title" xml:space="preserve">
     <value>Bu klasörü sildiniz mi?</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Seçim seçenekleri</value>
   </data>
   <data name="FileInUseDeleteDialog.Text" xml:space="preserve">
@@ -507,7 +507,7 @@
   <data name="SettingsAboutOpenLogLocationButton.Content" xml:space="preserve">
     <value>Log kaydı dizinini aç</value>
   </data>
-  <data name="TabStripAddNewTab.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="TabStripAddNewTab.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Yeni Sekme	(Ctrl + T)</value>
   </data>
   <data name="ItemSelected.Text" xml:space="preserve">
@@ -564,7 +564,7 @@
   <data name="ByteSymbol" xml:space="preserve">
     <value>B</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Tarih formatları hakkında daha fazla bilgi al</value>
   </data>
   <data name="BitlockerDialog.PrimaryButtonText" xml:space="preserve">
@@ -837,10 +837,10 @@
   <data name="BaseLayoutContextFlyoutLayoutMode.Text" xml:space="preserve">
     <value>Düzen modu</value>
   </data>
-  <data name="NavForwardButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>İleri Git</value>
   </data>
-  <data name="SettingsPreferencesAppLanguage.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesAppLanguage.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Uygulama Dili</value>
   </data>
   <data name="SettingsPreferencesAppLanguage.Header" xml:space="preserve">
@@ -855,10 +855,10 @@
   <data name="SettingsAppearanceTheme.Header" xml:space="preserve">
     <value>Uygulama teması</value>
   </data>
-  <data name="NavMoreButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Diğer seçenekler</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Seçim seçenekleri</value>
   </data>
   <data name="FileItemAutomation" xml:space="preserve">
@@ -882,7 +882,7 @@
   <data name="SettingsFilesAndFoldersShowHiddenItems.Header" xml:space="preserve">
     <value>Gizli dosya ve klasörleri göster</value>
   </data>
-  <data name="SettingsFilesAndFoldersShowHiddenItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersShowHiddenItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Gizli dosya ve klasörleri göster</value>
   </data>
   <data name="SideBarEjectDevice.Text" xml:space="preserve">
@@ -894,7 +894,7 @@
   <data name="HorizontalMultitaskingControlNewTab.Text" xml:space="preserve">
     <value>Yeni sekme</value>
   </data>
-  <data name="NavSearchButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Ara</value>
   </data>
   <data name="PropertiesDialogReadOnly.Text" xml:space="preserve">
@@ -1128,19 +1128,19 @@
   <data name="PropertyColorSpace_Value65535" xml:space="preserve">
     <value>Belirtilmemiş</value>
   </data>
-  <data name="SettingsAboutLicense.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutLicense.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Lisans</value>
   </data>
   <data name="SettingsAboutLicense.Content" xml:space="preserve">
     <value>Lisans</value>
   </data>
-  <data name="SettingsAboutWebsite.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutWebsite.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Web Sitesi</value>
   </data>
   <data name="SettingsAboutWebsite.Content" xml:space="preserve">
     <value>Web Sitesi</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Tarih formatları hakkında daha fazlasını öğren</value>
   </data>
   <data name="DragDropWindowText" xml:space="preserve">
@@ -1152,16 +1152,16 @@
   <data name="SearchTabHeaderText" xml:space="preserve">
     <value>Arama sonuçları</value>
   </data>
-  <data name="SettingsAboutContributorsListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutContributorsListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Files'a kimlerin katkıda bulunduğunu görün</value>
   </data>
-  <data name="SettingsAboutReleaseNotesListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutReleaseNotesListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Files de nelerin yeni olduğunu görün</value>
   </data>
-  <data name="SettingsAboutSubmitFeedbackListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutSubmitFeedbackListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Geliştiricilere bir sorun hakkında daha detaylı rapor gönder</value>
   </data>
-  <data name="SettingsAboutSupportUsListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutSupportUsListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Bizi PayPal üzerinden destekle</value>
   </data>
   <data name="PropertiesDialogTabDetails.Content" xml:space="preserve">
@@ -1182,7 +1182,7 @@
   <data name="SettingsFilesAndFoldersHideSystemItems.Header" xml:space="preserve">
     <value>Korunan işletim sistemi dosyalarını gizle (Önerilen)</value>
   </data>
-  <data name="SettingsFilesAndFoldersHideSystemItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersHideSystemItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Korunan işletim sistemi dosyalarını gizle (Önerilen)</value>
   </data>
   <data name="BaseLayoutContextFlyoutNewFile.Text" xml:space="preserve">
@@ -1221,7 +1221,7 @@
   <data name="ItemAlreadyExistsDialogCloseButtonText" xml:space="preserve">
     <value>İptal</value>
   </data>
-  <data name="StatusCenter.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusCenter.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Devam eden işlemler</value>
   </data>
   <data name="StatusCenterFlyoutTitle.Text" xml:space="preserve">
@@ -1254,19 +1254,19 @@
   <data name="SettingsContextMenuAnimationsSwitch.Header" xml:space="preserve">
     <value>Bağlam menüsünü açıp kapatırken animasyonu etkinleştir</value>
   </data>
-  <data name="StatusBarControlDetailsView.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlDetailsView.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Detaylı görünüm</value>
   </data>
-  <data name="StatusBarControlGridViewLarge.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlGridViewLarge.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Simge (Büyük)</value>
   </data>
-  <data name="StatusBarControlGridViewMedium.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlGridViewMedium.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Simge (Orta)</value>
   </data>
-  <data name="StatusBarControlGridViewSmall.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlGridViewSmall.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Simge (Küçük)</value>
   </data>
-  <data name="StatusBarControlTilesView.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlTilesView.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Liste</value>
   </data>
   <data name="StatusBarControlLayoutMode.Text" xml:space="preserve">
@@ -1275,22 +1275,22 @@
   <data name="StatusBarControlDisplayOptions.Text" xml:space="preserve">
     <value>Görüntüleme seçenekleri</value>
   </data>
-  <data name="StatusBarControlDisplayOptionsButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlDisplayOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Görüntüleme seçenekleri</value>
   </data>
-  <data name="StatusBarControlDisplayOptionsButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlDisplayOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Görüntüleme seçenekleri</value>
   </data>
-  <data name="StatusBarControlGridViewLarge.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlGridViewLarge.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Simge (Büyük)</value>
   </data>
-  <data name="StatusBarControlGridViewMedium.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlGridViewMedium.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Simge (Orta)</value>
   </data>
-  <data name="StatusBarControlGridViewSmall.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlGridViewSmall.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Simge (Küçük)</value>
   </data>
-  <data name="StatusBarControlTilesView.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlTilesView.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Liste</value>
   </data>
   <data name="StatusBarControlShowFileExtensions.Header" xml:space="preserve">
@@ -1299,7 +1299,7 @@
   <data name="StatusBarControlShowHiddenItems.Header" xml:space="preserve">
     <value>Gizli öğeleri göster</value>
   </data>
-  <data name="StatusBarControlDetailsView.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlDetailsView.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Detaylı görünüm</value>
   </data>
   <data name="BaseLayoutContextFlyoutSortByDateDeleted.Text" xml:space="preserve">

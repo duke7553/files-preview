@@ -309,22 +309,22 @@
   <data name="EmptyFolder.Text" xml:space="preserve">
     <value>Ця папка порожня.</value>
   </data>
-  <data name="NavBackButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavBackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Назад (Alt + Стрілка вліво)</value>
   </data>
-  <data name="NavForwardButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Вперед (Alt + Стрілка вправо)</value>
   </data>
-  <data name="NavUpButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavUpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Вгору (Alt + Стрілка вгору)</value>
   </data>
-  <data name="NavRefreshButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavRefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Оновити (F5)</value>
   </data>
-  <data name="NavSearchButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Пошук</value>
   </data>
-  <data name="NavMoreButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Більше</value>
   </data>
   <data name="SidebarDrives" xml:space="preserve">
@@ -384,7 +384,7 @@
   <data name="SettingsNavExperimental.Content" xml:space="preserve">
     <value>Експериментально</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Переглянути приклади профілів</value>
   </data>
   <data name="ItemAlreadyExistsDialogContent" xml:space="preserve">
@@ -444,7 +444,7 @@
   <data name="FolderNotFoundDialog.Title" xml:space="preserve">
     <value>Ви видалили цю папку?</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Виділення</value>
   </data>
   <data name="FileInUseDeleteDialog.Text" xml:space="preserve">
@@ -510,7 +510,7 @@
   <data name="SettingsAboutOpenLogLocationButton.Content" xml:space="preserve">
     <value>Відкрити розташування лог файлу</value>
   </data>
-  <data name="TabStripAddNewTab.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="TabStripAddNewTab.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Створити вкладку (Ctrl + T)</value>
   </data>
   <data name="ItemSelected.Text" xml:space="preserve">
@@ -576,7 +576,7 @@
   <data name="RecycleInProgress.Title" xml:space="preserve">
     <value>Переміщення файлів до Кошика</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Докладніше про формати дати</value>
   </data>
   <data name="BitlockerDialog.PrimaryButtonText" xml:space="preserve">
@@ -870,34 +870,34 @@
   <data name="BaseLayoutContextFlyoutLayoutMode.Text" xml:space="preserve">
     <value>Вид піктограм</value>
   </data>
-  <data name="NavBackButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavBackButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Навігація назад</value>
   </data>
-  <data name="NavForwardButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Перехід уперед</value>
   </data>
-  <data name="NavResfreshButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavResfreshButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Оновлення каталогу</value>
   </data>
-  <data name="NavUpButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavUpButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Піднятися вгору на один каталог</value>
   </data>
-  <data name="VerticalTabStrip.AutomationProperties.Name" xml:space="preserve">
+  <data name="VerticalTabStrip.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Вертикальна смуга вкладок</value>
   </data>
-  <data name="SettingsPreferencesAppLanguage.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesAppLanguage.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Мова програми</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplications.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplications.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Стандартний термінал</value>
   </data>
-  <data name="SettingsPreferencesEditTerminalApplications.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesEditTerminalApplications.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Змінити профілі терміналів</value>
   </data>
-  <data name="SettingsPreferencesEditTerminalApplications.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsPreferencesEditTerminalApplications.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Змінити профілі терміналів</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Переглянути зразки профілів</value>
   </data>
   <data name="SettingsPreferencesAppLanguage.Header" xml:space="preserve">
@@ -939,13 +939,13 @@
   <data name="SettingsShowFileOwnerInProperties.Header" xml:space="preserve">
     <value>Показуквати Власника у властивостях</value>
   </data>
-  <data name="NavMoreButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Більше</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Виділення</value>
   </data>
-  <data name="StatusCenter.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusCenter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Поточні операції</value>
   </data>
   <data name="SettingsOpenItemsWithOneclick.Header" xml:space="preserve">
@@ -969,7 +969,7 @@
   <data name="DrivesWidgetDescription.Text" xml:space="preserve">
     <value>Диски</value>
   </data>
-  <data name="SettingsWidgetsShowLibraryCards.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsWidgetsShowLibraryCards.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Показувати стандартні папки на домашній сторінці</value>
   </data>
   <data name="SettingsWidgetsShowLibraryCards.Header" xml:space="preserve">
@@ -981,13 +981,13 @@
   <data name="SettingsWidgets.Content" xml:space="preserve">
     <value>Віджети</value>
   </data>
-  <data name="SettingsWidgetsShowDrives.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsWidgetsShowDrives.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Показувати диски на домашній сторінці</value>
   </data>
   <data name="SettingsWidgetsShowDrives.Header" xml:space="preserve">
     <value>Показувати диски на домашній сторінці</value>
   </data>
-  <data name="SettingsWidgetsShowRecentFiles.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsWidgetsShowRecentFiles.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Показувати останні файли на домашній сторінці</value>
   </data>
   <data name="SettingsWidgetsShowRecentFiles.Header" xml:space="preserve">
@@ -996,7 +996,7 @@
   <data name="SettingsFilesAndFoldersShowHiddenItems.Header" xml:space="preserve">
     <value>Показуквати приховані файли і папки</value>
   </data>
-  <data name="SettingsFilesAndFoldersShowHiddenItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersShowHiddenItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Показуквати приховані файли і папки</value>
   </data>
   <data name="EjectNotificationHeader" xml:space="preserve">
@@ -1023,7 +1023,7 @@
   <data name="HorizontalMultitaskingControlNewTab.Text" xml:space="preserve">
     <value>Нова вкладка</value>
   </data>
-  <data name="NavSearchButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Пошук</value>
   </data>
   <data name="PropertiesDialogReadOnly.Text" xml:space="preserve">
@@ -1290,19 +1290,19 @@
   <data name="StatusCenterTeachingTip.Title" xml:space="preserve">
     <value>Центр операцій</value>
   </data>
-  <data name="SettingsAboutLicense.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutLicense.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Ліцензія</value>
   </data>
   <data name="SettingsAboutLicense.Content" xml:space="preserve">
     <value>Ліцензія</value>
   </data>
-  <data name="SettingsAboutWebsite.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutWebsite.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Веб-сайт</value>
   </data>
   <data name="SettingsAboutWebsite.Content" xml:space="preserve">
     <value>Веб-сайт</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Дізнайтеся більше про формати дат</value>
   </data>
   <data name="DragDropWindowText" xml:space="preserve">
@@ -1314,16 +1314,16 @@
   <data name="SearchTabHeaderText" xml:space="preserve">
     <value>Результати пошуку</value>
   </data>
-  <data name="SettingsAboutContributorsListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutContributorsListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Дізнайтеся, хто долучився до розробки Files</value>
   </data>
-  <data name="SettingsAboutReleaseNotesListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutReleaseNotesListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Дізнайтеся, що нового у Files</value>
   </data>
-  <data name="SettingsAboutSubmitFeedbackListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutSubmitFeedbackListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Надішліть розробникам звіт про проблему з детальною інформацією</value>
   </data>
-  <data name="SettingsAboutSupportUsListViewItem.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutSupportUsListViewItem.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Підтримайте нас на PayPal</value>
   </data>
   <data name="SettingsListAndSortDirectoriesAlongsideFiles.Header" xml:space="preserve">
@@ -1347,7 +1347,7 @@
   <data name="SettingsFilesAndFoldersHideSystemItems.Header" xml:space="preserve">
     <value>Приховувати захищені системні файли (рекомендовано)</value>
   </data>
-  <data name="SettingsFilesAndFoldersHideSystemItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersHideSystemItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Приховувати захищені системні файли (рекомендовано)</value>
   </data>
   <data name="BaseLayoutContextFlyoutNewFile.Text" xml:space="preserve">
@@ -1389,7 +1389,7 @@
   <data name="ItemAlreadyExistsDialogCloseButtonText" xml:space="preserve">
     <value>Скасувати</value>
   </data>
-  <data name="StatusCenter.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusCenter.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Поточні операції</value>
   </data>
   <data name="StatusCenterFlyoutTitle.Text" xml:space="preserve">

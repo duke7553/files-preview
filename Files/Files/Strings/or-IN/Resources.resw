@@ -363,22 +363,22 @@
   <data name="EmptyFolder.Text" xml:space="preserve">
     <value>ଏହି ଫୋଲ୍ଡରଟି ଖାଲି ଅଛି |</value>
   </data>
-  <data name="NavBackButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavBackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ପଛକୁ (Alt + Left Arrow)</value>
   </data>
-  <data name="NavForwardButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ଆଗକୁ (Alt + Right Arrow)</value>
   </data>
-  <data name="NavUpButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavUpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ଉପରକୁ (Alt + Up Arrow)</value>
   </data>
-  <data name="NavRefreshButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavRefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ସତେଜ କର (F5)</value>
   </data>
-  <data name="NavSearchButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ସନ୍ଧାନ କର</value>
   </data>
-  <data name="NavMoreButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ଅଧିକ ବିକଳ୍ପ</value>
   </data>
   <data name="PropertiesTitle" xml:space="preserve">
@@ -390,7 +390,7 @@
   <data name="PropertiesTitleSecondary.Text" xml:space="preserve">
     <value>ଗୁଣଧର୍ମ</value>
   </data>
-  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsPreferencesTerminalApplicationsSampleProfiles.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ନମୁନା ପ୍ରୋଫାଇଲ୍ ଦେଖନ୍ତୁ</value>
   </data>
   <data name="ItemAlreadyExistsDialogContent" xml:space="preserve">
@@ -462,7 +462,7 @@
   <data name="FileInUseDeleteDialog.SecondaryButtonText" xml:space="preserve">
     <value>ଠିକ୍ ଅଛି</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ଚୟନ ବିକଳ୍ପଗୁଡ଼ିକ</value>
   </data>
   <data name="BaseLayoutContextFlyoutEmptyRecycleBin.Text" xml:space="preserve">
@@ -516,7 +516,7 @@
   <data name="SettingsAboutOpenLogLocationButton.Content" xml:space="preserve">
     <value>ଲଗ୍ ଅବସ୍ଥାନ ଖୋଲ</value>
   </data>
-  <data name="TabStripAddNewTab.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="TabStripAddNewTab.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ନୂତନ ଟ୍ୟାବ୍ (Ctrl + T)</value>
   </data>
   <data name="ItemSelected.Text" xml:space="preserve">
@@ -579,7 +579,7 @@
   <data name="BaseLayoutContextFlyoutRunAsAdmin.Text" xml:space="preserve">
     <value>ପ୍ରଶାସକ ଭାବରେ ଚଲାନ୍ତୁ</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>ତାରିଖ ଫର୍ମାଟ୍ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</value>
   </data>
   <data name="BitlockerDialog.PrimaryButtonText" xml:space="preserve">
@@ -774,7 +774,7 @@
   <data name="AddDialogListFolderHeader" xml:space="preserve">
     <value>ଫୋଲ୍ଡର:</value>
   </data>
-  <data name="NavForwardButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ଅଗ୍ରଗାମୀ ନେଭିଗେଟ୍ କରନ୍ତୁ</value>
   </data>
   <data name="AccessDeniedCreateDialog.Title" xml:space="preserve">
@@ -924,10 +924,10 @@
   <data name="PropertySectionDocument" xml:space="preserve">
     <value>ଡକ୍ୟୁମେଣ୍ଟ୍</value>
   </data>
-  <data name="NavMoreButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ଅଧିକ ବିକଳ୍ପସମୂହ</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.AutomationProperties.Name" xml:space="preserve">
+  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ଚୟନ ବିକଳ୍ପସମୂହ</value>
   </data>
   <data name="FileItemAutomation" xml:space="preserve">
@@ -945,7 +945,7 @@
   <data name="SettingsFilesAndFoldersShowHiddenItems.Header" xml:space="preserve">
     <value>ଲୁକ୍କାୟିତ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡର୍‌ଗୁଡିକକୁ ଦେଖାନ୍ତୁ</value>
   </data>
-  <data name="SettingsFilesAndFoldersShowHiddenItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersShowHiddenItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ଲୁକ୍କାୟିତ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡର୍‌ଗୁଡିକକୁ ଦେଖାନ୍ତୁ</value>
   </data>
   <data name="SideBarEjectDevice.Text" xml:space="preserve">
@@ -957,7 +957,7 @@
   <data name="HorizontalMultitaskingControlNewTab.Text" xml:space="preserve">
     <value>ନୂତନ ଟ୍ୟାବ୍</value>
   </data>
-  <data name="NavSearchButton.AutomationProperties.Name" xml:space="preserve">
+  <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ସନ୍ଧାନ</value>
   </data>
   <data name="PropertiesDialogReadOnly.Text" xml:space="preserve">
@@ -984,13 +984,13 @@
   <data name="PropertyColorSpace_Value65535" xml:space="preserve">
     <value>ଅନିର୍ଦ୍ଦିଷ୍ଟ</value>
   </data>
-  <data name="SettingsAboutLicense.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutLicense.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ଲାଇସେନ୍ସ</value>
   </data>
   <data name="SettingsAboutLicense.Content" xml:space="preserve">
     <value>ଲାଇସେନ୍ସ</value>
   </data>
-  <data name="SettingsAboutWebsite.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsAboutWebsite.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ୱେବ୍‌ସାଇଟ୍</value>
   </data>
   <data name="SettingsAboutWebsite.Content" xml:space="preserve">
@@ -1014,7 +1014,7 @@
   <data name="SettingsFilesAndFoldersHideSystemItems.Header" xml:space="preserve">
     <value>ସୁରକ୍ଷିତ ଅପରେଟିଂ ସିଷ୍ଟମ୍ ଫାଇଲ୍‌ଗୁଡ଼ିକୁ (ଅନୁମୋଦିତ) ଲୁଚାନ୍ତୁ</value>
   </data>
-  <data name="SettingsFilesAndFoldersHideSystemItems.AutomationProperties.Name" xml:space="preserve">
+  <data name="SettingsFilesAndFoldersHideSystemItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>ସୁରକ୍ଷିତ ଅପରେଟିଂ ସିଷ୍ଟମ୍ ଫାଇଲ୍‌ଗୁଡ଼ିକୁ (ଅନୁମୋଦିତ) ଲୁଚାନ୍ତୁ</value>
   </data>
   <data name="BaseLayoutContextFlyoutNewFile.Text" xml:space="preserve">
