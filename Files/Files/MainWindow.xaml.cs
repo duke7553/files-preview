@@ -39,7 +39,7 @@ namespace Files
             this.Activated -= MainWindow_Activated;
 
             await EnsureSettingsAndConfigurationAreBootstrapped();
-            this.DispatcherQueue.TryEnqueue(() =>
+            await this.DispatcherQueue.EnqueueAsync(() =>
             {
                 (this.Content as Frame).Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
 

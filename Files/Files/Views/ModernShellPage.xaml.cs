@@ -169,7 +169,7 @@ namespace Files.Views
             }
         }
 
-        public INavigationToolbar NavigationToolbar => NavToolbar;
+        public INavigationToolbar NavigationToolbar => null;
 
         public ModernShellPage()
         {
@@ -190,28 +190,28 @@ namespace Files.Views
             //    FlowDirection = FlowDirection.RightToLeft;
             //}
 
-            NavigationToolbar.EditModeEnabled += NavigationToolbar_EditModeEnabled;
-            NavigationToolbar.PathBoxQuerySubmitted += NavigationToolbar_QuerySubmitted;
-            NavigationToolbar.SearchQuerySubmitted += ModernShellPage_SearchQuerySubmitted;
-            NavigationToolbar.SearchTextChanged += ModernShellPage_SearchTextChanged;
-            NavigationToolbar.SearchSuggestionChosen += ModernShellPage_SearchSuggestionChosen;
-            NavigationToolbar.BackRequested += ModernShellPage_BackNavRequested;
-            NavigationToolbar.ForwardRequested += ModernShellPage_ForwardNavRequested;
-            NavigationToolbar.UpRequested += ModernShellPage_UpNavRequested;
-            NavigationToolbar.RefreshRequested += ModernShellPage_RefreshRequested;
-            NavigationToolbar.ItemDraggedOverPathItem += ModernShellPage_NavigationRequested;
-            NavigationToolbar.PathControlDisplayText = "NewTab".GetLocalized();
-            NavigationToolbar.CanGoBack = false;
-            NavigationToolbar.CanGoForward = false;
+            //NavigationToolbar.EditModeEnabled += NavigationToolbar_EditModeEnabled;
+            //NavigationToolbar.PathBoxQuerySubmitted += NavigationToolbar_QuerySubmitted;
+            //NavigationToolbar.SearchQuerySubmitted += ModernShellPage_SearchQuerySubmitted;
+            //NavigationToolbar.SearchTextChanged += ModernShellPage_SearchTextChanged;
+            //NavigationToolbar.SearchSuggestionChosen += ModernShellPage_SearchSuggestionChosen;
+            //NavigationToolbar.BackRequested += ModernShellPage_BackNavRequested;
+            //NavigationToolbar.ForwardRequested += ModernShellPage_ForwardNavRequested;
+            //NavigationToolbar.UpRequested += ModernShellPage_UpNavRequested;
+            //NavigationToolbar.RefreshRequested += ModernShellPage_RefreshRequested;
+            //NavigationToolbar.ItemDraggedOverPathItem += ModernShellPage_NavigationRequested;
+            //NavigationToolbar.PathControlDisplayText = "NewTab".GetLocalized();
+            //NavigationToolbar.CanGoBack = false;
+            //NavigationToolbar.CanGoForward = false;
 
-            if (NavigationToolbar is NavigationToolbar navToolbar)
-            {
-                navToolbar.ToolbarPathItemInvoked += ModernShellPage_NavigationRequested;
-                navToolbar.ToolbarFlyoutOpened += ModernShellPage_ToolbarFlyoutOpened;
-                navToolbar.ToolbarPathItemLoaded += ModernShellPage_ToolbarPathItemLoaded;
-                navToolbar.AddressBarTextEntered += ModernShellPage_AddressBarTextEntered;
-                navToolbar.PathBoxItemDropped += ModernShellPage_PathBoxItemDropped;
-            }
+            //if (NavigationToolbar is NavigationToolbar navToolbar)
+            //{
+            //    navToolbar.ToolbarPathItemInvoked += ModernShellPage_NavigationRequested;
+            //    navToolbar.ToolbarFlyoutOpened += ModernShellPage_ToolbarFlyoutOpened;
+            //    navToolbar.ToolbarPathItemLoaded += ModernShellPage_ToolbarPathItemLoaded;
+            //    navToolbar.AddressBarTextEntered += ModernShellPage_AddressBarTextEntered;
+            //    navToolbar.PathBoxItemDropped += ModernShellPage_PathBoxItemDropped;
+            //}
 
             InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated += AppSettings_SortDirectionPreferenceUpdated;
             InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated += AppSettings_SortOptionPreferenceUpdated;
@@ -1213,8 +1213,7 @@ namespace Files.Views
             App.Current.LeavingBackground -= OnLeavingBackground;
             App.DrivesManager.PropertyChanged -= DrivesManager_PropertyChanged;
             AppSettings.PropertyChanged -= AppSettings_PropertyChanged;
-            NavigationToolbar.EditModeEnabled -= NavigationToolbar_EditModeEnabled;
-            NavigationToolbar.PathBoxQuerySubmitted -= NavigationToolbar_QuerySubmitted;
+            
             if (SidebarControl != null)
             {
                 SidebarControl.SidebarItemInvoked -= SidebarControl_SidebarItemInvoked;
@@ -1223,23 +1222,26 @@ namespace Files.Views
                 SidebarControl.RecycleBinItemRightTapped -= SidebarControl_RecycleBinItemRightTapped;
                 SidebarControl.SidebarItemNewPaneInvoked -= SidebarControl_SidebarItemNewPaneInvoked;
             }
-            NavigationToolbar.SearchQuerySubmitted -= ModernShellPage_SearchQuerySubmitted;
-            NavigationToolbar.SearchTextChanged -= ModernShellPage_SearchTextChanged;
-            NavigationToolbar.SearchSuggestionChosen -= ModernShellPage_SearchSuggestionChosen;
-            NavigationToolbar.BackRequested -= ModernShellPage_BackNavRequested;
-            NavigationToolbar.ForwardRequested -= ModernShellPage_ForwardNavRequested;
-            NavigationToolbar.UpRequested -= ModernShellPage_UpNavRequested;
-            NavigationToolbar.RefreshRequested -= ModernShellPage_RefreshRequested;
-            NavigationToolbar.ItemDraggedOverPathItem -= ModernShellPage_NavigationRequested;
 
-            if (NavigationToolbar is NavigationToolbar navToolbar)
-            {
-                navToolbar.ToolbarPathItemInvoked -= ModernShellPage_NavigationRequested;
-                navToolbar.ToolbarFlyoutOpened -= ModernShellPage_ToolbarFlyoutOpened;
-                navToolbar.ToolbarPathItemLoaded -= ModernShellPage_ToolbarPathItemLoaded;
-                navToolbar.AddressBarTextEntered -= ModernShellPage_AddressBarTextEntered;
-                navToolbar.PathBoxItemDropped -= ModernShellPage_PathBoxItemDropped;
-            }
+            //NavigationToolbar.EditModeEnabled -= NavigationToolbar_EditModeEnabled;
+            //NavigationToolbar.PathBoxQuerySubmitted -= NavigationToolbar_QuerySubmitted;
+            //NavigationToolbar.SearchQuerySubmitted -= ModernShellPage_SearchQuerySubmitted;
+            //NavigationToolbar.SearchTextChanged -= ModernShellPage_SearchTextChanged;
+            //NavigationToolbar.SearchSuggestionChosen -= ModernShellPage_SearchSuggestionChosen;
+            //NavigationToolbar.BackRequested -= ModernShellPage_BackNavRequested;
+            //NavigationToolbar.ForwardRequested -= ModernShellPage_ForwardNavRequested;
+            //NavigationToolbar.UpRequested -= ModernShellPage_UpNavRequested;
+            //NavigationToolbar.RefreshRequested -= ModernShellPage_RefreshRequested;
+            //NavigationToolbar.ItemDraggedOverPathItem -= ModernShellPage_NavigationRequested;
+
+            //if (NavigationToolbar is NavigationToolbar navToolbar)
+            //{
+            //    navToolbar.ToolbarPathItemInvoked -= ModernShellPage_NavigationRequested;
+            //    navToolbar.ToolbarFlyoutOpened -= ModernShellPage_ToolbarFlyoutOpened;
+            //    navToolbar.ToolbarPathItemLoaded -= ModernShellPage_ToolbarPathItemLoaded;
+            //    navToolbar.AddressBarTextEntered -= ModernShellPage_AddressBarTextEntered;
+            //    navToolbar.PathBoxItemDropped -= ModernShellPage_PathBoxItemDropped;
+            //}
 
             InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated -= AppSettings_SortDirectionPreferenceUpdated;
             InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated -= AppSettings_SortOptionPreferenceUpdated;

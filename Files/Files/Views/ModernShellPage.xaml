@@ -235,7 +235,7 @@
                     Background="Transparent"
                     Loaded="SmallWindowTitlebar_Loaded" />
 
-                <controls:NavigationToolbar
+                <!--<controls:NavigationToolbar
                     x:Name="NavToolbar"
                     Grid.Row="1"
                     Grid.Column="0"
@@ -261,7 +261,7 @@
                     OpenInTerminalInvokedCommand="{x:Bind InteractionOperations.OpenDirectoryInDefaultTerminal, Mode=OneWay}"
                     PasteInvokedCommand="{x:Bind InteractionOperations.PasteItemsFromClipboard, Mode=OneWay}"
                     PreviewPaneEnabled="{x:Bind PreviewPaneEnabled, Mode=TwoWay}"
-                    ShowMultiPaneControls="{x:Bind converters1:MultiBooleanConverter.AndConvert(IsMultiPaneEnabled, IsPageMainPane), Mode=OneWay}" />
+                    ShowMultiPaneControls="{x:Bind converters1:MultiBooleanConverter.AndConvert(IsMultiPaneEnabled, IsPageMainPane), Mode=OneWay}" />-->
 
                 <Frame
                     x:Name="ItemDisplayFrame"
@@ -293,12 +293,12 @@
 
                 <controls:PreviewPane
                     x:Name="PreviewPane"
+                    x:Uid="SelectedFilePreviewPane"
                     Grid.Row="1"
                     Grid.Column="2"
                     x:Load="{x:Bind PreviewPaneEnabled, Mode=OneWay}"
-                    SelectedItems="{x:Bind ContentPage.SelectedItems, Mode=OneWay}" 
                     AutomationProperties.Name="Selected file preview pane"
-                    x:Uid="SelectedFilePreviewPane"/>
+                    SelectedItems="{x:Bind ContentPage.SelectedItems, Mode=OneWay}" />
 
                 <controls:StatusBarControl
                     x:Name="StatusBarControl"

@@ -535,7 +535,7 @@ namespace Files.ViewModels
             IsSelectedItemShortcut = false;
             string ItemExtension = null;
             //check if the selected item is an image file
-            MainWindow.Current.DispatcherQueue.TryEnqueue(() =>
+            App.mainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 ItemExtension = contentPage?.SelectedItem?.FileExtension;
             });

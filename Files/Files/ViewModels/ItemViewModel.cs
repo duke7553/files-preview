@@ -7,6 +7,7 @@ using Files.Filesystem.Cloud;
 using Files.Helpers;
 using Files.Helpers.FileListCache;
 using Files.Views.LayoutModes;
+using Microsoft.System;
 using Microsoft.Toolkit.Uwp.Extensions;
 using Microsoft.Toolkit.Uwp.UI;
 using Microsoft.UI.Text;
@@ -65,7 +66,7 @@ namespace Files.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         private string jumpString = "";
-        private readonly DispatcherTimer jumpTimer = new DispatcherTimer();
+        private DispatcherQueueTimer jumpTimer = App.mainWindow.DispatcherQueue.CreateTimer();
 
         private string customPath;
 
@@ -395,7 +396,7 @@ namespace Files.ViewModels
                             break;
 
                         default:
-                            MainWindow.Current.DispatcherQueue.TryEnqueue(() =>
+                            App.mainWindow.DispatcherQueue.TryEnqueue(() =>
                             {
                                 RefreshItems(null);
                             });
@@ -476,7 +477,7 @@ namespace Files.ViewModels
             {
                 if (filesAndFolders == null || filesAndFolders.Count == 0)
                 {
-                    MainWindow.Current.DispatcherQueue.TryEnqueue(() =>
+                    App.mainWindow.DispatcherQueue.TryEnqueue(() =>
                     {
                         FilesAndFolders.Clear();
                         IsFolderEmptyTextDisplayed = FilesAndFolders.Count == 0;
@@ -548,7 +549,7 @@ namespace Files.ViewModels
                     }
                 });
 
-                MainWindow.Current.DispatcherQueue.TryEnqueue(() =>
+                App.mainWindow.DispatcherQueue.TryEnqueue(() =>
                 {
                     // trigger CollectionChanged with NotifyCollectionChangedAction.Reset
                     // once loading is completed so that UI can be updated
@@ -736,7 +737,7 @@ namespace Files.ViewModels
                     {
                         var fileIconInfo = await LoadIconOverlayAsync(item.ItemPath, thumbnailSize);
 
-                        MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
+                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
                         {
                             if (fileIconInfo.IconData != null && !item.IsLinkItem)
                             {
@@ -757,7 +758,7 @@ namespace Files.ViewModels
                                     {
                                         if (Thumbnail != null)
                                         {
-                                            MainWindow.Current.DispatcherQueue.TryEnqueue(async () =>
+                                            App.mainWindow.DispatcherQueue.TryEnqueue(async () =>
                                             {
                                                 item.FileImage = new BitmapImage();
                                                 await item.FileImage.SetSourceAsync(Thumbnail);
@@ -769,7 +770,7 @@ namespace Files.ViewModels
                                 }
 
                                 var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageItem);
-                                MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
+                                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
                                 {
                                     item.FolderRelativeId = matchingStorageItem.FolderRelativeId;
                                     item.ItemType = matchingStorageItem.DisplayType;
@@ -783,7 +784,7 @@ namespace Files.ViewModels
                     {
                         var fileIconInfo = await LoadIconOverlayAsync(item.ItemPath, thumbnailSize);
 
-                        MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
+                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
                         {
                             if (fileIconInfo.IconData != null && fileIconInfo.IsCustom) // Only set folder icon if it's a custom icon
                             {
@@ -800,7 +801,7 @@ namespace Files.ViewModels
                             if (matchingStorageItem != null)
                             {
                                 var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageItem);
-                                MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
+                                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
                                 {
                                     item.FolderRelativeId = matchingStorageItem.FolderRelativeId;
                                     item.ItemType = matchingStorageItem.DisplayType;
@@ -818,7 +819,7 @@ namespace Files.ViewModels
                 {
                     if (!wasSyncStatusLoaded)
                     {
-                        MainWindow.Current.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
+                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
                         {
                             item.SyncStatusUI = new CloudDriveSyncStatusUI() { LoadSyncStatus = false }; // Reset cloud sync status icon
                         });
@@ -1816,7 +1817,7 @@ namespace Files.ViewModels
             if (storageItem != null)
             {
                 var syncStatus = await CheckCloudDriveSyncStatusAsync(storageItem);
-                MainWindow.Current.DispatcherQueue.TryEnqueue(() =>
+                App.mainWindow.DispatcherQueue.TryEnqueue(() =>
                 {
                     item.SyncStatusUI = CloudDriveSyncStatusUI.FromCloudDriveSyncStatus(syncStatus);
                 });
@@ -1862,7 +1863,7 @@ namespace Files.ViewModels
         public void RemoveFileOrFolderAsync(ListedItem item)
         {
             filesAndFolders.Remove(item);
-            MainWindow.Current.DispatcherQueue.TryEnqueue(() =>
+            App.mainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 App.JumpList.RemoveFolder(item.ItemPath);
             });

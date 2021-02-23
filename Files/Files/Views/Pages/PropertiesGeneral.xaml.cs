@@ -29,7 +29,7 @@ namespace Files.Views
                             { "drivename", drive.Path },
                             { "newlabel", ViewModel.ItemName }
                         });
-                        MainWindow.Current.DispatcherQueue.TryEnqueue(async () =>
+                        App.mainWindow.DispatcherQueue.TryEnqueue(async () =>
                         {
                             await drive.UpdateLabelAsync();
                             await AppInstance.FilesystemViewModel.SetWorkingDirectoryAsync(drive.Path);
@@ -41,7 +41,7 @@ namespace Files.Views
             {
                 if (!string.IsNullOrWhiteSpace(ViewModel.ItemName) && ViewModel.OriginalItemName != ViewModel.ItemName)
                 {
-                    MainWindow.Current.DispatcherQueue.TryEnqueue(async () => await AppInstance.InteractionOperations.RenameFileItemAsync(item,
+                    App.mainWindow.DispatcherQueue.TryEnqueue(async () => await AppInstance.InteractionOperations.RenameFileItemAsync(item,
                           ViewModel.OriginalItemName,
                           ViewModel.ItemName));
                 }
@@ -53,13 +53,13 @@ namespace Files.Views
                     var items = (BaseProperties as CombinedProperties).List;
                     foreach (var fileOrFolder in items)
                     {
-                        MainWindow.Current.DispatcherQueue.TryEnqueue(() => AppInstance.InteractionOperations.SetHiddenAttributeItem(fileOrFolder, ViewModel.IsHidden));
+                        App.mainWindow.DispatcherQueue.TryEnqueue(() => AppInstance.InteractionOperations.SetHiddenAttributeItem(fileOrFolder, ViewModel.IsHidden));
                     }
                 }
                 else
                 {
                     // Handle the visibility attribute for a single file
-                    MainWindow.Current.DispatcherQueue.TryEnqueue(() => AppInstance.InteractionOperations.SetHiddenAttributeItem(item, ViewModel.IsHidden));
+                    App.mainWindow.DispatcherQueue.TryEnqueue(() => AppInstance.InteractionOperations.SetHiddenAttributeItem(item, ViewModel.IsHidden));
                 }
             }
         }

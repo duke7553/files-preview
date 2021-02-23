@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
@@ -29,15 +28,14 @@ using LaunchActivatedEventArgs = Microsoft.UI.Xaml.LaunchActivatedEventArgs;
 
 namespace Files
 {
-    sealed partial class App : Application
+    public partial class App : Application
     {
         private static bool ShowErrorNotification = false;
 
-        public static SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
         public static StorageHistoryWrapper HistoryWrapper = new StorageHistoryWrapper();
 
         public static IBundlesSettings BundlesSettings = new BundlesSettingsViewModel();
-
+        public static SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
         public static SettingsViewModel AppSettings { get; set; }
         public static InteractionViewModel InteractionViewModel { get; set; }
         public static JumpListManager JumpList { get; } = new JumpListManager();
@@ -56,12 +54,12 @@ namespace Files
 
         public App()
         {
-            UnhandledException += OnUnhandledException;
-            TaskScheduler.UnobservedTaskException += OnUnobservedException;
+            //UnhandledException += OnUnhandledException;
+            //TaskScheduler.UnobservedTaskException += OnUnobservedException;
 
             InitializeComponent();
-            Suspending += OnSuspending;
-            LeavingBackground += OnLeavingBackground;
+            //Suspending += OnSuspending;
+            //LeavingBackground += OnLeavingBackground;
             Clipboard.ContentChanged += Clipboard_ContentChanged;
             // Initialize NLog
             StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
@@ -285,38 +283,38 @@ namespace Files
         //    mainWindow.Activated += MainWindow_Activated;
         //}
 
-        private void TryEnablePrelaunch()
-        {
-            //CoreApplication.EnablePrelaunch(true);
-        }
+        //private void TryEnablePrelaunch()
+        //{
+        //    //CoreApplication.EnablePrelaunch(true);
+        //}
 
-        /// <summary>
-        /// Invoked when Navigation to a certain page fails
-        /// </summary>
-        /// <param name="sender">The Frame which failed navigation</param>
-        /// <param name="e">Details about the navigation failure</param>
-        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
-        {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-        }
+        ///// <summary>
+        ///// Invoked when Navigation to a certain page fails
+        ///// </summary>
+        ///// <param name="sender">The Frame which failed navigation</param>
+        ///// <param name="e">Details about the navigation failure</param>
+        //private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        //{
+        //    throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+        //}
 
-        /// <summary>
-        /// Invoked when application execution is being suspended.  Application state is saved
-        /// without knowing whether the application will be terminated or resumed with the contents
-        /// of memory still intact.
-        /// </summary>
-        /// <param name="sender">The source of the suspend request.</param>
-        /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            SaveSessionTabs();
+        ///// <summary>
+        ///// Invoked when application execution is being suspended.  Application state is saved
+        ///// without knowing whether the application will be terminated or resumed with the contents
+        ///// of memory still intact.
+        ///// </summary>
+        ///// <param name="sender">The source of the suspend request.</param>
+        ///// <param name="e">Details about the suspend request.</param>
+        //private void OnSuspending(object sender, SuspendingEventArgs e)
+        //{
+        //    SaveSessionTabs();
 
-            var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+        //    var deferral = e.SuspendingOperation.GetDeferral();
+        //    //TODO: Save application state and stop any background activity
 
-            DrivesManager?.Dispose();
-            deferral.Complete();
-        }
+        //    DrivesManager?.Dispose();
+        //    deferral.Complete();
+        //}
 
         public static void SaveSessionTabs() // Enumerates through all tabs and gets the Path property and saves it to AppSettings.LastSessionPages
         {
@@ -337,60 +335,60 @@ namespace Files
             }
         }
 
-        // Occurs when an exception is not handled on the UI thread.
-        private static void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) => AppUnhandledException(e.Exception);
+        //// Occurs when an exception is not handled on the UI thread.
+        //private static void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) => AppUnhandledException(e.Exception);
 
-        // Occurs when an exception is not handled on a background thread.
-        // ie. A task is fired and forgotten Task.Run(() => {...})
-        private static void OnUnobservedException(object sender, UnobservedTaskExceptionEventArgs e) => AppUnhandledException(e.Exception);
+        //// Occurs when an exception is not handled on a background thread.
+        //// ie. A task is fired and forgotten Task.Run(() => {...})
+        //private static void OnUnobservedException(object sender, UnobservedTaskExceptionEventArgs e) => AppUnhandledException(e.Exception);
 
-        private static void AppUnhandledException(Exception ex)
-        {
-            Logger.Error(ex, ex.Message);
-            if (ShowErrorNotification)
-            {
-                var toastContent = new ToastContent()
-                {
-                    Visual = new ToastVisual()
-                    {
-                        BindingGeneric = new ToastBindingGeneric()
-                        {
-                            Children =
-                            {
-                                new AdaptiveText()
-                                {
-                                    Text = "ExceptionNotificationHeader".GetLocalized()
-                                },
-                                new AdaptiveText()
-                                {
-                                    Text = "ExceptionNotificationBody".GetLocalized()
-                                }
-                            },
-                            AppLogoOverride = new ToastGenericAppLogo()
-                            {
-                                Source = "ms-appx:///Assets/error.png"
-                            }
-                        }
-                    },
-                    Actions = new ToastActionsCustom()
-                    {
-                        Buttons =
-                        {
-                            new ToastButton("ExceptionNotificationReportButton".GetLocalized(), "report")
-                            {
-                                ActivationType = ToastActivationType.Foreground
-                            }
-                        }
-                    }
-                };
+        //private static void AppUnhandledException(Exception ex)
+        //{
+        //    Logger.Error(ex, ex.Message);
+        //    if (ShowErrorNotification)
+        //    {
+        //        var toastContent = new ToastContent()
+        //        {
+        //            Visual = new ToastVisual()
+        //            {
+        //                BindingGeneric = new ToastBindingGeneric()
+        //                {
+        //                    Children =
+        //                    {
+        //                        new AdaptiveText()
+        //                        {
+        //                            Text = "ExceptionNotificationHeader".GetLocalized()
+        //                        },
+        //                        new AdaptiveText()
+        //                        {
+        //                            Text = "ExceptionNotificationBody".GetLocalized()
+        //                        }
+        //                    },
+        //                    AppLogoOverride = new ToastGenericAppLogo()
+        //                    {
+        //                        Source = "ms-appx:///Assets/error.png"
+        //                    }
+        //                }
+        //            },
+        //            Actions = new ToastActionsCustom()
+        //            {
+        //                Buttons =
+        //                {
+        //                    new ToastButton("ExceptionNotificationReportButton".GetLocalized(), "report")
+        //                    {
+        //                        ActivationType = ToastActivationType.Foreground
+        //                    }
+        //                }
+        //            }
+        //        };
 
-                // Create the toast notification
-                var toastNotif = new ToastNotification(toastContent.GetXml());
+        //        // Create the toast notification
+        //        var toastNotif = new ToastNotification(toastContent.GetXml());
 
-                // And send the notification
-                ToastNotificationManager.CreateToastNotifier().Show(toastNotif);
-            }
-        }
+        //        // And send the notification
+        //        ToastNotificationManager.CreateToastNotifier().Show(toastNotif);
+        //    }
+        //}
 
         public static void CloseApp()
         {

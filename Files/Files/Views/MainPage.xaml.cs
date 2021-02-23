@@ -145,9 +145,9 @@ namespace Files.Views
                     }
                 }
 
-                // Check for required updates
-                AppUpdater updater = new AppUpdater();
-                updater.CheckForUpdatesAsync();
+                // TODO: Fix Check for required updates
+                //AppUpdater updater = new AppUpdater();
+                //updater.CheckForUpdatesAsync();
 
                 // Initial setting of SelectedTabItem
                 Frame rootFrame = App.mainWindow.Content as Frame;
