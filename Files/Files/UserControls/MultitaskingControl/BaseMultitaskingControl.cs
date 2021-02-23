@@ -25,7 +25,7 @@ namespace Files.UserControls.MultitaskingControl
             Loaded += MultitaskingControl_Loaded;
         }
 
-        public ObservableCollection<TabItem> Items => MainPage.AppInstances;
+        public ObservableCollection<TabItem> Items => MainWindow.AppInstances;
 
         public List<ITabItem> RecentlyClosedTabs { get; private set; } = new List<ITabItem>();
 
@@ -64,7 +64,7 @@ namespace Files.UserControls.MultitaskingControl
 
         protected void TabView_AddTabButtonClick(TabView sender, object args)
         {
-            MainPage.AddNewTab();
+            MainWindow.AddNewTab();
         }
 
         public void MultitaskingControl_Loaded(object sender, RoutedEventArgs e)
@@ -74,12 +74,12 @@ namespace Files.UserControls.MultitaskingControl
 
         public ITabItemContent GetCurrentSelectedTabInstance()
         {
-            return MainPage.AppInstances[App.InteractionViewModel.TabStripSelectedIndex].Control?.TabItemContent;
+            return MainWindow.AppInstances[App.InteractionViewModel.TabStripSelectedIndex].Control?.TabItemContent;
         }
 
         public List<ITabItemContent> GetAllTabInstances()
         {
-            return MainPage.AppInstances.Select(x => x.Control?.TabItemContent).ToList();
+            return MainWindow.AppInstances.Select(x => x.Control?.TabItemContent).ToList();
         }
 
         public void RemoveTab(TabItem tabItem)

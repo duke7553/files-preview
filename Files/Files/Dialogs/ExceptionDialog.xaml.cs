@@ -20,13 +20,13 @@ namespace Files.Dialogs
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            if (MainPage.MultitaskingControl.Items.Count == 1)
+            if (MainWindow.MultitaskingControl.Items.Count == 1)
             {
                 App.CloseApp();
             }
-            else if (MainPage.MultitaskingControl.Items.Count > 1)
+            else if (MainWindow.MultitaskingControl.Items.Count > 1)
             {
-                MainPage.MultitaskingControl.RemoveTab(MainPage.MultitaskingControl.Items.ElementAt(App.InteractionViewModel.TabStripSelectedIndex));
+                MainWindow.MultitaskingControl.RemoveTab(MainWindow.MultitaskingControl.Items.ElementAt(App.InteractionViewModel.TabStripSelectedIndex));
             }
         }
 

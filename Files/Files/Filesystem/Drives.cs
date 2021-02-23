@@ -129,14 +129,14 @@ namespace Files.Filesystem
         {
             App.mainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
             {
-                lock (MainPage.SideBarItems)
+                lock (MainWindow.SideBarItems)
                 {
-                    var drivesSection = MainPage.SideBarItems.FirstOrDefault(x => x is HeaderTextItem && x.Text == "SidebarDrives".GetLocalized());
+                    var drivesSection = MainWindow.SideBarItems.FirstOrDefault(x => x is HeaderTextItem && x.Text == "SidebarDrives".GetLocalized());
 
                     if (drivesSection != null && Drives.Count == 0)
                     {
                         //No drives - remove the header
-                        MainPage.SideBarItems.Remove(drivesSection);
+                        MainWindow.SideBarItems.Remove(drivesSection);
                     }
 
                     if (drivesSection == null && Drives.Count > 0)
@@ -146,17 +146,17 @@ namespace Files.Filesystem
                             Text = "SidebarDrives".GetLocalized()
                         };
 
-                        MainPage.SideBarItems.Add(drivesSection);
+                        MainWindow.SideBarItems.Add(drivesSection);
                     }
 
-                    var sectionStartIndex = MainPage.SideBarItems.IndexOf(drivesSection);
+                    var sectionStartIndex = MainWindow.SideBarItems.IndexOf(drivesSection);
 
                     //Remove all existing drives from the sidebar
-                    foreach (var item in MainPage.SideBarItems
+                    foreach (var item in MainWindow.SideBarItems
                     .Where(x => x.ItemType == NavigationControlItemType.Drive)
                     .ToList())
                     {
-                        MainPage.SideBarItems.Remove(item);
+                        MainWindow.SideBarItems.Remove(item);
                         DrivesWidget.ItemsAdded.Remove(item);
                     }
 
@@ -164,7 +164,7 @@ namespace Files.Filesystem
                     var insertAt = sectionStartIndex + 1;
                     foreach (var drive in Drives)
                     {
-                        MainPage.SideBarItems.Insert(insertAt, drive);
+                        MainWindow.SideBarItems.Insert(insertAt, drive);
                         insertAt++;
 
                         if (drive.Type != DriveType.VirtualDrive)
@@ -447,7 +447,7 @@ namespace Files.Filesystem
                     DriveItem matchingDriveEjected = Drives.FirstOrDefault(x => x.DeviceID == deviceId);
                     if (rootModified && matchingDriveEjected != null)
                     {
-                        _ = MainPage.dispatcherQueue.TryEnqueue(async () =>
+                        _ = App.mainWindow.DispatcherQueue.TryEnqueue(async () =>
                         {
                             matchingDriveEjected.Root = rootModified.Result;
                             matchingDriveEjected.Text = rootModified.Result.DisplayName;

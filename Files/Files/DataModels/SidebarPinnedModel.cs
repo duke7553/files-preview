@@ -86,8 +86,8 @@ namespace Files.DataModels
 
             if (oldIndex >= 0 && newIndex >= 0)
             {
-                MainPage.SideBarItems.RemoveAt(oldIndex);
-                MainPage.SideBarItems.Insert(newIndex, locationItem);
+                MainWindow.SideBarItems.RemoveAt(oldIndex);
+                MainWindow.SideBarItems.Insert(newIndex, locationItem);
                 return true;
             }
 
@@ -152,7 +152,7 @@ namespace Files.DataModels
         /// <returns>Index of the item</returns>
         public int IndexOfItem(INavigationControlItem locationItem)
         {
-            return MainPage.SideBarItems.IndexOf(locationItem);
+            return MainWindow.SideBarItems.IndexOf(locationItem);
         }
 
         /// <summary>
@@ -182,12 +182,9 @@ namespace Files.DataModels
             var res = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(path, item));
             if (res || (FilesystemResult)ItemViewModel.CheckFolderAccessWithWin32(path))
             {
-                int insertIndex = MainPage.SideBarItems.IndexOf(MainPage.SideBarItems.Last(x => x.ItemType == NavigationControlItemType.Location
+                int insertIndex = MainWindow.SideBarItems.IndexOf(MainWindow.SideBarItems.Last(x => x.ItemType == NavigationControlItemType.Location
                 && !x.Path.Equals(App.AppSettings.RecycleBinPath))) + 1;
-                LocationItem locationItem = null;
-                await App.mainWindow.DispatcherQueue.EnqueueAsync(() =>
-                {
-                    locationItem = new LocationItem
+                LocationItem locationItem = new LocationItem
                     {
                         Font = App.Current.Resources["FluentUIGlyphs"] as FontFamily,
                         Path = path,
@@ -195,11 +192,10 @@ namespace Files.DataModels
                         IsDefaultLocation = false,
                         Text = res.Result?.DisplayName ?? Path.GetFileName(path.TrimEnd('\\'))
                     };
-                });
 
-                if (!MainPage.SideBarItems.Contains(locationItem))
+                if (!MainWindow.SideBarItems.Contains(locationItem))
                 {
-                    MainPage.SideBarItems.Insert(insertIndex, locationItem);
+                    MainWindow.SideBarItems.Insert(insertIndex, locationItem);
                 }
             }
             else
@@ -227,14 +223,14 @@ namespace Files.DataModels
         public void RemoveStaleSidebarItems()
         {
             // Remove unpinned items from sidebar
-            for (int i = 0; i < MainPage.SideBarItems.Count(); i++)
+            for (int i = 0; i < MainWindow.SideBarItems.Count(); i++)
             {
-                if (MainPage.SideBarItems[i] is LocationItem)
+                if (MainWindow.SideBarItems[i] is LocationItem)
                 {
-                    var item = MainPage.SideBarItems[i] as LocationItem;
+                    var item = MainWindow.SideBarItems[i] as LocationItem;
                     if (!item.IsDefaultLocation && !Items.Contains(item.Path))
                     {
-                        MainPage.SideBarItems.RemoveAt(i);
+                        MainWindow.SideBarItems.RemoveAt(i);
                     }
                 }
             }

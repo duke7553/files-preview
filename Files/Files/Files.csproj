@@ -208,9 +208,6 @@
     <Page Update="Views\LayoutModes\GridViewBrowser.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Update="Views\ModernShellPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

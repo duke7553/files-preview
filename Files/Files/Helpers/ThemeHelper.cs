@@ -1,7 +1,6 @@
 ﻿using Microsoft.System;
 using Microsoft.UI.Xaml;
 using Windows.Storage;
-using Windows.UI.ViewManagement;
 
 namespace Files.Helpers
 {
@@ -12,10 +11,9 @@ namespace Files.Helpers
     {
         private const string selectedAppThemeKey = "theme";
         private static Window currentApplicationWindow;
-        private static ApplicationViewTitleBar titleBar;
 
         // Keep reference so it does not get optimized/garbage collected
-        public static UISettings UiSettings;
+        //public static UISettings UiSettings;
 
         /// <summary>
         /// Gets the current actual theme of the app based on the requested theme of the
@@ -46,10 +44,8 @@ namespace Files.Helpers
             {
 
                 FrameworkElement rootfe = null;
-                App.mainWindow.DispatcherQueue.TryEnqueue(() =>
-                {
-                    rootfe = App.mainWindow.Content as FrameworkElement;
-                });
+                rootfe = App.mainWindow.Content as FrameworkElement;
+          
                 if (rootfe != null)
                 {
                     return rootfe.RequestedTheme;
@@ -59,11 +55,7 @@ namespace Files.Helpers
             }
             set
             {
-                FrameworkElement rootfe = null;
-                App.mainWindow.DispatcherQueue.TryEnqueue(() =>
-                {
-                    rootfe = App.mainWindow.Content as FrameworkElement;
-                });
+                FrameworkElement rootfe = App.mainWindow.Content as FrameworkElement;
                 if (rootfe != null)
                 {
                     rootfe.RequestedTheme = value;
@@ -97,23 +89,23 @@ namespace Files.Helpers
                 RootTheme = ElementTheme.Default;
             }
 
-            // Registering to color changes, thus we notice when user changes theme system wide
-            UiSettings = new UISettings();
-            UiSettings.ColorValuesChanged += UiSettings_ColorValuesChanged;
+            // TODO: Registering to color changes, thus we notice when user changes theme system wide
+            //UiSettings = new UISettings();
+            //UiSettings.ColorValuesChanged += UiSettings_ColorValuesChanged;
         }
 
-        private static void UiSettings_ColorValuesChanged(UISettings sender, object args)
-        {
-            // Make sure we have a reference to our window so we dispatch a UI change
-            if (currentApplicationWindow != null)
-            {
-                // Dispatch on UI thread so that we have a current appbar to access and change
-                App.mainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
-                {
-                    UpdateTheme();
-                });
-            }
-        }
+        //private static void UiSettings_ColorValuesChanged(UISettings sender, object args)
+        //{
+        //    // Make sure we have a reference to our window so we dispatch a UI change
+        //    if (currentApplicationWindow != null)
+        //    {
+        //        // Dispatch on UI thread so that we have a current appbar to access and change
+        //        DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.High, () =>
+        //        {
+        //            UpdateTheme();
+        //        });
+        //    }
+        //}
 
         public static void UpdateTheme()
         {

@@ -30,7 +30,7 @@ namespace Files
 {
     public partial class App : Application
     {
-        private static bool ShowErrorNotification = false;
+       // private static bool ShowErrorNotification = false;
 
         public static StorageHistoryWrapper HistoryWrapper = new StorageHistoryWrapper();
 
@@ -128,7 +128,8 @@ namespace Files
 
             mainWindow = new MainWindow();
             mainWindow.Activate();
-            ShowErrorNotification = true;
+            mainWindow.ExtendsContentIntoTitleBar = true;
+            //ShowErrorNotification = true;
             ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = Process.GetCurrentProcess().Id;
             Clipboard_ContentChanged(null, null);
         }
@@ -320,7 +321,7 @@ namespace Files
         {
             if (AppSettings != null)
             {
-                AppSettings.LastSessionPages = MainPage.AppInstances.DefaultIfEmpty().Select(tab =>
+                AppSettings.LastSessionPages = MainWindow.AppInstances.DefaultIfEmpty().Select(tab =>
                 {
                     if (tab != null && tab.TabItemArguments != null)
                     {

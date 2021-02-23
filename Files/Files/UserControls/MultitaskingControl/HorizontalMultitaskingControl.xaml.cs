@@ -136,7 +136,7 @@ namespace Files.UserControls.MultitaskingControl
 
             var tabViewItemArgs = TabItemArguments.Deserialize(tabViewItemString);
             ApplicationData.Current.LocalSettings.Values[TabDropHandledIdentifier] = true;
-            MainPage.AddNewTabByParam(tabViewItemArgs.InitialPageType, tabViewItemArgs.NavigationArg, index);
+            MainWindow.AddNewTabByParam(tabViewItemArgs.InitialPageType, tabViewItemArgs.NavigationArg, index);
         }
 
         private void TabStrip_TabDragCompleted(TabView sender, TabViewTabDragCompletedEventArgs args)
@@ -177,7 +177,7 @@ namespace Files.UserControls.MultitaskingControl
 
         private void TabItemContextMenu_Opening(object sender, object e)
         {
-            if (MainPage.MultitaskingControl.Items.Count == 1)
+            if (MainWindow.MultitaskingControl.Items.Count == 1)
             {
                 MenuItemMoveTabToNewWindow.IsEnabled = false;
             }

@@ -88,16 +88,14 @@ namespace Files.Filesystem
 
         private void SyncSideBarItemsUI()
         {
-            App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
-            {
-                lock (MainPage.SideBarItems)
+            lock (MainWindow.SideBarItems)
                 {
-                    var drivesSection = MainPage.SideBarItems.FirstOrDefault(x => x is HeaderTextItem && x.Text == "SidebarCloudDrives".GetLocalized());
+                    var drivesSection = MainWindow.SideBarItems.FirstOrDefault(x => x is HeaderTextItem && x.Text == "SidebarCloudDrives".GetLocalized());
 
                     if (drivesSection != null && Drives.Count == 0)
                     {
                         //No drives - remove the header
-                        MainPage.SideBarItems.Remove(drivesSection);
+                        MainWindow.SideBarItems.Remove(drivesSection);
                     }
 
                     if (drivesSection == null && Drives.Count > 0)
@@ -108,40 +106,39 @@ namespace Files.Filesystem
                         };
 
                         //Get the last location item in the sidebar
-                        var lastLocationItem = MainPage.SideBarItems.LastOrDefault(x => x is LocationItem);
+                        var lastLocationItem = MainWindow.SideBarItems.LastOrDefault(x => x is LocationItem);
 
                         if (lastLocationItem != null)
                         {
                             //Get the index of the last location item
-                            var lastLocationItemIndex = MainPage.SideBarItems.IndexOf(lastLocationItem);
+                            var lastLocationItemIndex = MainWindow.SideBarItems.IndexOf(lastLocationItem);
                             //Insert the drives title beneath it
-                            MainPage.SideBarItems.Insert(lastLocationItemIndex + 1, drivesSection);
+                            MainWindow.SideBarItems.Insert(lastLocationItemIndex + 1, drivesSection);
                         }
                         else
                         {
-                            MainPage.SideBarItems.Add(drivesSection);
+                            MainWindow.SideBarItems.Add(drivesSection);
                         }
                     }
 
-                    var sectionStartIndex = MainPage.SideBarItems.IndexOf(drivesSection);
+                    var sectionStartIndex = MainWindow.SideBarItems.IndexOf(drivesSection);
 
                     //Remove all existing cloud drives from the sidebar
-                    foreach (var item in MainPage.SideBarItems
+                    foreach (var item in MainWindow.SideBarItems
                         .Where(x => x.ItemType == NavigationControlItemType.CloudDrive)
                         .ToList())
                     {
-                        MainPage.SideBarItems.Remove(item);
+                        MainWindow.SideBarItems.Remove(item);
                     }
 
                     //Add all cloud drives to the sidebar
                     var insertAt = sectionStartIndex + 1;
                     foreach (var drive in Drives.OrderBy(o => o.Text))
                     {
-                        MainPage.SideBarItems.Insert(insertAt, drive);
+                        MainWindow.SideBarItems.Insert(insertAt, drive);
                         insertAt++;
                     }
                 }
-            });
         }
     }
 }

@@ -31,10 +31,10 @@ namespace Files.Filesystem
             {
                 return new PathBoxItem()
                 {
-                    Title = MainPage.SideBarItems
+                    Title = MainWindow.SideBarItems
                         .FirstOrDefault(x => x.ItemType == NavigationControlItemType.Drive &&
                             x.Path.Contains(component, StringComparison.OrdinalIgnoreCase)) != null ?
-                            MainPage.SideBarItems
+                            MainWindow.SideBarItems
                                 .FirstOrDefault(x => x.ItemType == NavigationControlItemType.Drive &&
                                     x.Path.Contains(component, StringComparison.OrdinalIgnoreCase)).Text :
                             $@"Drive ({component}\)",

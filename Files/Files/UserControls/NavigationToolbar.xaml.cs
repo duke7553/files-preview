@@ -863,7 +863,7 @@ namespace Files.UserControls
 
         private void VerticalTabStripInvokeButton_Loaded(object sender, RoutedEventArgs e)
         {
-            MainPage.MultitaskingControl = VerticalTabs;
+            MainWindow.MultitaskingControl = VerticalTabs;
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)

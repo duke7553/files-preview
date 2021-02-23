@@ -101,7 +101,7 @@ namespace Files.ViewModels
             set => Set(value.Value);
         }
 
-        public async void DetectQuickLook()
+        public void DetectQuickLook()
         {
             // TODO: Detect QuickLook with in-project code
             //try
@@ -139,10 +139,10 @@ namespace Files.ViewModels
 
         private void AddDefaultLocations()
         {
-            MainPage.SideBarItems.Add(new LocationItem
+            MainWindow.SideBarItems.Add(new LocationItem
             {
                 Text = "SidebarHome".GetLocalized(),
-                Font = App.Current.Resources["FluentUIGlyphs"] as FontFamily,
+                Font = Application.Current.Resources["FluentUIGlyphs"] as FontFamily,
                 Glyph = "\uea80",
                 IsDefaultLocation = true,
                 Path = "Home"
@@ -187,7 +187,7 @@ namespace Files.ViewModels
                         logoURI = new Uri("ms-appx:///Assets/WSL/genericpng.png");
                     }
 
-                    MainPage.SideBarItems.Add(new WSLDistroItem()
+                    MainWindow.SideBarItems.Add(new WSLDistroItem()
                     {
                         Text = folder.DisplayName,
                         Path = folder.Path,
@@ -539,16 +539,16 @@ namespace Files.ViewModels
                         };
                         // Add recycle bin to sidebar, title is read from LocalSettings (provided by the fulltrust process)
                         // TODO: the very first time the app is launched localized name not available
-                        MainPage.SideBarItems.Insert(MainPage.SideBarItems.Where(item => item is LocationItem).Count(), recycleBinItem);
+                        MainWindow.SideBarItems.Insert(MainWindow.SideBarItems.Where(item => item is LocationItem).Count(), recycleBinItem);
                     }
                     else
                     {
                         localSettings.Values["PinRecycleBin"] = false;
-                        foreach (INavigationControlItem item in MainPage.SideBarItems.ToList())
+                        foreach (INavigationControlItem item in MainWindow.SideBarItems.ToList())
                         {
                             if (item is LocationItem && item.Path == RecycleBinPath)
                             {
-                                MainPage.SideBarItems.Remove(item);
+                                MainWindow.SideBarItems.Remove(item);
                             }
                         }
                     }

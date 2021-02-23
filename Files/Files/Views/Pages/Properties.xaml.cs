@@ -70,7 +70,7 @@ namespace Files.Views
             //    TitleBar = ApplicationView.GetForCurrentView().TitleBar;
             //    TitleBar.ButtonBackgroundColor = Colors.Transparent;
             //    TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            //    MainPage.dispatcherQueue.TryEnqueue(() => AppSettings.UpdateThemeElements.Execute(null));
+            //    MainWindow.dispatcherQueue.TryEnqueue(() => AppSettings.UpdateThemeElements.Execute(null));
             //}
             //else
             //{

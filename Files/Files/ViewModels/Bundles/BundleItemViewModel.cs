@@ -113,7 +113,7 @@ namespace Files.ViewModels.Bundles
 
         private void OpenInNewTab()
         {
-            MainPage.AddNewTabByPath(typeof(PaneHolderPage), Path);
+            MainWindow.AddNewTabByPath(typeof(PaneHolderPage), Path);
         }
 
         private async void OpenItemLocation()

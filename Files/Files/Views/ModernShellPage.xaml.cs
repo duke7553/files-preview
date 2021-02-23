@@ -935,7 +935,7 @@ namespace Files.Views
             string value = e.Path;
 
             INavigationControlItem item = null;
-            List<INavigationControlItem> sidebarItems = MainPage.SideBarItems.Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
+            List<INavigationControlItem> sidebarItems = MainWindow.SideBarItems.Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
 
             item = sidebarItems.FirstOrDefault(x => x.Path.Equals(value, StringComparison.OrdinalIgnoreCase));
             if (item == null)
@@ -1195,7 +1195,7 @@ namespace Files.Views
         {
             if (incomingSourcePageType == typeof(YourHome) && incomingSourcePageType != null)
             {
-                SidebarSelectedItem = MainPage.SideBarItems.First(x => x.Path.Equals("Home"));
+                SidebarSelectedItem = MainWindow.SideBarItems.First(x => x.Path.Equals("Home"));
                 NavigationToolbar.PathControlDisplayText = "NewTab".GetLocalized();
             }
         }

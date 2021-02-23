@@ -120,7 +120,7 @@ namespace Files.Interacts
 
         private void OpenNewTab()
         {
-            MainPage.AddNewTabByPath(typeof(PaneHolderPage), "NewTab".GetLocalized());
+            MainWindow.AddNewTabByPath(typeof(PaneHolderPage), "NewTab".GetLocalized());
         }
 
         public async void OpenInNewWindowItem_Click()
@@ -156,7 +156,7 @@ namespace Files.Interacts
             {
                 DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.Low, () =>
                 {
-                    MainPage.AddNewTabByPath(typeof(PaneHolderPage), (listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
+                    MainWindow.AddNewTabByPath(typeof(PaneHolderPage), (listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
                 });
             }
         }
@@ -181,7 +181,7 @@ namespace Files.Interacts
 
         public static void OpenPathInNewTab(string path)
         {
-            MainPage.AddNewTabByPath(typeof(PaneHolderPage), path);
+            MainWindow.AddNewTabByPath(typeof(PaneHolderPage), path);
         }
 
         public static async Task<bool> OpenPathInNewWindowAsync(string path)
