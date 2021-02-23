@@ -79,10 +79,12 @@ namespace Files
             if (App.CloudDrivesManager == null)
             {
                 //Enumerate cloud drives on in the background. It will update the UI itself when finished
-                await Files.Filesystem.CloudDrivesManager.Instance.ContinueWith(o =>
-                {
-                    App.CloudDrivesManager = o.Result;
-                });
+                var o = await Files.Filesystem.CloudDrivesManager.Instance;
+                App.CloudDrivesManager = o;
+                //    .ContinueWith(o =>
+                //{
+                //    App.CloudDrivesManager = o.Result;
+                //});
             }
 
             //Start off a list of tasks we need to run before we can continue startup
@@ -109,7 +111,13 @@ namespace Files
 
             if (App.DrivesManager == null)
             {
-                tasksToRun.Add(DrivesManager.Instance.ContinueWith(o => App.DrivesManager = o.Result));
+                var driveTask = new Func<Task>(async () =>
+                {
+                    var o = await DrivesManager.Instance;
+                    App.DrivesManager = o;
+                });
+                //var drive = DrivesManager.Instance.ContinueWith(o => App.DrivesManager = o.Result)
+                tasksToRun.Add(driveTask());
             }
 
             if (App.InteractionViewModel == null)
