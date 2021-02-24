@@ -86,10 +86,8 @@ namespace Files
             if (App.CloudDrivesManager == null)
             {
                 //Enumerate cloud drives on in the background. It will update the UI itself when finished
-                await Files.Filesystem.CloudDrivesManager.Instance.ContinueWith(o =>
-                {
-                    App.CloudDrivesManager = o.Result;
-                });
+                var o = await Files.Filesystem.CloudDrivesManager.Instance;
+                App.CloudDrivesManager = o;
             }
 
             //Start off a list of tasks we need to run before we can continue startup
@@ -97,15 +95,12 @@ namespace Files
 
             if (App.AppSettings == null)
             {
-                //await this.DispatcherQueue.EnqueueAsync(async () =>
-                //{
-                    //We can't create AppSettings at the same time as everything else as other dependencies depend on AppSettings
-                    App.AppSettings = await SettingsViewModel.CreateInstance();
-                    if (App.AppSettings?.AcrylicTheme == null)
-                    {
-                        Helpers.ThemeHelper.Initialize();
-                    }
-               // });
+                //We can't create AppSettings at the same time as everything else as other dependencies depend on AppSettings
+                App.AppSettings = await SettingsViewModel.CreateInstance();
+                if (App.AppSettings?.AcrylicTheme == null)
+                {
+                    Helpers.ThemeHelper.Initialize();
+                }
             }
 
             if (App.SidebarPinnedController == null)
@@ -116,7 +111,13 @@ namespace Files
 
             if (App.DrivesManager == null)
             {
-                tasksToRun.Add(DrivesManager.Instance.ContinueWith(o => App.DrivesManager = o.Result));
+                var driveTask = new Func<Task>(async () =>
+                {
+                    var o = await DrivesManager.Instance;
+                    App.DrivesManager = o;
+                });
+                //var drive = DrivesManager.Instance.ContinueWith(o => App.DrivesManager = o.Result)
+                tasksToRun.Add(driveTask());
             }
 
             if (App.InteractionViewModel == null)
@@ -129,93 +130,6 @@ namespace Files
                 //Only proceed when all tasks are completed
                 await Task.WhenAll(tasksToRun);
             }
-        }
-
-        private void OnDisplayed()
-        {
-            EnsureSettingsAndConfigurationAreBootstrapped();
-
-            //if (eventArgs.NavigationMode != NavigationMode.Back)
-            //{
-            //    if (eventArgs.Parameter == null || (eventArgs.Parameter is string eventStr && string.IsNullOrEmpty(eventStr)))
-            //    {
-            //        try
-            //        {
-            //            if (App.AppSettings.ResumeAfterRestart)
-            //            {
-            //                App.AppSettings.ResumeAfterRestart = false;
-
-            //                foreach (string tabArgsString in App.AppSettings.LastSessionPages)
-            //                {
-            //                    var tabArgs = TabItemArguments.Deserialize(tabArgsString);
-            //                    AddNewTabByParam(tabArgs.InitialPageType, tabArgs.NavigationArg);
-            //                }
-
-            //                if (!App.AppSettings.ContinueLastSessionOnStartUp)
-            //                {
-            //                    App.AppSettings.LastSessionPages = null;
-            //                }
-            //            }
-            //            else if (App.AppSettings.OpenASpecificPageOnStartup)
-            //            {
-            //                if (App.AppSettings.PagesOnStartupList != null)
-            //                {
-            //                    foreach (string path in App.AppSettings.PagesOnStartupList)
-            //                    {
-            //                        AddNewTabByPath(typeof(PaneHolderPage), path);
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    AddNewTab();
-            //                }
-            //            }
-            //            else if (App.AppSettings.ContinueLastSessionOnStartUp)
-            //            {
-            //                if (App.AppSettings.LastSessionPages != null)
-            //                {
-            //                    foreach (string tabArgsString in App.AppSettings.LastSessionPages)
-            //                    {
-            //                        var tabArgs = TabItemArguments.Deserialize(tabArgsString);
-            //                        AddNewTabByParam(tabArgs.InitialPageType, tabArgs.NavigationArg);
-            //                    }
-            //                    var defaultArg = new TabItemArguments() { InitialPageType = typeof(PaneHolderPage), NavigationArg = "NewTab".GetLocalized() };
-            //                    App.AppSettings.LastSessionPages = new string[] { defaultArg.Serialize() };
-            //                }
-            //                else
-            //                {
-            //                    AddNewTab();
-            //                }
-            //            }
-            //            else
-            //            {
-            //                AddNewTab();
-            //            }
-            //        }
-            //        catch (Exception)
-            //        {
-            AddNewTab();
-            //    }
-            //}
-            //else
-            //{
-            //    if (eventArgs.Parameter is string navArgs)
-            //    {
-            //        AddNewTabByPath(typeof(PaneHolderPage), navArgs);
-            //    }
-            //    else if (eventArgs.Parameter is TabItemArguments tabArgs)
-            //    {
-            //        AddNewTabByParam(tabArgs.InitialPageType, tabArgs.NavigationArg);
-            //    }
-            //}
-
-            // TODO: Fix Check for required updates
-            //AppUpdater updater = new AppUpdater();
-            //updater.CheckForUpdatesAsync();
-
-            // Initial setting of SelectedTabItem
-            this.SelectedTabItem = AppInstances[App.InteractionViewModel.TabStripSelectedIndex];
-            //}
         }
 
         public static void AddNewTab()
