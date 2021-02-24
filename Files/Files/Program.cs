@@ -1,4 +1,5 @@
 ﻿using Files.CommandLine;
+using Microsoft.System;
 using Microsoft.UI.Xaml;
 using System;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using Windows.Storage;
 
 namespace Files
 {
-    internal class Program
+    internal class Program1
     {
         private static async Task Main()
         {
@@ -62,7 +63,7 @@ namespace Files
 
             //AppInstance.FindOrRegisterInstanceForKey(proc.Id.ToString());
             ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = proc.Id;
-            Application.Start(_ => new App());
+            Application.Start( p => new App());
         }
 
         public static async Task OpenShellCommandInExplorerAsync(string shellCommand, int pid)

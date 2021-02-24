@@ -63,6 +63,13 @@ namespace Files
             //{
             //    FlowDirection = FlowDirection.RightToLeft;
             //}
+            horizontalMultitaskingControl.Loaded += HorizontalMultitaskingControl_Loaded1;
+        }
+
+        private void HorizontalMultitaskingControl_Loaded1(object sender, RoutedEventArgs e)
+        {
+            MultitaskingControl = horizontalMultitaskingControl;
+            horizontalMultitaskingControl.Loaded -= HorizontalMultitaskingControl_Loaded1;
         }
 
         private async void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

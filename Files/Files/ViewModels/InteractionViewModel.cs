@@ -66,9 +66,7 @@ namespace Files.ViewModels
                     }
                     if (value < MainWindow.MultitaskingControl.Items.Count)
                     {
-                        Frame rootFrame = mainWindowInstance.Content as Frame;
-                        var mainView = rootFrame.Content as MainWindow;
-                        mainView.SelectedTabItem = MainWindow.MultitaskingControl.Items[value];
+                        mainWindowInstance.SelectedTabItem = MainWindow.MultitaskingControl.Items[value];
                     }
                 }
             }
