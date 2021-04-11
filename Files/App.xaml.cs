@@ -393,7 +393,7 @@ namespace Files
 
         public static void CloseApp()
         {
-            Application.Current.Exit();
+            mainWindow.Close();
         }
     }
 
