@@ -1,6 +1,6 @@
 ﻿using Files.Enums;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Media;
 
 namespace Files.Filesystem.Cloud

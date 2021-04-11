@@ -1,7 +1,7 @@
 ﻿using Files.Filesystem;
 using Files.ViewModels;
 using Files.Views;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using System;

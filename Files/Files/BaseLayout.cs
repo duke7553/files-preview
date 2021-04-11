@@ -6,7 +6,7 @@ using Files.Helpers;
 using Files.UserControls;
 using Files.ViewModels;
 using Files.Views;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

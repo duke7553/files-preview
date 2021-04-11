@@ -3,7 +3,7 @@ using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
 using Files.Common;
 using Files.Views;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;

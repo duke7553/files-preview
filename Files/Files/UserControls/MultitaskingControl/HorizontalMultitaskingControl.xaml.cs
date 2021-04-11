@@ -1,7 +1,7 @@
 ﻿using Files.Interacts;
 using Files.ViewModels;
 using Files.Views;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;

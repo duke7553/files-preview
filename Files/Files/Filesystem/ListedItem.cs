@@ -1,8 +1,8 @@
 ﻿using Files.Enums;
 using Files.Filesystem.Cloud;
 using Files.ViewModels.Properties;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using System;

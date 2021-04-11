@@ -3,7 +3,7 @@ using Files.Enums;
 using Files.Extensions;
 using Files.Filesystem;
 using Microsoft.System;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using System;
 using System.Collections.Generic;
 using System.IO;

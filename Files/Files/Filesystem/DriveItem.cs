@@ -1,8 +1,8 @@
 ﻿using ByteSizeLib;
 using Files.Common;
 using Files.Extensions;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using System;
 using System.Threading.Tasks;

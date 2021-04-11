@@ -6,9 +6,9 @@ using Files.Filesystem;
 using Files.Helpers;
 using Files.ViewModels;
 using Files.Views;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.Notifications;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Notifications;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -592,7 +592,7 @@ namespace Files.Interacts
                                     //We can have many sort entries
                                     SortEntry sortEntry = new SortEntry()
                                     {
-                                        AscendingOrder = FolderSettings.DirectorySortDirection == Microsoft.Toolkit.Uwp.UI.SortDirection.Ascending
+                                        AscendingOrder = FolderSettings.DirectorySortDirection == CommunityToolkit.WinUI.UI.SortDirection.Ascending
                                     };
 
                                     //Basically we tell to the launched app to follow how we sorted the files in the directory.

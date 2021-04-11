@@ -96,18 +96,11 @@ namespace Files.Views
         {
             DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
             {
-                var backgroundBrush = new AcrylicBrush()
+                var backgroundBrush = new SolidColorBrush()
                 {
-                    AlwaysUseFallback = AppSettings.IsAcrylicDisabled,
-                    BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
-                    FallbackColor = AppSettings.AcrylicTheme.FallbackColor,
-                    TintColor = AppSettings.AcrylicTheme.TintColor,
-                    TintOpacity = AppSettings.AcrylicTheme.TintOpacity,
+                    Color = AppSettings.AcrylicTheme.FallbackColor,
+                    
                 };
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 9))
-                {
-                    backgroundBrush.TintLuminosityOpacity = 0.9;
-                }
 
                 if (!(new AccessibilitySettings()).HighContrast)
                 {

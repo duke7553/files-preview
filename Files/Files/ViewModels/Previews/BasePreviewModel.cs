@@ -1,6 +1,6 @@
 ﻿using Files.Filesystem;
 using Files.ViewModels.Properties;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;

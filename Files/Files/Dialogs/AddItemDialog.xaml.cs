@@ -1,6 +1,6 @@
 ﻿using Files.DataModels;
 using Files.Helpers;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;

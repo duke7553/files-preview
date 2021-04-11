@@ -8,8 +8,8 @@ using Files.Helpers;
 using Files.Helpers.FileListCache;
 using Files.Views.LayoutModes;
 using Microsoft.System;
-using Microsoft.Toolkit.Uwp.Extensions;
-using Microsoft.Toolkit.Uwp.UI;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -754,19 +754,19 @@ namespace Files.ViewModels
                             {
                                 if (!item.LoadFileIcon) // Loading icon from fulltrust process failed
                                 {
-                                    using (var Thumbnail = await matchingStorageItem.GetThumbnailAsync(ThumbnailMode.SingleItem, thumbnailSize, ThumbnailOptions.UseCurrentScale))
+                                    App.mainWindow.DispatcherQueue.TryEnqueue(async () =>
                                     {
-                                        if (Thumbnail != null)
+                                        using (var Thumbnail = await matchingStorageItem.GetThumbnailAsync(ThumbnailMode.SingleItem, thumbnailSize, ThumbnailOptions.UseCurrentScale))
                                         {
-                                            App.mainWindow.DispatcherQueue.TryEnqueue(async () =>
+                                            if (Thumbnail != null)
                                             {
                                                 item.FileImage = new BitmapImage();
                                                 await item.FileImage.SetSourceAsync(Thumbnail);
                                                 item.LoadUnknownTypeGlyph = false;
                                                 item.LoadFileIcon = true;
-                                            });
+                                            }
                                         }
-                                    }
+                                    });
                                 }
 
                                 var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageItem);

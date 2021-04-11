@@ -3,7 +3,7 @@ using Files.Extensions;
 using Files.Filesystem;
 using Files.Helpers;
 using Microsoft.System;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;

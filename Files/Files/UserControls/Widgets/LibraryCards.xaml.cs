@@ -1,5 +1,5 @@
 ﻿using Files.ViewModels;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
@@ -67,7 +67,7 @@ namespace Files.UserControls.Widgets
 
         private void GridScaleUp(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            // Source for the scaling: https://github.com/windows-toolkit/WindowsCommunityToolkit/blob/master/Microsoft.Toolkit.Uwp.SampleApp/SamplePages/Implicit%20Animations/ImplicitAnimationsPage.xaml.cs
+            // Source for the scaling: https://github.com/windows-toolkit/WindowsCommunityToolkit/blob/master/CommunityToolkit.WinUI.SampleApp/SamplePages/Implicit%20Animations/ImplicitAnimationsPage.xaml.cs
             // Search for "Scale Element".
             var element = sender as UIElement;
             var visual = ElementCompositionPreview.GetElementVisual(element);

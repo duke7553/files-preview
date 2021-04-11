@@ -1,9 +1,9 @@
 ﻿using Files.Enums;
 using Files.Helpers;
 using Files.Views.LayoutModes;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Uwp.UI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.UI;
 using Newtonsoft.Json;
 using System;
 using Windows.Storage;

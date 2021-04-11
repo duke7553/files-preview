@@ -9,7 +9,7 @@ using Files.UserControls;
 using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
 using Files.Views.LayoutModes;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -169,7 +169,7 @@ namespace Files.Views
             }
         }
 
-        public INavigationToolbar NavigationToolbar => null;
+        public INavigationToolbar NavigationToolbar => NavToolbar;
 
         public ModernShellPage()
         {
@@ -765,14 +765,14 @@ namespace Files.Views
             }
         }
 
-        private BaseLayout GetContentOrNullAsync()
+        private async Task<BaseLayout> GetContentOrNullAsync()
         {
             BaseLayout FrameContent = null;
-            App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal,
+            await this.DispatcherQueue.EnqueueAsync(
             () =>
             {
                 FrameContent = (ItemDisplayFrame.Content as BaseLayout);
-            });
+            }, Microsoft.System.DispatcherQueuePriority.Normal);
             return FrameContent;
         }
 
@@ -907,8 +907,8 @@ namespace Files.Views
             FilesystemViewModel = new ItemViewModel(this);
             FilesystemViewModel.OnAppServiceConnectionChanged();
             InteractionOperations = new Interaction(this);
-            App.Current.Suspending += Current_Suspending;
-            App.Current.LeavingBackground += OnLeavingBackground;
+            //App.Current.Suspending += Current_Suspending;
+            //App.Current.LeavingBackground += OnLeavingBackground;
             FilesystemViewModel.WorkingDirectoryModified += ViewModel_WorkingDirectoryModified;
             OnNavigationParamsChanged();
             this.Loaded -= Page_Loaded;
@@ -957,9 +957,9 @@ namespace Files.Views
             }
         }
 
-        private void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
+        private async void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
         {
-            ContentPage = GetContentOrNullAsync();
+            ContentPage = await GetContentOrNullAsync();
             NavigationToolbar.ClearSearchBoxQueryText(true);
             if (ItemDisplayFrame.CurrentSourcePageType == typeof(GenericFileBrowser)
                 || ItemDisplayFrame.CurrentSourcePageType == typeof(GridViewBrowser))
@@ -1209,8 +1209,8 @@ namespace Files.Views
         {
             App.mainWindow.Content.PointerPressed -= Content_PointerPressed;
             //SystemNavigationManager.GetForCurrentView().BackRequested -= ModernShellPage_BackRequested;
-            App.Current.Suspending -= Current_Suspending;
-            App.Current.LeavingBackground -= OnLeavingBackground;
+            //App.Current.Suspending -= Current_Suspending;
+            //App.Current.LeavingBackground -= OnLeavingBackground;
             App.DrivesManager.PropertyChanged -= DrivesManager_PropertyChanged;
             AppSettings.PropertyChanged -= AppSettings_PropertyChanged;
             

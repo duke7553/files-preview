@@ -4,7 +4,7 @@ using Files.Helpers;
 using Files.UserControls.Widgets;
 using Files.ViewModels;
 using Files.ViewModels.Bundles;
-using Microsoft.Toolkit.Uwp.Extensions;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
