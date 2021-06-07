@@ -28,7 +28,9 @@
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Light">
-                            <SolidColorBrush x:Key="CloudDriveSyncStatusOnlineColor" Color="#0078D7" />
+							<!--<SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#F9F9F9" />
+							<SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#F9F9F9" />-->
+							<SolidColorBrush x:Key="CloudDriveSyncStatusOnlineColor" Color="#0078D7" />
                             <SolidColorBrush x:Key="CloudDriveSyncStatusOfflineColor" Color="#30BB03" />
                             <SolidColorBrush x:Key="CloudDriveSyncStatusExcludedColor" Color="#AAAAAA" />
                             <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="White" />
