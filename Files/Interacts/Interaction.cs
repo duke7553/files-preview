@@ -734,7 +734,7 @@ namespace Files.Interacts
             //{
             //    Window newWindow = new Window();
 
-            //    newWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
+            //    newWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             //    {
             //        Frame frame = new Frame();
             //        frame.Navigate(typeof(Properties), new PropertiesPageNavigationArguments()

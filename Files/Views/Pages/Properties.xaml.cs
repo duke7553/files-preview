@@ -94,7 +94,7 @@ namespace Files.Views
 
         private void SetBackground()
         {
-            DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             {
                 var backgroundBrush = new SolidColorBrush()
                 {
@@ -149,7 +149,7 @@ namespace Files.Views
         private void AppSettings_ThemeModeChanged(object sender, EventArgs e)
         {
             var selectedTheme = ThemeHelper.RootTheme;
-            DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             {
                 RequestedTheme = selectedTheme;
                 if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))

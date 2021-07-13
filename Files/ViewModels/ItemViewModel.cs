@@ -7,7 +7,7 @@ using Files.Filesystem.Cloud;
 using Files.Helpers;
 using Files.Helpers.FileListCache;
 using Files.Views.LayoutModes;
-using Microsoft.System;
+using Microsoft.UI.Dispatching;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.UI;
 using Microsoft.UI.Text;
@@ -737,7 +737,7 @@ namespace Files.ViewModels
                     {
                         var fileIconInfo = await LoadIconOverlayAsync(item.ItemPath, thumbnailSize);
 
-                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
+                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
                         {
                             if (fileIconInfo.IconData != null && !item.IsLinkItem)
                             {
@@ -770,7 +770,7 @@ namespace Files.ViewModels
                                 }
 
                                 var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageItem);
-                                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
+                                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
                                 {
                                     item.FolderRelativeId = matchingStorageItem.FolderRelativeId;
                                     item.ItemType = matchingStorageItem.DisplayType;
@@ -784,7 +784,7 @@ namespace Files.ViewModels
                     {
                         var fileIconInfo = await LoadIconOverlayAsync(item.ItemPath, thumbnailSize);
 
-                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, async () =>
+                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
                         {
                             if (fileIconInfo.IconData != null && fileIconInfo.IsCustom) // Only set folder icon if it's a custom icon
                             {
@@ -801,7 +801,7 @@ namespace Files.ViewModels
                             if (matchingStorageItem != null)
                             {
                                 var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageItem);
-                                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
+                                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
                                 {
                                     item.FolderRelativeId = matchingStorageItem.FolderRelativeId;
                                     item.ItemType = matchingStorageItem.DisplayType;
@@ -819,7 +819,7 @@ namespace Files.ViewModels
                 {
                     if (!wasSyncStatusLoaded)
                     {
-                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Low, () =>
+                        App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
                         {
                             item.SyncStatusUI = new CloudDriveSyncStatusUI() { LoadSyncStatus = false }; // Reset cloud sync status icon
                         });

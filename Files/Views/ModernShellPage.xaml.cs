@@ -772,7 +772,7 @@ namespace Files.Views
             () =>
             {
                 FrameContent = (ItemDisplayFrame.Content as BaseLayout);
-            }, Microsoft.System.DispatcherQueuePriority.Normal);
+            }, Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal);
             return FrameContent;
         }
 
@@ -1123,7 +1123,7 @@ namespace Files.Views
         public void Refresh_Click()
         {
             NavigationToolbar.CanRefresh = false;
-            App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.System.DispatcherQueuePriority.Normal, () =>
+            App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             {
                 var ContentOwnedViewModelInstance = FilesystemViewModel;
                 ContentOwnedViewModelInstance.RefreshItems(null, false);

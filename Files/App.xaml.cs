@@ -11,6 +11,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using CommunityToolkit.WinUI.Notifications;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json.Linq;
 using NLog;
