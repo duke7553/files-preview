@@ -1,4 +1,5 @@
 ﻿using Files.Common;
+using CommunityToolkit.WinUI;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Files.Helpers
 {
@@ -19,7 +21,7 @@ namespace Files.Helpers
 
         private IShellPage associatedInstance;
 
-        private AppServiceConnection Connection => associatedInstance?.ServiceConnection;
+        private NamedPipeAsAppServiceConnection Connection => associatedInstance?.ServiceConnection;
 
         #endregion Private Members
 
@@ -34,43 +36,32 @@ namespace Files.Helpers
             {
                 ValueSet value = new ValueSet
                 {
-                    { "Arguments", "RecycleBin" },
-                    { "action", "Enumerate" }
+                    { "Arguments", "ShellFolder" },
+                    { "action", "Enumerate" },
+                    { "folder", App.AppSettings.RecycleBinPath }
                 };
-                AppServiceResponse response = await Connection.SendMessageAsync(value);
+                var (status, response) = await Connection.SendMessageForResponseAsync(value);
 
-                if (response.Status == AppServiceResponseStatus.Success
-                    && response.Message.ContainsKey("Enumerate"))
+                if (status == AppServiceResponseStatus.Success
+                    && response.ContainsKey("Enumerate"))
                 {
-                    List<ShellFileItem> items = JsonConvert.DeserializeObject<List<ShellFileItem>>((string)response.Message["Enumerate"]);
+                    List<ShellFileItem> items = JsonConvert.DeserializeObject<List<ShellFileItem>>((string)response["Enumerate"]);
                     return items;
                 }
             }
 
-            return null;
+            return new List<ShellFileItem>();
         }
 
         public async Task<bool> IsRecycleBinItem(IStorageItem item)
         {
             List<ShellFileItem> recycleBinItems = await EnumerateRecycleBin();
-
-            if (recycleBinItems == null)
-            {
-                return false;
-            }
-
             return recycleBinItems.Any((shellItem) => shellItem.RecyclePath == item.Path);
         }
 
         public async Task<bool> IsRecycleBinItem(string path)
         {
             List<ShellFileItem> recycleBinItems = await EnumerateRecycleBin();
-
-            if (recycleBinItems == null)
-            {
-                return false;
-            }
-
             return recycleBinItems.Any((shellItem) => shellItem.RecyclePath == path);
         }
 
@@ -79,13 +70,40 @@ namespace Files.Helpers
             return recycleBinPathRegex.IsMatch(path);
         }
 
+        public static void EmptyRecycleBin(IShellPage associatedInstance)
+        {
+            new RecycleBinHelpers(associatedInstance).EmptyRecycleBin();
+        }
+
+        public async void EmptyRecycleBin()
+        {
+            var ConfirmEmptyBinDialog = new ContentDialog()
+            {
+                Title = "ConfirmEmptyBinDialogTitle".GetLocalized(),
+                Content = "ConfirmEmptyBinDialogContent".GetLocalized(),
+                PrimaryButtonText = "ConfirmEmptyBinDialog/PrimaryButtonText".GetLocalized(),
+                SecondaryButtonText = "ConfirmEmptyBinDialog/SecondaryButtonText".GetLocalized()
+            };
+
+            ContentDialogResult result = await ConfirmEmptyBinDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                if (Connection != null)
+                {
+                    var value = new ValueSet();
+                    value.Add("Arguments", "RecycleBin");
+                    value.Add("action", "Empty");
+                    // Send request to fulltrust process to empty recyclebin
+                    await Connection.SendMessageAsync(value);
+                }
+            }
+        }
+
         #region IDisposable
 
         public void Dispose()
         {
-            Connection?.Dispose();
-            associatedInstance?.Dispose();
-
             associatedInstance = null;
         }
 

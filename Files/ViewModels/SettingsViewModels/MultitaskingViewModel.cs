@@ -4,40 +4,7 @@ namespace Files.ViewModels.SettingsViewModels
 {
     public class MultitaskingViewModel : ObservableObject
     {
-        private bool isMultitaskingExperienceAdaptive = App.AppSettings.IsMultitaskingExperienceAdaptive;
-        private bool isHorizontalTabStripEnabled = App.AppSettings.IsHorizontalTabStripEnabled;
         private bool isVerticalTabFlyoutEnabled = App.AppSettings.IsVerticalTabFlyoutEnabled;
-
-        public bool IsMultitaskingExperienceAdaptive
-        {
-            get
-            {
-                return isMultitaskingExperienceAdaptive;
-            }
-            set
-            {
-                if (SetProperty(ref isMultitaskingExperienceAdaptive, value))
-                {
-                    App.AppSettings.IsMultitaskingExperienceAdaptive = value;
-                }
-            }
-        }
-
-        public bool IsHorizontalTabStripEnabled
-        {
-            get
-            {
-                return isHorizontalTabStripEnabled;
-            }
-            set
-            {
-                if (SetProperty(ref isHorizontalTabStripEnabled, value))
-                {
-                    App.AppSettings.IsHorizontalTabStripEnabled = value;
-                }
-            }
-        }
-
         public bool IsVerticalTabFlyoutEnabled
         {
             get
@@ -46,7 +13,7 @@ namespace Files.ViewModels.SettingsViewModels
             }
             set
             {
-                if (SetProperty(ref isHorizontalTabStripEnabled, value))
+                if (SetProperty(ref isVerticalTabFlyoutEnabled, value))
                 {
                     App.AppSettings.IsVerticalTabFlyoutEnabled = value;
                 }

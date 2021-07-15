@@ -1,8 +1,10 @@
-﻿using Files.Filesystem;
-using Microsoft.UI.Xaml;
+﻿using Files.DataModels.NavigationControlItems;
+using Files.Extensions;
+using CommunityToolkit.WinUI;
 using System;
-using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
+using Microsoft.UI.Xaml;
 
 namespace Files.ViewModels.Properties
 {
@@ -22,18 +24,25 @@ namespace Files.ViewModels.Properties
         {
             if (Drive != null)
             {
-                ViewModel.DriveItemGlyphSource = Drive.Glyph;
-                ViewModel.LoadDriveItemGlyph = true;
+                ViewModel.CustomIconSource = Drive.IconSource;
+                ViewModel.IconData = Drive.IconData;
+                ViewModel.LoadCustomIcon = Drive.IconSource != null && Drive.IconData == null;
+                ViewModel.LoadFileIcon = Drive.IconData != null;
                 ViewModel.ItemName = Drive.Text;
                 ViewModel.OriginalItemName = Drive.Text;
-                ViewModel.ItemType = Drive.Type.ToString();
+                // Note: if DriveType enum changes, the corresponding resource keys should change too
+                ViewModel.ItemType = string.Format("DriveType{0}", Drive.Type).GetLocalized();
             }
         }
 
-        public override void GetSpecialProperties()
+        public async override void GetSpecialProperties()
         {
             ViewModel.ItemAttributesVisibility = Visibility.Collapsed;
-            StorageFolder diskRoot = Task.Run(async () => await AppInstance.FilesystemViewModel.GetFolderFromPathAsync(Drive.Path)).Result;
+            StorageFolder diskRoot = await AppInstance.FilesystemViewModel.GetFolderFromPathAsync(Drive.Path);
+            if (diskRoot == null)
+            {
+                return;
+            }
 
             string freeSpace = "System.FreeSpace";
             string capacity = "System.Capacity";
@@ -41,10 +50,13 @@ namespace Files.ViewModels.Properties
 
             try
             {
-                var properties = Task.Run(async () =>
+                if (ViewModel.LoadFileIcon)
                 {
-                    return await diskRoot.Properties.RetrievePropertiesAsync(new[] { freeSpace, capacity, fileSystem });
-                }).Result;
+                    using var thumbnail = await diskRoot.GetThumbnailAsync(ThumbnailMode.SingleItem, 80, ThumbnailOptions.UseCurrentScale);
+                    ViewModel.IconData = await thumbnail.ToByteArrayAsync();
+                }
+
+                var properties = await diskRoot.Properties.RetrievePropertiesAsync(new[] { freeSpace, capacity, fileSystem });
 
                 ViewModel.DriveCapacityValue = (ulong)properties[capacity];
                 ViewModel.DriveFreeSpaceValue = (ulong)properties[freeSpace];
@@ -54,7 +66,7 @@ namespace Files.ViewModels.Properties
             catch (Exception e)
             {
                 ViewModel.LastSeparatorVisibility = Visibility.Collapsed;
-                NLog.LogManager.GetCurrentClassLogger().Error(e, e.Message);
+                App.Logger.Warn(e, e.Message);
             }
         }
     }

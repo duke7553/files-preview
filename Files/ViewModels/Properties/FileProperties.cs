@@ -2,11 +2,8 @@
 using Files.Extensions;
 using Files.Filesystem;
 using Files.Helpers;
-using Microsoft.UI.Dispatching;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -17,28 +14,32 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation.Collections;
+using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Services.Maps;
 using Windows.Storage;
+using Windows.Storage.Streams;
+
+using Microsoft.UI.Xaml;
 
 namespace Files.ViewModels.Properties
 {
     public class FileProperties : BaseProperties
     {
-        private ProgressBar ProgressBar;
-
         public ListedItem Item { get; }
 
-        public FileProperties(SelectedItemsPropertiesViewModel viewModel, CancellationTokenSource tokenSource, DispatcherQueue coreDispatcher, ProgressBar progressBar, ListedItem item, IShellPage instance)
+        private IProgress<float> hashProgress;
+
+        public FileProperties(SelectedItemsPropertiesViewModel viewModel, CancellationTokenSource tokenSource, IProgress<float> hashProgress, ListedItem item, IShellPage instance)
         {
             ViewModel = viewModel;
             TokenSource = tokenSource;
-            ProgressBar = progressBar;
-            Dispatcher = coreDispatcher;
             Item = item;
             AppInstance = instance;
+            this.hashProgress = hashProgress;
 
             GetBaseProperties();
+
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
         }
 
@@ -52,9 +53,12 @@ namespace Files.ViewModels.Properties
                 ViewModel.ItemPath = (Item as RecycleBinItem)?.ItemOriginalFolder ??
                     (Path.IsPathRooted(Item.ItemPath) ? Path.GetDirectoryName(Item.ItemPath) : Item.ItemPath);
                 ViewModel.ItemModifiedTimestamp = Item.ItemDateModified;
-                //ViewModel.FileIconSource = Item.FileImage;
+                ViewModel.ItemCreatedTimestamp = Item.ItemDateCreated;
                 ViewModel.LoadFolderGlyph = Item.LoadFolderGlyph;
+                ViewModel.IconData = Item.CustomIconData;
                 ViewModel.LoadUnknownTypeGlyph = Item.LoadUnknownTypeGlyph;
+                ViewModel.LoadCustomIcon = Item.LoadCustomIcon;
+                ViewModel.CustomIconSource = Item.CustomIconSource;
                 ViewModel.LoadFileIcon = Item.LoadFileIcon;
 
                 if (Item.IsShortcutItem)
@@ -79,7 +83,7 @@ namespace Files.ViewModels.Properties
                         if (Item.IsLinkItem)
                         {
                             var tmpItem = (ShortcutItem)Item;
-                            await AppInstance.InteractionOperations.InvokeWin32ComponentAsync(ViewModel.ShortcutItemPath, ViewModel.ShortcutItemArguments, tmpItem.RunAsAdmin, ViewModel.ShortcutItemWorkingDir);
+                            await Win32Helpers.InvokeWin32ComponentAsync(ViewModel.ShortcutItemPath, AppInstance, ViewModel.ShortcutItemArguments, tmpItem.RunAsAdmin, ViewModel.ShortcutItemWorkingDir);
                         }
                         else
                         {
@@ -104,17 +108,19 @@ namespace Files.ViewModels.Properties
             ViewModel.ItemSizeVisibility = Visibility.Visible;
             ViewModel.ItemSize = $"{ByteSize.FromBytes(Item.FileSizeBytes).ToBinaryString().ConvertSizeAbbreviation()} ({ByteSize.FromBytes(Item.FileSizeBytes).Bytes:#,##0} {"ItemSizeBytes".GetLocalized()})";
 
-            var fileIconInfo = await AppInstance.FilesystemViewModel.LoadIconOverlayAsync(Item.ItemPath, 80);
-            if (fileIconInfo.IconData != null && !Item.IsLinkItem)
+            var fileIconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, 80);
+            if (fileIconData != null)
             {
-                ViewModel.FileIconSource = await fileIconInfo.IconData.ToBitmapAsync();
+                ViewModel.IconData = fileIconData;
+                ViewModel.LoadUnknownTypeGlyph = false;
+                ViewModel.LoadFileIcon = true;
             }
 
             if (Item.IsShortcutItem)
             {
                 ViewModel.ItemCreatedTimestamp = Item.ItemDateCreated;
                 ViewModel.ItemAccessedTimestamp = Item.ItemDateAccessed;
-                ViewModel.LoadLinkIcon = Item.IsLinkItem;
+                ViewModel.LoadLinkIcon = Item.LoadWebShortcutGlyph;
                 if (Item.IsLinkItem || string.IsNullOrWhiteSpace(((ShortcutItem)Item).TargetPath))
                 {
                     // Can't show any other property
@@ -143,19 +149,18 @@ namespace Files.ViewModels.Properties
             ViewModel.ItemMD5HashVisibility = Visibility.Visible;
             try
             {
-                ViewModel.ItemMD5Hash = await AppInstance.InteractionOperations
-                    .GetHashForFileAsync(Item, hashAlgTypeName, TokenSource.Token, ProgressBar);
+                ViewModel.ItemMD5Hash = await GetHashForFileAsync(Item, hashAlgTypeName, TokenSource.Token, hashProgress, AppInstance);
             }
             catch (Exception ex)
             {
-                NLog.LogManager.GetCurrentClassLogger().Error(ex, ex.Message);
+                App.Logger.Warn(ex, ex.Message);
                 ViewModel.ItemMD5HashCalcError = true;
             }
         }
 
         public async void GetSystemFileProperties()
         {
-            StorageFile file = await StorageFile.GetFileFromPathAsync(Item.ItemPath);
+            StorageFile file = await FilesystemTasks.Wrap(() => StorageFile.GetFileFromPathAsync(Item.ItemPath).AsTask());
             if (file == null)
             {
                 // Could not access file, can't show any other property
@@ -211,8 +216,12 @@ namespace Files.ViewModels.Properties
 
         public async Task SyncPropertyChangesAsync()
         {
-            StorageFile file = null;
-            file = await StorageFile.GetFileFromPathAsync(Item.ItemPath);
+            StorageFile file = await FilesystemTasks.Wrap(() => StorageFile.GetFileFromPathAsync(Item.ItemPath).AsTask());
+            if (file == null)
+            {
+                // Could not access file, can't save properties
+                return;
+            }
 
             var failedProperties = "";
             foreach (var group in ViewModel.PropertySections)
@@ -228,7 +237,7 @@ namespace Files.ViewModels.Properties
                         {
                             await file.Properties.SavePropertiesAsync(newDict);
                         }
-                        catch (Exception e)
+                        catch
                         {
                             failedProperties += $"{prop.Name}\n";
                         }
@@ -249,12 +258,8 @@ namespace Files.ViewModels.Properties
         public async Task ClearPropertiesAsync()
         {
             var failedProperties = new List<string>();
-            StorageFile file = null;
-            try
-            {
-                file = await StorageFile.GetFileFromPathAsync(Item.ItemPath);
-            }
-            catch
+            StorageFile file = await FilesystemTasks.Wrap(() => StorageFile.GetFileFromPathAsync(Item.ItemPath).AsTask());
+            if (file == null)
             {
                 return;
             }
@@ -319,7 +324,7 @@ namespace Files.ViewModels.Properties
                     var tmpItem = (ShortcutItem)Item;
                     if (string.IsNullOrWhiteSpace(ViewModel.ShortcutItemPath))
                         return;
-                    if (AppInstance.FilesystemViewModel.Connection != null)
+                    if (AppInstance.ServiceConnection != null)
                     {
                         var value = new ValueSet()
                         {
@@ -331,10 +336,62 @@ namespace Files.ViewModels.Properties
                             { "workingdir", ViewModel.ShortcutItemWorkingDir },
                             { "runasadmin", tmpItem.RunAsAdmin },
                         };
-                        await AppInstance.FilesystemViewModel.Connection.SendMessageAsync(value);
+                        await AppInstance.ServiceConnection.SendMessageAsync(value);
                     }
                     break;
             }
+        }
+
+        private async Task<string> GetHashForFileAsync(ListedItem fileItem, string nameOfAlg, CancellationToken token, IProgress<float> progress, IShellPage associatedInstance)
+        {
+            HashAlgorithmProvider algorithmProvider = HashAlgorithmProvider.OpenAlgorithm(nameOfAlg);
+            StorageFile file = await StorageItemHelpers.ToStorageItem<StorageFile>((fileItem as ShortcutItem)?.TargetPath ?? fileItem.ItemPath, associatedInstance);
+            if (file == null)
+            {
+                return "";
+            }
+
+            Stream stream = await FilesystemTasks.Wrap(() => file.OpenStreamForReadAsync());
+            if (stream == null)
+            {
+                return "";
+            }
+
+            var inputStream = stream.AsInputStream();
+            var str = inputStream.AsStreamForRead();
+            var cap = (long)(0.5 * str.Length) / 100;
+            uint capacity;
+            if (cap >= uint.MaxValue)
+            {
+                capacity = uint.MaxValue;
+            }
+            else
+            {
+                capacity = Convert.ToUInt32(cap);
+            }
+
+            Windows.Storage.Streams.Buffer buffer = new Windows.Storage.Streams.Buffer(capacity);
+            var hash = algorithmProvider.CreateHash();
+            while (!token.IsCancellationRequested)
+            {
+                await inputStream.ReadAsync(buffer, capacity, InputStreamOptions.None);
+                if (buffer.Length > 0)
+                {
+                    hash.Append(buffer);
+                }
+                else
+                {
+                    break;
+                }
+                progress?.Report((float)str.Position / str.Length * 100.0f);
+            }
+            inputStream.Dispose();
+            stream.Dispose();
+            if (token.IsCancellationRequested)
+            {
+                return "";
+            }
+            return CryptographicBuffer.EncodeToHexString(hash.GetValueAndReset()).ToLower();
         }
     }
 }

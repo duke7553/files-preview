@@ -1,13 +1,16 @@
-﻿using Files.Filesystem;
+﻿using Files.DataModels.NavigationControlItems;
+using Files.Filesystem;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.Storage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System.Collections.Generic;
-using Windows.Storage;
 
 namespace Files.ViewModels.Properties
 {
-    public abstract class PropertiesTab : Page
+    public abstract class PropertiesTab : Page, IDisposable
     {
         public IShellPage AppInstance = null;
 
@@ -15,7 +18,7 @@ namespace Files.ViewModels.Properties
 
         public SelectedItemsPropertiesViewModel ViewModel { get; set; }
 
-        protected Microsoft.UI.Xaml.Controls.ProgressBar ItemMD5HashProgress = null;
+        protected IProgress<float> hashProgress;
 
         protected virtual void Properties_Loaded(object sender, RoutedEventArgs e)
         {
@@ -30,27 +33,30 @@ namespace Files.ViewModels.Properties
             var np = e.Parameter as Views.Properties.PropertyNavParam;
 
             AppInstance = np.AppInstanceArgument;
-            ViewModel = new SelectedItemsPropertiesViewModel(AppInstance.ContentPage);
+            ViewModel = new SelectedItemsPropertiesViewModel();
 
-            if (np.navParameter is ListedItem)
+            if (np.navParameter is LibraryItem library)
             {
-                var listedItem = np.navParameter as ListedItem;
-                if (listedItem.PrimaryItemAttribute == StorageItemTypes.File)
+                BaseProperties = new LibraryProperties(ViewModel, np.tokenSource, library, AppInstance);
+            }
+            else if (np.navParameter is ListedItem item)
+            {
+                if (item.PrimaryItemAttribute == StorageItemTypes.File)
                 {
-                    BaseProperties = new FileProperties(ViewModel, np.tokenSource, DispatcherQueue, ItemMD5HashProgress, listedItem, AppInstance);
+                    BaseProperties = new FileProperties(ViewModel, np.tokenSource, hashProgress, item, AppInstance);
                 }
-                else if (listedItem.PrimaryItemAttribute == StorageItemTypes.Folder)
+                else if (item.PrimaryItemAttribute == StorageItemTypes.Folder)
                 {
-                    BaseProperties = new FolderProperties(ViewModel, np.tokenSource, DispatcherQueue, listedItem, AppInstance);
+                    BaseProperties = new FolderProperties(ViewModel, np.tokenSource, item, AppInstance);
                 }
             }
-            else if (np.navParameter is List<ListedItem>)
+            else if (np.navParameter is List<ListedItem> items)
             {
-                BaseProperties = new CombinedProperties(ViewModel, np.tokenSource, DispatcherQueue, np.navParameter as List<ListedItem>, AppInstance);
+                BaseProperties = new CombinedProperties(ViewModel, np.tokenSource, items, AppInstance);
             }
-            else if (np.navParameter is DriveItem)
+            else if (np.navParameter is DriveItem drive)
             {
-                BaseProperties = new DriveProperties(ViewModel, np.navParameter as DriveItem, AppInstance);
+                BaseProperties = new DriveProperties(ViewModel, drive, AppInstance);
             }
 
             base.OnNavigatedTo(e);
@@ -65,5 +71,13 @@ namespace Files.ViewModels.Properties
 
             base.OnNavigatedFrom(e);
         }
+
+        /// <summary>
+        /// Tries to save changed properties to file.
+        /// </summary>
+        /// <returns>Returns true if properties have been saved successfully.</returns>
+        public abstract Task<bool> SaveChangesAsync(ListedItem item);
+
+        public abstract void Dispose();
     }
 }

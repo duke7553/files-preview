@@ -1,50 +1,60 @@
-﻿using Files.Controllers;
+using Files.CommandLine;
+using Files.Common;
+using Files.Controllers;
 using Files.Filesystem;
 using Files.Filesystem.FilesystemHistory;
 using Files.Helpers;
+using Files.Models.Settings;
 using Files.SettingsInterfaces;
 using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
 using Files.Views;
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Helpers;
 using CommunityToolkit.WinUI.Notifications;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Navigation;
-using Newtonsoft.Json.Linq;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
+using Windows.Foundation.Metadata;
 using Windows.Storage;
-using Windows.UI.Notifications;
-using LaunchActivatedEventArgs = Microsoft.UI.Xaml.LaunchActivatedEventArgs;
-using CommunityToolkit.WinUI;
+
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace Files
 {
-    public partial class App : Application
+    sealed partial class App : Application
     {
-       // private static bool ShowErrorNotification = false;
-
-        public static StorageHistoryWrapper HistoryWrapper = new StorageHistoryWrapper();
-
-        public static IBundlesSettings BundlesSettings = new BundlesSettingsViewModel();
+        private static bool ShowErrorNotification = false;
+        public static Window MainWindow;
         public static SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
-        public static SettingsViewModel AppSettings { get; set; }
-        public static InteractionViewModel InteractionViewModel { get; set; }
-        public static JumpListManager JumpList { get; } = new JumpListManager();
-        public static SidebarPinnedController SidebarPinnedController { get; set; }
-        public static CloudDrivesManager CloudDrivesManager { get; set; }
-        public static DrivesManager DrivesManager { get; set; }
+        public static StorageHistoryWrapper HistoryWrapper = new StorageHistoryWrapper();
+        public static IBundlesSettings BundlesSettings = new BundlesSettingsModel();
+        public static SettingsViewModel AppSettings { get; private set; }
+        public static MainViewModel MainViewModel { get; private set; }
+        public static SidebarPinnedController SidebarPinnedController { get; private set; }
+        public static CloudDrivesManager CloudDrivesManager { get; private set; }
+        public static NetworkDrivesManager NetworkDrivesManager { get; private set; }
+        public static DrivesManager DrivesManager { get; private set; }
+        public static WSLDistroManager WSLDistroManager { get; private set; }
+        public static LibraryManager LibraryManager { get; private set; }
+        public static ExternalResourcesHelper ExternalResourcesHelper { get; private set; }
+        public static OptionalPackageManager OptionalPackageManager { get; private set; } = new OptionalPackageManager();
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public static Logger Logger { get; private set; }
+        private static readonly UniversalLogWriter logWriter = new UniversalLogWriter();
+
+        public static StatusCenterViewModel StatusCenterViewModel { get; } = new StatusCenterViewModel();
 
         public static class AppData
         {
@@ -55,36 +65,46 @@ namespace Files
 
         public App()
         {
+            // Initialize logger
+            Logger = new Logger(logWriter);
+
             //UnhandledException += OnUnhandledException;
             //TaskScheduler.UnobservedTaskException += OnUnobservedException;
-
             InitializeComponent();
             //Suspending += OnSuspending;
             //LeavingBackground += OnLeavingBackground;
-            Clipboard.ContentChanged += Clipboard_ContentChanged;
-            // Initialize NLog
-            StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
-            LogManager.Configuration.Variables["LogPath"] = storageFolder.Path;
-            AppData.FilePreviewExtensionManager.Initialize(); // The extension manager can update UI, so pass it the UI dispatcher to use for UI updates
 
-            StartAppCenter();
+            //LogManager.Configuration.Variables["LogPath"] = storageFolder.Path;
+            AppData.FilePreviewExtensionManager.Initialize(); // The extension manager can update UI, so pass it the UI dispatcher to use for UI updates
         }
 
-        private async void StartAppCenter()
+        private static async Task EnsureSettingsAndConfigurationAreBootstrapped()
         {
-            JObject obj;
-            try
+            if (AppSettings == null)
             {
-                StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(@"ms-appx:///Resources/AppCenterKey.txt"));
-                var lines = await FileIO.ReadTextAsync(file);
-                obj = JObject.Parse(lines);
-            }
-            catch
-            {
-                return;
+                AppSettings = await SettingsViewModel.CreateInstance();
             }
 
-            AppCenter.Start((string)obj.SelectToken("key"), typeof(Analytics), typeof(Crashes));
+            ExternalResourcesHelper ??= new ExternalResourcesHelper();
+            await ExternalResourcesHelper.LoadSelectedTheme();
+
+            MainViewModel ??= new MainViewModel();
+            SidebarPinnedController ??= await SidebarPinnedController.CreateInstance();
+            LibraryManager ??= new LibraryManager();
+            DrivesManager ??= new DrivesManager();
+            NetworkDrivesManager ??= new NetworkDrivesManager();
+            CloudDrivesManager ??= new CloudDrivesManager();
+            WSLDistroManager ??= new WSLDistroManager();
+
+            // Start off a list of tasks we need to run before we can continue startup
+            _ = Task.Factory.StartNew(async () =>
+            {
+                await LibraryManager.EnumerateLibrariesAsync();
+                await DrivesManager.EnumerateDrivesAsync();
+                await CloudDrivesManager.EnumerateDrivesAsync();
+                await NetworkDrivesManager.EnumerateDrivesAsync();
+                await WSLDistroManager.EnumerateDrivesAsync();
+            });
         }
 
         private void OnLeavingBackground(object sender, LeavingBackgroundEventArgs e)
@@ -92,91 +112,98 @@ namespace Files
             DrivesManager?.ResumeDeviceWatcher();
         }
 
-        public static INavigationControlItem RightClickedItem;
-
-        public static void UnpinItem_Click(object sender, RoutedEventArgs e)
-        {
-            if (RightClickedItem.Path.Equals(AppSettings.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
-            {
-                AppSettings.PinRecycleBinToSideBar = false;
-            }
-            else
-            {
-                SidebarPinnedController.Model.RemoveItem(RightClickedItem.Path.ToString());
-            }
-        }
-
         public static Microsoft.UI.Xaml.UnhandledExceptionEventArgs ExceptionInfo { get; set; }
         public static string ExceptionStackTrace { get; set; }
         public static List<string> pathsToDeleteAfterPaste = new List<string>();
-        public static MainWindow mainWindow;
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs e)
         {
-            base.OnLaunched(args);
-
+            await logWriter.InitializeAsync("debug.log");
             //start tracking app usage
-            //SystemInformation.Instance.TrackAppUse(args.);
+            //SystemInformation.Instance.TrackAppUse(e);
 
             Logger.Info("App launched");
 
             //bool canEnablePrelaunch = ApiInformation.IsMethodPresent("Windows.ApplicationModel.Core.CoreApplication", "EnablePrelaunch");
+            MainWindow = new Window();
 
-            mainWindow = new MainWindow();
-            mainWindow.Activate();
-            mainWindow.ExtendsContentIntoTitleBar = true;
-            //ShowErrorNotification = true;
-            ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = Process.GetCurrentProcess().Id;
-            Clipboard_ContentChanged(null, null);
-        }
+            await EnsureSettingsAndConfigurationAreBootstrapped();
 
-        private void Clipboard_ContentChanged(object sender, object e)
-        {
-            if (App.InteractionViewModel == null)
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (!(MainWindow.Content is Frame rootFrame))
             {
-                return;
+                // Create a Frame to act as the navigation context and navigate to the first page
+                rootFrame = new Frame();
+                rootFrame.CacheSize = 1;
+                rootFrame.NavigationFailed += OnNavigationFailed;
+
+                // Place the frame in the current Window
+                MainWindow.Content = rootFrame;
             }
 
-            try
-            {
-                // Clipboard.GetContent() will throw UnauthorizedAccessException
-                // if the app window is not in the foreground and active
-                DataPackageView packageView = Clipboard.GetContent();
-                if (packageView.Contains(StandardDataFormats.StorageItems) || packageView.Contains(StandardDataFormats.Bitmap))
+            //if (e.PrelaunchActivated == false)
+            //{
+               
+
+                if (rootFrame.Content == null)
                 {
-                    App.InteractionViewModel.IsPasteEnabled = true;
+                    // When the navigation stack isn't restored navigate to the first page,
+                    // configuring the new page by passing required information as a navigation
+                    // parameter
+                    rootFrame.Navigate(typeof(MainPage), e.Arguments, new SuppressNavigationTransitionInfo());
                 }
                 else
                 {
-                    App.InteractionViewModel.IsPasteEnabled = false;
+                    if (!(string.IsNullOrEmpty(e.Arguments) && MainPageViewModel.AppInstances.Count > 0))
+                    {
+                        await MainPageViewModel.AddNewTabByPathAsync(typeof(PaneHolderPage), e.Arguments);
+                    }
                 }
-            }
-            catch
+
+                // Ensure the current window is active
+                MainWindow.Activated += Window_Activated;
+                MainWindow.ExtendsContentIntoTitleBar = true;
+                MainWindow.Activate();
+            //}
+        }
+
+        private void Window_Activated(object sender, WindowActivatedEventArgs args)
+        {
+            if (args.WindowActivationState == WindowActivationState.CodeActivated ||
+                args.WindowActivationState == WindowActivationState.PointerActivated)
             {
-                App.InteractionViewModel.IsPasteEnabled = false;
+                ShowErrorNotification = true;
+                ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = Process.GetCurrentProcess().Id;
+                if (MainViewModel != null)
+                {
+                    MainViewModel.Clipboard_ContentChanged(null, null);
+                }
             }
         }
 
         //protected override async void OnActivated(IActivatedEventArgs args)
         //{
+        //    await logWriter.InitializeAsync("debug.log");
+
         //    Logger.Info("App activated");
 
         //    await EnsureSettingsAndConfigurationAreBootstrapped();
 
         //    // Window management
-        //    if (!(mainWindow.Content is Frame rootFrame))
+        //    if (!(App.MainWindow.Content is Frame rootFrame))
         //    {
         //        rootFrame = new Frame();
         //        rootFrame.CacheSize = 1;
-        //        mainWindow.Content = rootFrame;
+        //        App.MainWindow.Content = rootFrame;
         //    }
 
-        //    //var currentView = SystemNavigationManager.GetForCurrentView();
+        //    var currentView = SystemNavigationManager.GetForCurrentView();
         //    switch (args.Kind)
         //    {
         //        case ActivationKind.Protocol:
@@ -203,8 +230,8 @@ namespace Files
         //            }
 
         //            // Ensure the current window is active.
-        //            mainWindow.Activate();
-        //            mainWindow.Activated += MainWindow_Activated;
+        //            App.MainWindow.Activate();
+        //            App.MainWindow.CoreWindow.Activated += CoreWindow_Activated;
         //            return;
 
         //        case ActivationKind.CommandLineLaunch:
@@ -225,8 +252,8 @@ namespace Files
         //                            rootFrame.Navigate(typeof(MainPage), command.Payload, new SuppressNavigationTransitionInfo());
 
         //                            // Ensure the current window is active.
-        //                            mainWindow.Activate();
-        //                            mainWindow.Activated += MainWindow_Activated;
+        //                            App.MainWindow.Activate();
+        //                            App.MainWindow.CoreWindow.Activated += CoreWindow_Activated;
         //                            return;
 
         //                        case ParsedCommandType.OpenPath:
@@ -238,8 +265,8 @@ namespace Files
         //                                rootFrame.Navigate(typeof(MainPage), command.Payload, new SuppressNavigationTransitionInfo());
 
         //                                // Ensure the current window is active.
-        //                                mainWindow.Activate();
-        //                                mainWindow.Activated += MainWindow_Activated;
+        //                                App.MainWindow.Activate();
+        //                                App.MainWindow.CoreWindow.Activated += CoreWindow_Activated;
 
         //                                return;
         //                            }
@@ -256,10 +283,26 @@ namespace Files
         //                            break;
 
         //                        case ParsedCommandType.Unknown:
-        //                            rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
+        //                            if (command.Payload.Equals("."))
+        //                            {
+        //                                rootFrame.Navigate(typeof(MainPage), activationPath, new SuppressNavigationTransitionInfo());
+        //                            }
+        //                            else
+        //                            {
+        //                                var target = Path.GetFullPath(Path.Combine(activationPath, command.Payload));
+        //                                if (!string.IsNullOrEmpty(command.Payload))
+        //                                {
+        //                                    rootFrame.Navigate(typeof(MainPage), target, new SuppressNavigationTransitionInfo());
+        //                                }
+        //                                else
+        //                                {
+        //                                    rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
+        //                                }
+        //                            }
+
         //                            // Ensure the current window is active.
-        //                            mainWindow.Activate();
-        //                            mainWindow.Activated += MainWindow_Activated;
+        //                            App.MainWindow.Activate();
+        //                            App.MainWindow.CoreWindow.Activated += CoreWindow_Activated;
 
         //                            return;
         //                    }
@@ -281,48 +324,49 @@ namespace Files
         //    rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
 
         //    // Ensure the current window is active.
-        //    mainWindow.Activate();
-        //    mainWindow.Activated += MainWindow_Activated;
+        //    App.MainWindow.Activate();
+        //    App.MainWindow.CoreWindow.Activated += CoreWindow_Activated;
         //}
 
         //private void TryEnablePrelaunch()
         //{
-        //    //CoreApplication.EnablePrelaunch(true);
+        //    CoreApplication.EnablePrelaunch(true);
         //}
 
-        ///// <summary>
-        ///// Invoked when Navigation to a certain page fails
-        ///// </summary>
-        ///// <param name="sender">The Frame which failed navigation</param>
-        ///// <param name="e">Details about the navigation failure</param>
-        //private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
-        //{
-        //    throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-        //}
+        /// <summary>
+        /// Invoked when Navigation to a certain page fails
+        /// </summary>
+        /// <param name="sender">The Frame which failed navigation</param>
+        /// <param name="e">Details about the navigation failure</param>
+        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        {
+            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+        }
 
-        ///// <summary>
-        ///// Invoked when application execution is being suspended.  Application state is saved
-        ///// without knowing whether the application will be terminated or resumed with the contents
-        ///// of memory still intact.
-        ///// </summary>
-        ///// <param name="sender">The source of the suspend request.</param>
-        ///// <param name="e">Details about the suspend request.</param>
-        //private void OnSuspending(object sender, SuspendingEventArgs e)
-        //{
-        //    SaveSessionTabs();
+        /// <summary>
+        /// Invoked when application execution is being suspended.  Application state is saved
+        /// without knowing whether the application will be terminated or resumed with the contents
+        /// of memory still intact.
+        /// </summary>
+        /// <param name="sender">The source of the suspend request.</param>
+        /// <param name="e">Details about the suspend request.</param>
+        private void OnSuspending(object sender, SuspendingEventArgs e)
+        {
+            SaveSessionTabs();
 
-        //    var deferral = e.SuspendingOperation.GetDeferral();
-        //    //TODO: Save application state and stop any background activity
+            var deferral = e.SuspendingOperation.GetDeferral();
+            //TODO: Save application state and stop any background activity
 
-        //    DrivesManager?.Dispose();
-        //    deferral.Complete();
-        //}
+            LibraryManager?.Dispose();
+            DrivesManager?.Dispose();
+            deferral.Complete();
+        }
 
         public static void SaveSessionTabs() // Enumerates through all tabs and gets the Path property and saves it to AppSettings.LastSessionPages
         {
             if (AppSettings != null)
             {
-                AppSettings.LastSessionPages = MainWindow.AppInstances.DefaultIfEmpty().Select(tab =>
+                AppSettings.LastSessionPages = MainPageViewModel.AppInstances.DefaultIfEmpty().Select(tab =>
                 {
                     if (tab != null && tab.TabItemArguments != null)
                     {
@@ -337,87 +381,103 @@ namespace Files
             }
         }
 
-        //// Occurs when an exception is not handled on the UI thread.
-        //private static void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) => AppUnhandledException(e.Exception);
+        // Occurs when an exception is not handled on the UI thread.
+        private static void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) => AppUnhandledException(e.Exception);
 
-        //// Occurs when an exception is not handled on a background thread.
-        //// ie. A task is fired and forgotten Task.Run(() => {...})
-        //private static void OnUnobservedException(object sender, UnobservedTaskExceptionEventArgs e) => AppUnhandledException(e.Exception);
+        // Occurs when an exception is not handled on a background thread.
+        // ie. A task is fired and forgotten Task.Run(() => {...})
+        private static void OnUnobservedException(object sender, UnobservedTaskExceptionEventArgs e) => AppUnhandledException(e.Exception);
 
-        //private static void AppUnhandledException(Exception ex)
-        //{
-        //    Logger.Error(ex, ex.Message);
-        //    if (ShowErrorNotification)
-        //    {
-        //        var toastContent = new ToastContent()
-        //        {
-        //            Visual = new ToastVisual()
-        //            {
-        //                BindingGeneric = new ToastBindingGeneric()
-        //                {
-        //                    Children =
-        //                    {
-        //                        new AdaptiveText()
-        //                        {
-        //                            Text = "ExceptionNotificationHeader".GetLocalized()
-        //                        },
-        //                        new AdaptiveText()
-        //                        {
-        //                            Text = "ExceptionNotificationBody".GetLocalized()
-        //                        }
-        //                    },
-        //                    AppLogoOverride = new ToastGenericAppLogo()
-        //                    {
-        //                        Source = "ms-appx:///Assets/error.png"
-        //                    }
-        //                }
-        //            },
-        //            Actions = new ToastActionsCustom()
-        //            {
-        //                Buttons =
-        //                {
-        //                    new ToastButton("ExceptionNotificationReportButton".GetLocalized(), "report")
-        //                    {
-        //                        ActivationType = ToastActivationType.Foreground
-        //                    }
-        //                }
-        //            }
-        //        };
-
-        //        // Create the toast notification
-        //        var toastNotif = new ToastNotification(toastContent.GetXml());
-
-        //        // And send the notification
-        //        ToastNotificationManager.CreateToastNotifier().Show(toastNotif);
-        //    }
-        //}
-
-        public static void CloseApp()
+        private static void AppUnhandledException(Exception ex)
         {
-            mainWindow.Close();
-        }
-    }
+            string formattedException = string.Empty;
 
-    public class WSLDistroItem : INavigationControlItem
-    {
-        public string Glyph { get; set; } = null;
-
-        public string Text { get; set; }
-
-        private string path;
-        public string Path
-        {
-            get => path;
-            set
+            formattedException += "--------- UNHANDLED EXCEPTION ---------";
+            if (ex != null)
             {
-                path = value;
-                HoverDisplayText = Path.Contains("?") ? Text : Path;
+                formattedException += $"\n>>>> HRESULT: {ex.HResult}\n";
+                if (ex.Message != null)
+                {
+                    formattedException += "\n--- MESSAGE ---";
+                    formattedException += ex.Message;
+                }
+                if (ex.StackTrace != null)
+                {
+                    formattedException += "\n--- STACKTRACE ---";
+                    formattedException += ex.StackTrace;
+                }
+                if (ex.Source != null)
+                {
+                    formattedException += "\n--- SOURCE ---";
+                    formattedException += ex.Source;
+                }
+                if (ex.InnerException != null)
+                {
+                    formattedException += "\n--- INNER ---";
+                    formattedException += ex.InnerException;
+                }
+            }
+            else
+            {
+                formattedException += "\nException is null!\n";
+            }
+
+            formattedException += "---------------------------------------";
+
+            Debug.WriteLine(formattedException);
+
+            Debugger.Break(); // Please check "Output Window" for exception details (View -> Output Window) (CTRL + ALT + O)
+
+            SaveSessionTabs();
+            Logger.UnhandledError(ex, ex.Message);
+            if (ShowErrorNotification)
+            {
+                var toastContent = new ToastContent()
+                {
+                    Visual = new ToastVisual()
+                    {
+                        BindingGeneric = new ToastBindingGeneric()
+                        {
+                            Children =
+                            {
+                                new AdaptiveText()
+                                {
+                                    Text = "ExceptionNotificationHeader".GetLocalized()
+                                },
+                                new AdaptiveText()
+                                {
+                                    Text = "ExceptionNotificationBody".GetLocalized()
+                                }
+                            },
+                            AppLogoOverride = new ToastGenericAppLogo()
+                            {
+                                Source = "ms-appx:///Assets/error.png"
+                            }
+                        }
+                    },
+                    Actions = new ToastActionsCustom()
+                    {
+                        Buttons =
+                        {
+                            new ToastButton("ExceptionNotificationReportButton".GetLocalized(), "report")
+                            {
+                                ActivationType = ToastActivationType.Foreground
+                            }
+                        }
+                    }
+                };
+
+                // Create the toast notification
+                //var toastNotif = new ToastNotification(toastContent.GetXml());
+
+                // And send the notification
+                //ToastNotificationManager.CreateToastNotifier().Show(toastNotif);
             }
         }
-        public string HoverDisplayText { get; private set; }
 
-        public NavigationControlItemType ItemType => NavigationControlItemType.LinuxDistro;
-
-        public Uri Logo { get; set; }
+        public static async void CloseApp()
+        {
+            MainWindow.Close();
+        }
     }
 }

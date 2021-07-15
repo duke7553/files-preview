@@ -1,13 +1,16 @@
 ﻿using Files.Converters;
+using Files.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Data;
 
 namespace Files.ViewModels.Properties
 {
@@ -31,7 +34,7 @@ namespace Files.ViewModels.Properties
         /// <summary>
         /// The name of the section to display
         /// </summary>
-        public string Section => SectionResource.GetLocalized();
+        public string Section => SectionResource?.GetLocalized();
 
         /// <summary>
         /// The name of the string resource for the section name
@@ -94,6 +97,8 @@ namespace Files.ViewModels.Properties
         public bool Modified { get; private set; }
 
         public Visibility Visibility { get; set; } = Visibility.Visible;
+
+        public bool InProgress { get; set; }
 
         /// <summary>
         /// If a property has an enumerated list of strings to display, add a dictionary in the JSON file that has the number as it's key
@@ -234,20 +239,32 @@ namespace Files.ViewModels.Properties
             return value;
         }
 
+        private static Dictionary<string, string> cachedPropertiesListFiles = new Dictionary<string, string>();
+
         /// <summary>
         /// This function retrieves the list of properties to display from the PropertiesInformation.json
-        /// file, then intilializes them.
+        /// file, then initializes them.
         /// If you would like to add more properties, define them in the PropertiesInformation file, then
         /// add the string resources to Strings/en-Us/Resources.resw file
         /// A full list of file properties and their information can be found here
         /// <a href="https://docs.microsoft.com/windows/win32/properties/props"/>.
         /// </summary>
         /// <param name="file">The file whose properties you wish to obtain</param>
+        /// <param name="path">The path to the json file of properties to be loaded</param>
         /// <returns>A list if FileProperties containing their values</returns>
-        public async static Task<List<FileProperty>> RetrieveAndInitializePropertiesAsync(StorageFile file)
+        public async static Task<List<FileProperty>> RetrieveAndInitializePropertiesAsync(StorageFile file, string path = Constants.ResourceFilePaths.DetailsPagePropertiesJsonPath)
         {
-            var propertiesJsonFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(@"ms-appx:///Resources/PropertiesInformation.json"));
-            var list = JsonConvert.DeserializeObject<List<FileProperty>>(await FileIO.ReadTextAsync(propertiesJsonFile));
+            var propertiesJsonFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
+
+            // cache the contents of the file to avoid repeatedly reading the file
+            string text;
+            if (!cachedPropertiesListFiles.TryGetValue(path, out text))
+            {
+                text = await FileIO.ReadTextAsync(propertiesJsonFile);
+                cachedPropertiesListFiles[path] = text;
+            }
+
+            List<FileProperty> list = JsonConvert.DeserializeObject<List<FileProperty>>(text);
 
             var propsToGet = new List<string>();
 
@@ -258,9 +275,25 @@ namespace Files.ViewModels.Properties
                     propsToGet.Add(prop.Property);
                 }
             }
-
+#if DEBUG
+            // This makes it much easier to debug issues with the property list
+            var keyValuePairs = new Dictionary<string, object>();
+            foreach (var prop in propsToGet)
+            {
+                object val = null;
+                try
+                {
+                    val = (await file.Properties.RetrievePropertiesAsync(new string[] { prop })).First().Value;
+                }
+                catch (ArgumentException e)
+                {
+                    Debug.WriteLine($"Unable to retrieve system file property {prop}.\n{e}");
+                }
+                keyValuePairs.Add(prop, val);
+            }
+#else
             var keyValuePairs = await file.Properties.RetrievePropertiesAsync(propsToGet);
-
+#endif
             foreach (var prop in list)
             {
                 if (!string.IsNullOrEmpty(prop.Property))
@@ -280,7 +313,12 @@ namespace Files.ViewModels.Properties
         private static readonly Dictionary<string, Func<object, string>> DisplayFuncs = new Dictionary<string, Func<object, string>>()
         {
             { "DivideBy1000", input => (((uint) input)/1000).ToString() },
-            { "FormatDuration", input => new TimeSpan(Convert.ToInt64(input)).ToString("mm':'ss")},
+            { "FormatDuration", input => new TimeSpan(Convert.ToInt64(input)).ToString("hh':'mm':'ss")},
+            { "Fraction" , input => ((double)input).ToFractions(2000)},
+            { "AddF" , input => $"f/{(double)input}"},
+            { "AddISO" , input => $"ISO-{(UInt16)input}"},
+            { "RoundDouble" , input => $"{Math.Round((double)input)}"},
+            { "UnitMM" , input => $"{(double)input} mm"},
         };
     }
 }

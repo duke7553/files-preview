@@ -1,79 +1,94 @@
 ﻿using Files.CommandLine;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+using Files.Common;
 using System;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.Storage;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
 
 namespace Files
 {
-    internal class Program1
-    {
-        private static async Task Main()
-        {
-            var args = Environment.GetCommandLineArgs();
-            var proc = System.Diagnostics.Process.GetCurrentProcess();
+    //internal class Program
+    //{
+    //    private static async Task Main()
+    //    {
+    //        var args = Environment.GetCommandLineArgs();
+    //        var proc = System.Diagnostics.Process.GetCurrentProcess();
 
-            if (args.Length == 2)
-            {
-                var parsedCommands = CommandLineParser.ParseUntrustedCommands(args);
+    //        if (args.Length == 2)
+    //        {
+    //            var parsedCommands = CommandLineParser.ParseUntrustedCommands(args);
 
-                if (parsedCommands != null && parsedCommands.Count > 0)
-                {
-                    foreach (var command in parsedCommands)
-                    {
-                        switch (command.Type)
-                        {
-                            case ParsedCommandType.ExplorerShellCommand:
-                                await OpenShellCommandInExplorerAsync(command.Payload, proc.Id);
-                                //Exit..
+    //            if (parsedCommands != null && parsedCommands.Count > 0)
+    //            {
+    //                foreach (var command in parsedCommands)
+    //                {
+    //                    switch (command.Type)
+    //                    {
+    //                        case ParsedCommandType.ExplorerShellCommand:
+    //                            await OpenShellCommandInExplorerAsync(command.Payload, proc.Id);
+    //                            //Exit..
 
-                                return;
+    //                            return;
 
-                            default:
-                                break;
-                        }
-                    }
-                }
-            }
+    //                        default:
+    //                            break;
+    //                    }
+    //                }
+    //            }
+    //        }
 
-            // TODO: Add Activation args with Reunion
-            //if (!ApplicationData.Current.RoamingSettings.Values.Get("AlwaysOpenANewInstance", false))
-            //{
-            //    IActivatedEventArgs activatedArgs = AppInstance.GetActivatedEventArgs();
+    //        //if (!ApplicationData.Current.LocalSettings.Values.Get("AlwaysOpenANewInstance", false))
+    //        //{
+    //        //    IActivatedEventArgs activatedArgs = AppInstance.GetActivatedEventArgs();
 
-            //    if (AppInstance.RecommendedInstance != null)
-            //    {
-            //        AppInstance.RecommendedInstance.RedirectActivationTo();
-            //        return;
-            //    }
-            //    else if (activatedArgs is LaunchActivatedEventArgs)
-            //    {
-            //        var launchArgs = activatedArgs as LaunchActivatedEventArgs;
+    //        //    if (AppInstance.RecommendedInstance != null)
+    //        //    {
+    //        //        AppInstance.RecommendedInstance.RedirectActivationTo();
+    //        //        return;
+    //        //    }
+    //        //    else if (activatedArgs is LaunchActivatedEventArgs)
+    //        //    {
+    //        //        var launchArgs = activatedArgs as LaunchActivatedEventArgs;
 
-            //        var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
-            //        var instance = AppInstance.FindOrRegisterInstanceForKey(activePid.ToString());
-            //        if (!instance.IsCurrentInstance && !string.IsNullOrEmpty(launchArgs.Arguments))
-            //        {
-            //            instance.RedirectActivationTo();
-            //            return;
-            //        }
-            //    }
-            //}
+    //        //        var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+    //        //        var instance = AppInstance.FindOrRegisterInstanceForKey(activePid.ToString());
+    //        //        if (!instance.IsCurrentInstance && !string.IsNullOrEmpty(launchArgs.Arguments))
+    //        //        {
+    //        //            instance.RedirectActivationTo();
+    //        //            return;
+    //        //        }
+    //        //    }
+    //        //    else if (activatedArgs is CommandLineActivatedEventArgs)
+    //        //    {
+    //        //        var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+    //        //        var instance = AppInstance.FindOrRegisterInstanceForKey(activePid.ToString());
+    //        //        if (!instance.IsCurrentInstance)
+    //        //        {
+    //        //            instance.RedirectActivationTo();
+    //        //            return;
+    //        //        }
+    //        //    }
+    //        //}
 
-            //AppInstance.FindOrRegisterInstanceForKey(proc.Id.ToString());
-            ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = proc.Id;
-            Application.Start( p => new App());
-        }
+    //        AppInstance.FindOrRegisterInstanceForKey(proc.Id.ToString());
+    //        ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = proc.Id;
+    //        Application.Start(_ =>
+    //        {
+    //            var context = new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread());
+    //            System.Threading.SynchronizationContext.SetSynchronizationContext(context);
+    //            new App();
+    //        });
+    //    }
 
-        public static async Task OpenShellCommandInExplorerAsync(string shellCommand, int pid)
-        {
-            // TODO: Implment shell commands in-project
-            //System.Diagnostics.Debug.WriteLine("Launching shell command in FullTrustProcess");
-            //ApplicationData.Current.LocalSettings.Values["ShellCommand"] = shellCommand;
-            //ApplicationData.Current.LocalSettings.Values["Arguments"] = "ShellCommand";
-            //ApplicationData.Current.LocalSettings.Values["pid"] = pid;
-            //await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
-        }
-    }
+    //    public static async Task OpenShellCommandInExplorerAsync(string shellCommand, int pid)
+    //    {
+    //        System.Diagnostics.Debug.WriteLine("Launching shell command in FullTrustProcess");
+    //        ApplicationData.Current.LocalSettings.Values["ShellCommand"] = shellCommand;
+    //        ApplicationData.Current.LocalSettings.Values["Arguments"] = "ShellCommand";
+    //        ApplicationData.Current.LocalSettings.Values["pid"] = pid;
+    //        await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
+    //    }
+    //}
 }

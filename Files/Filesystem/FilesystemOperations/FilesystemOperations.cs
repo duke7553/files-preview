@@ -3,8 +3,8 @@ using Files.Enums;
 using Files.Extensions;
 using Files.Filesystem.FilesystemHistory;
 using Files.Helpers;
+using Files.Interacts;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +15,9 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Microsoft.UI.Xaml.Controls;
 using FileAttributes = System.IO.FileAttributes;
+using Microsoft.UI.Dispatching;
 
 namespace Files.Filesystem
 {
@@ -30,6 +32,8 @@ namespace Files.Filesystem
         #region Private Members
 
         private IShellPage associatedInstance;
+
+        private ItemManipulationModel itemManipulationModel => associatedInstance.SlimContentPage?.ItemManipulationModel;
 
         private RecycleBinHelpers recycleBinHelpers;
 
@@ -47,8 +51,9 @@ namespace Files.Filesystem
 
         #region IFilesystemOperations
 
-        public async Task<IStorageHistory> CreateAsync(IStorageItemWithPath source, IProgress<FileSystemStatusCode> errorCode, CancellationToken cancellationToken)
+        public async Task<(IStorageHistory, IStorageItem)> CreateAsync(IStorageItemWithPath source, IProgress<FileSystemStatusCode> errorCode, CancellationToken cancellationToken)
         {
+            IStorageItem item = null;
             try
             {
                 switch (source.ItemType)
@@ -59,11 +64,11 @@ namespace Files.Filesystem
                             if (newEntryInfo == null)
                             {
                                 StorageFolder folder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(Path.GetDirectoryName(source.Path));
-                                await folder.CreateFileAsync(Path.GetFileName(source.Path));
+                                item = await folder.CreateFileAsync(Path.GetFileName(source.Path));
                             }
                             else
                             {
-                                await newEntryInfo.Create(source.Path, associatedInstance);
+                                item = (await newEntryInfo.Create(source.Path, associatedInstance)).Result;
                             }
 
                             break;
@@ -72,7 +77,7 @@ namespace Files.Filesystem
                     case FilesystemItemType.Directory:
                         {
                             StorageFolder folder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(Path.GetDirectoryName(source.Path));
-                            await folder.CreateFolderAsync(Path.GetFileName(source.Path));
+                            item = await folder.CreateFolderAsync(Path.GetFileName(source.Path));
 
                             break;
                         }
@@ -89,23 +94,25 @@ namespace Files.Filesystem
                 }
 
                 errorCode?.Report(FileSystemStatusCode.Success);
-                return new StorageHistory(FileOperationType.CreateNew, source.CreateEnumerable(), null);
+                return (new StorageHistory(FileOperationType.CreateNew, source.CreateEnumerable(), null), item);
             }
             catch (Exception e)
             {
                 errorCode?.Report(FilesystemTasks.GetErrorCode(e));
-                return null;
+                return (null, null);
             }
         }
 
         public async Task<IStorageHistory> CopyAsync(IStorageItem source,
                                                      string destination,
+                                                     NameCollisionOption collision,
                                                      IProgress<float> progress,
                                                      IProgress<FileSystemStatusCode> errorCode,
                                                      CancellationToken cancellationToken)
         {
             return await CopyAsync(source.FromStorageItem(),
                                                     destination,
+                                                    collision,
                                                     progress,
                                                     errorCode,
                                                     cancellationToken);
@@ -113,11 +120,12 @@ namespace Files.Filesystem
 
         public async Task<IStorageHistory> CopyAsync(IStorageItemWithPath source,
                                                      string destination,
+                                                     NameCollisionOption collision,
                                                      IProgress<float> progress,
                                                      IProgress<FileSystemStatusCode> errorCode,
                                                      CancellationToken cancellationToken)
         {
-            if (associatedInstance.FilesystemViewModel.WorkingDirectory.StartsWith(App.AppSettings.RecycleBinPath))
+            if (destination.StartsWith(App.AppSettings.RecycleBinPath))
             {
                 errorCode?.Report(FileSystemStatusCode.Unauthorized);
                 progress?.Report(100.0f);
@@ -170,37 +178,18 @@ namespace Files.Filesystem
 
                     if (fsResult)
                     {
-                        var fsCopyResult = await FilesystemTasks.Wrap(() => CloneDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, CreationCollisionOption.FailIfExists));
+                        var fsCopyResult = await FilesystemTasks.Wrap(() => CloneDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, collision.Convert()));
+
                         if (fsCopyResult == FileSystemStatusCode.AlreadyExists)
                         {
-                            var ItemAlreadyExistsDialog = new ContentDialog()
-                            {
-                                Title = "ItemAlreadyExistsDialogTitle".GetLocalized(),
-                                Content = "ItemAlreadyExistsDialogContent".GetLocalized(),
-                                PrimaryButtonText = "ItemAlreadyExistsDialogPrimaryButtonText".GetLocalized(),
-                                SecondaryButtonText = "ItemAlreadyExistsDialogSecondaryButtonText".GetLocalized(),
-                                CloseButtonText = "ItemAlreadyExistsDialogCloseButtonText".GetLocalized()
-                            };
-
-                            ContentDialogResult result = await ItemAlreadyExistsDialog.ShowAsync();
-
-                            if (result == ContentDialogResult.Primary)
-                            {
-                                fsCopyResult = await FilesystemTasks.Wrap(() => CloneDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, CreationCollisionOption.GenerateUniqueName));
-                            }
-                            else if (result == ContentDialogResult.Secondary)
-                            {
-                                fsCopyResult = await FilesystemTasks.Wrap(() => CloneDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, CreationCollisionOption.ReplaceExisting));
-                                return null; // Cannot undo overwrite operation
-                            }
-                            else
-                            {
-                                return null;
-                            }
+                            errorCode?.Report(FileSystemStatusCode.AlreadyExists);
+                            progress?.Report(100.0f);
+                            return null;
                         }
+
                         if (fsCopyResult)
                         {
-                            if (associatedInstance.FilesystemViewModel.CheckFolderForHiddenAttribute(source.Path))
+                            if (FolderHelpers.CheckFolderForHiddenAttribute(source.Path))
                             {
                                 // The source folder was hidden, apply hidden attribute to destination
                                 NativeFileOperationsHelper.SetFileAttribute(fsCopyResult.Result.Path, FileAttributes.Hidden);
@@ -208,6 +197,18 @@ namespace Files.Filesystem
                             copiedItem = (StorageFolder)fsCopyResult;
                         }
                         fsResult = fsCopyResult;
+                    }
+                    if (fsResult == FileSystemStatusCode.Unauthorized)
+                    {
+                        fsResult = await PerformAdminOperation(new ValueSet()
+                        {
+                            { "Arguments", "FileOperation" },
+                            { "fileop", "CopyItem" },
+                            { "operationID", Guid.NewGuid().ToString() },
+                            { "filepath", source.Path },
+                            { "destpath", destination },
+                            { "overwrite", collision == NameCollisionOption.ReplaceExisting }
+                        });
                     }
                     errorCode?.Report(fsResult.ErrorCode);
                     if (!fsResult)
@@ -218,7 +219,7 @@ namespace Files.Filesystem
             }
             else if (source.ItemType == FilesystemItemType.File)
             {
-                var fsResult = (FilesystemResult)NativeFileOperationsHelper.CopyFileFromApp(source.Path, destination, true);
+                var fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.CopyFileFromApp(source.Path, destination, true));
 
                 if (!fsResult)
                 {
@@ -231,39 +232,32 @@ namespace Files.Filesystem
                     if (fsResult)
                     {
                         var file = (StorageFile)sourceResult;
-                        var fsResultCopy = await FilesystemTasks.Wrap(() => file.CopyAsync(destinationResult.Result, Path.GetFileName(file.Name), NameCollisionOption.FailIfExists).AsTask());
+                        var fsResultCopy = await FilesystemTasks.Wrap(() => file.CopyAsync(destinationResult.Result, Path.GetFileName(file.Name), collision).AsTask());
+
                         if (fsResultCopy == FileSystemStatusCode.AlreadyExists)
                         {
-                            var ItemAlreadyExistsDialog = new ContentDialog()
-                            {
-                                Title = "ItemAlreadyExistsDialogTitle".GetLocalized(),
-                                Content = "ItemAlreadyExistsDialogContent".GetLocalized(),
-                                PrimaryButtonText = "ItemAlreadyExistsDialogPrimaryButtonText".GetLocalized(),
-                                SecondaryButtonText = "ItemAlreadyExistsDialogSecondaryButtonText".GetLocalized(),
-                                CloseButtonText = "ItemAlreadyExistsDialogCloseButtonText".GetLocalized()
-                            };
-
-                            ContentDialogResult result = await ItemAlreadyExistsDialog.ShowAsync();
-
-                            if (result == ContentDialogResult.Primary)
-                            {
-                                fsResultCopy = await FilesystemTasks.Wrap(() => file.CopyAsync(destinationResult.Result, Path.GetFileName(file.Name), NameCollisionOption.GenerateUniqueName).AsTask());
-                            }
-                            else if (result == ContentDialogResult.Secondary)
-                            {
-                                fsResultCopy = await FilesystemTasks.Wrap(() => file.CopyAsync(destinationResult.Result, Path.GetFileName(file.Name), NameCollisionOption.ReplaceExisting).AsTask());
-                                return null; // Cannot undo overwrite operation
-                            }
-                            else
-                            {
-                                return null;
-                            }
+                            errorCode?.Report(FileSystemStatusCode.AlreadyExists);
+                            progress?.Report(100.0f);
+                            return null;
                         }
+
                         if (fsResultCopy)
                         {
                             copiedItem = fsResultCopy.Result;
                         }
                         fsResult = fsResultCopy;
+                    }
+                    if (fsResult == FileSystemStatusCode.Unauthorized)
+                    {
+                        fsResult = await PerformAdminOperation(new ValueSet()
+                        {
+                            { "Arguments", "FileOperation" },
+                            { "fileop", "CopyItem" },
+                            { "operationID", Guid.NewGuid().ToString() },
+                            { "filepath", source.Path },
+                            { "destpath", destination },
+                            { "overwrite", collision == NameCollisionOption.ReplaceExisting }
+                        });
                     }
                 }
                 errorCode?.Report(fsResult.ErrorCode);
@@ -273,9 +267,9 @@ namespace Files.Filesystem
                 }
             }
 
-            if (Path.GetDirectoryName(destination) == associatedInstance.FilesystemViewModel.WorkingDirectory)
+            if (Path.GetDirectoryName(destination) == associatedInstance.FilesystemViewModel.WorkingDirectory.TrimPath())
             {
-                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
+                await DispatcherQueue.GetForCurrentThread().EnqueueAsync(async () =>
                 {
                     await Task.Delay(50); // Small delay for the item to appear in the file list
                     List<ListedItem> copiedListedItems = associatedInstance.FilesystemViewModel.FilesAndFolders
@@ -283,13 +277,20 @@ namespace Files.Filesystem
 
                     if (copiedListedItems.Count > 0)
                     {
-                        associatedInstance.ContentPage.AddSelectedItemsOnUi(copiedListedItems);
-                        associatedInstance.ContentPage.FocusSelectedItems();
+                        itemManipulationModel.AddSelectedItems(copiedListedItems);
+                        itemManipulationModel.FocusSelectedItems();
                     }
-                });
+                }, DispatcherQueuePriority.Low);
             }
 
             progress?.Report(100.0f);
+
+            if (collision == NameCollisionOption.ReplaceExisting)
+            {
+                errorCode?.Report(FileSystemStatusCode.Success);
+
+                return null; // Cannot undo overwrite operation
+            }
 
             var pathWithType = copiedItem.FromStorageItem(destination, source.ItemType);
 
@@ -298,12 +299,14 @@ namespace Files.Filesystem
 
         public async Task<IStorageHistory> MoveAsync(IStorageItem source,
                                                      string destination,
+                                                     NameCollisionOption collision,
                                                      IProgress<float> progress,
                                                      IProgress<FileSystemStatusCode> errorCode,
                                                      CancellationToken cancellationToken)
         {
             return await MoveAsync(source.FromStorageItem(),
                                                     destination,
+                                                    collision,
                                                     progress,
                                                     errorCode,
                                                     cancellationToken);
@@ -311,6 +314,7 @@ namespace Files.Filesystem
 
         public async Task<IStorageHistory> MoveAsync(IStorageItemWithPath source,
                                                      string destination,
+                                                     NameCollisionOption collision,
                                                      IProgress<float> progress,
                                                      IProgress<FileSystemStatusCode> errorCode,
                                                      CancellationToken cancellationToken)
@@ -327,10 +331,10 @@ namespace Files.Filesystem
                 // Can't move (only copy) files from MTP devices because:
                 // StorageItems returned in DataPackageView are read-only
                 // The item.Path property will be empty and there's no way of retrieving a new StorageItem with R/W access
-                return await CopyAsync(source, destination, progress, errorCode, cancellationToken);
+                return await CopyAsync(source, destination, collision, progress, errorCode, cancellationToken);
             }
 
-            if (associatedInstance.FilesystemViewModel.WorkingDirectory.StartsWith(App.AppSettings.RecycleBinPath))
+            if (destination.StartsWith(App.AppSettings.RecycleBinPath))
             {
                 errorCode?.Report(FileSystemStatusCode.Unauthorized);
                 progress?.Report(100.0f);
@@ -376,7 +380,7 @@ namespace Files.Filesystem
                 }
                 else
                 {
-                    var fsResult = (FilesystemResult)NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination);
+                    var fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination));
 
                     if (!fsResult)
                     {
@@ -388,37 +392,18 @@ namespace Files.Filesystem
 
                         if (fsResult)
                         {
-                            var fsResultMove = await FilesystemTasks.Wrap(() => MoveDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, CreationCollisionOption.FailIfExists, true));
+                            var fsResultMove = await FilesystemTasks.Wrap(() => MoveDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, collision.Convert(), true));
+
                             if (fsResultMove == FileSystemStatusCode.AlreadyExists)
                             {
-                                var ItemAlreadyExistsDialog = new ContentDialog()
-                                {
-                                    Title = "ItemAlreadyExistsDialogTitle".GetLocalized(),
-                                    Content = "ItemAlreadyExistsDialogContent".GetLocalized(),
-                                    PrimaryButtonText = "ItemAlreadyExistsDialogPrimaryButtonText".GetLocalized(),
-                                    SecondaryButtonText = "ItemAlreadyExistsDialogSecondaryButtonText".GetLocalized(),
-                                    CloseButtonText = "ItemAlreadyExistsDialogCloseButtonText".GetLocalized()
-                                };
-
-                                ContentDialogResult result = await ItemAlreadyExistsDialog.ShowAsync();
-
-                                if (result == ContentDialogResult.Primary)
-                                {
-                                    fsResultMove = await FilesystemTasks.Wrap(() => MoveDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, CreationCollisionOption.GenerateUniqueName, true));
-                                }
-                                else if (result == ContentDialogResult.Secondary)
-                                {
-                                    fsResultMove = await FilesystemTasks.Wrap(() => MoveDirectoryAsync((StorageFolder)fsSourceFolder, (StorageFolder)fsDestinationFolder, fsSourceFolder.Result.Name, CreationCollisionOption.ReplaceExisting, true));
-                                    return null; // Cannot undo overwrite operation
-                                }
-                                else
-                                {
-                                    return null;
-                                }
+                                progress?.Report(100.0f);
+                                errorCode?.Report(FileSystemStatusCode.AlreadyExists);
+                                return null;
                             }
+
                             if (fsResultMove)
                             {
-                                if (associatedInstance.FilesystemViewModel.CheckFolderForHiddenAttribute(source.Path))
+                                if (FolderHelpers.CheckFolderForHiddenAttribute(source.Path))
                                 {
                                     // The source folder was hidden, apply hidden attribute to destination
                                     NativeFileOperationsHelper.SetFileAttribute(fsResultMove.Result.Path, FileAttributes.Hidden);
@@ -427,13 +412,25 @@ namespace Files.Filesystem
                             }
                             fsResult = fsResultMove;
                         }
+                        if (fsResult == FileSystemStatusCode.Unauthorized || fsResult == FileSystemStatusCode.ReadOnly)
+                        {
+                            fsResult = await PerformAdminOperation(new ValueSet()
+                            {
+                                { "Arguments", "FileOperation" },
+                                { "fileop", "MoveItem" },
+                                { "operationID", Guid.NewGuid().ToString() },
+                                { "filepath", source.Path },
+                                { "destpath", destination },
+                                { "overwrite", collision == NameCollisionOption.ReplaceExisting }
+                            });
+                        }
                     }
                     errorCode?.Report(fsResult.ErrorCode);
                 }
             }
             else if (source.ItemType == FilesystemItemType.File)
             {
-                var fsResult = (FilesystemResult)NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination);
+                var fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination));
 
                 if (!fsResult)
                 {
@@ -446,47 +443,40 @@ namespace Files.Filesystem
                     if (fsResult)
                     {
                         var file = (StorageFile)sourceResult;
-                        var fsResultMove = await FilesystemTasks.Wrap(() => file.MoveAsync(destinationResult.Result, Path.GetFileName(file.Name), NameCollisionOption.FailIfExists).AsTask());
+                        var fsResultMove = await FilesystemTasks.Wrap(() => file.MoveAsync(destinationResult.Result, Path.GetFileName(file.Name), collision).AsTask());
+
                         if (fsResultMove == FileSystemStatusCode.AlreadyExists)
                         {
-                            var ItemAlreadyExistsDialog = new ContentDialog()
-                            {
-                                Title = "ItemAlreadyExistsDialogTitle".GetLocalized(),
-                                Content = "ItemAlreadyExistsDialogContent".GetLocalized(),
-                                PrimaryButtonText = "ItemAlreadyExistsDialogPrimaryButtonText".GetLocalized(),
-                                SecondaryButtonText = "ItemAlreadyExistsDialogSecondaryButtonText".GetLocalized(),
-                                CloseButtonText = "ItemAlreadyExistsDialogCloseButtonText".GetLocalized()
-                            };
-
-                            ContentDialogResult result = await ItemAlreadyExistsDialog.ShowAsync();
-
-                            if (result == ContentDialogResult.Primary)
-                            {
-                                fsResultMove = await FilesystemTasks.Wrap(() => file.MoveAsync(destinationResult.Result, Path.GetFileName(file.Name), NameCollisionOption.GenerateUniqueName).AsTask());
-                            }
-                            else if (result == ContentDialogResult.Secondary)
-                            {
-                                fsResultMove = await FilesystemTasks.Wrap(() => file.MoveAsync(destinationResult.Result, Path.GetFileName(file.Name), NameCollisionOption.ReplaceExisting).AsTask());
-                                return null; // Cannot undo overwrite operation
-                            }
-                            else
-                            {
-                                return null;
-                            }
+                            progress?.Report(100.0f);
+                            errorCode?.Report(FileSystemStatusCode.AlreadyExists);
+                            return null;
                         }
+
                         if (fsResultMove)
                         {
                             movedItem = file;
                         }
                         fsResult = fsResultMove;
                     }
+                    if (fsResult == FileSystemStatusCode.Unauthorized || fsResult == FileSystemStatusCode.ReadOnly)
+                    {
+                        fsResult = await PerformAdminOperation(new ValueSet()
+                        {
+                            { "Arguments", "FileOperation" },
+                            { "fileop", "MoveItem" },
+                            { "operationID", Guid.NewGuid().ToString() },
+                            { "filepath", source.Path },
+                            { "destpath", destination },
+                            { "overwrite", collision == NameCollisionOption.ReplaceExisting }
+                        });
+                    }
                 }
                 errorCode?.Report(fsResult.ErrorCode);
             }
 
-            if (Path.GetDirectoryName(destination) == associatedInstance.FilesystemViewModel.WorkingDirectory)
+            if (Path.GetDirectoryName(destination) == associatedInstance.FilesystemViewModel.WorkingDirectory.TrimPath())
             {
-                App.mainWindow.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
+                await DispatcherQueue.GetForCurrentThread().EnqueueAsync(async () =>
                 {
                     await Task.Delay(50); // Small delay for the item to appear in the file list
                     List<ListedItem> movedListedItems = associatedInstance.FilesystemViewModel.FilesAndFolders
@@ -494,13 +484,18 @@ namespace Files.Filesystem
 
                     if (movedListedItems.Count > 0)
                     {
-                        associatedInstance.ContentPage.AddSelectedItemsOnUi(movedListedItems);
-                        associatedInstance.ContentPage.FocusSelectedItems();
+                        itemManipulationModel.AddSelectedItems(movedListedItems);
+                        itemManipulationModel.FocusSelectedItems();
                     }
-                });
+                }, DispatcherQueuePriority.Low);
             }
 
             progress?.Report(100.0f);
+
+            if (collision == NameCollisionOption.ReplaceExisting)
+            {
+                return null; // Cannot undo overwrite operation
+            }
 
             var pathWithType = movedItem.FromStorageItem(destination, source.ItemType);
 
@@ -533,33 +528,53 @@ namespace Files.Filesystem
             errorCode?.Report(fsResult);
             progress?.Report(0.0f);
 
-            if (source.ItemType == FilesystemItemType.File)
+            if (permanently)
             {
-                fsResult = await associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path)
-                    .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
+                fsResult = (FilesystemResult)NativeFileOperationsHelper.DeleteFileFromApp(source.Path);
             }
-            else if (source.ItemType == FilesystemItemType.Directory)
+            if (!fsResult)
             {
-                fsResult = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path)
-                    .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
+                if (source.ItemType == FilesystemItemType.File)
+                {
+                    fsResult = await associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path)
+                        .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
+                }
+                else if (source.ItemType == FilesystemItemType.Directory)
+                {
+                    fsResult = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path)
+                        .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
+                }
             }
 
             errorCode?.Report(fsResult);
 
             if (fsResult == FileSystemStatusCode.Unauthorized)
             {
-                // Try again with fulltrust process
-                if (associatedInstance.FilesystemViewModel.Connection != null)
+                // Try again with fulltrust process (non admin: for shortcuts and hidden files)
+                var connection = await AppServiceConnectionHelper.Instance;
+                if (connection != null)
                 {
-                    AppServiceResponse response = await associatedInstance.FilesystemViewModel.Connection.SendMessageAsync(new ValueSet()
-                        {
-                            { "Arguments", "FileOperation" },
-                            { "fileop", "DeleteItem" },
-                            { "filepath", source.Path },
-                            { "permanently", permanently }
-                        });
-                    fsResult = (FilesystemResult)(response.Status == AppServiceResponseStatus.Success
-                        && response.Message.Get("Success", false));
+                    var (status, response) = await connection.SendMessageForResponseAsync(new ValueSet()
+                    {
+                        { "Arguments", "FileOperation" },
+                        { "fileop", "DeleteItem" },
+                        { "operationID", Guid.NewGuid().ToString() },
+                        { "filepath", source.Path },
+                        { "permanently", permanently }
+                    });
+                    fsResult = (FilesystemResult)(status == AppServiceResponseStatus.Success
+                        && response.Get("Success", false));
+                }
+                if (!fsResult)
+                {
+                    fsResult = await PerformAdminOperation(new ValueSet()
+                    {
+                        { "Arguments", "FileOperation" },
+                        { "fileop", "DeleteItem" },
+                        { "operationID", Guid.NewGuid().ToString() },
+                        { "filepath", source.Path },
+                        { "permanently", permanently }
+                    });
                 }
             }
             else if (fsResult == FileSystemStatusCode.InUse)
@@ -585,20 +600,16 @@ namespace Files.Filesystem
                 if (!permanently)
                 {
                     // Enumerate Recycle Bin
-                    List<ShellFileItem> items = await recycleBinHelpers.EnumerateRecycleBin();
-                    List<ShellFileItem> nameMatchItems = new List<ShellFileItem>();
+                    List<ShellFileItem> nameMatchItems, items = await recycleBinHelpers.EnumerateRecycleBin();
 
                     // Get name matching files
-                    if (items != null)
+                    if (Path.GetExtension(source.Path) == ".lnk" || Path.GetExtension(source.Path) == ".url") // We need to check if it is a shortcut file
                     {
-                        if (Path.GetExtension(source.Path) == ".lnk" || Path.GetExtension(source.Path) == ".url") // We need to check if it is a shortcut file
-                        {
-                            nameMatchItems = items.Where((item) => item.FilePath == Path.Combine(Path.GetDirectoryName(source.Path), Path.GetFileNameWithoutExtension(source.Path))).ToList();
-                        }
-                        else
-                        {
-                            nameMatchItems = items.Where((item) => item.FilePath == source.Path).ToList();
-                        }
+                        nameMatchItems = items.Where((item) => item.FilePath == Path.Combine(Path.GetDirectoryName(source.Path), Path.GetFileNameWithoutExtension(source.Path))).ToList();
+                    }
+                    else
+                    {
+                        nameMatchItems = items.Where((item) => item.FilePath == source.Path).ToList();
                     }
 
                     // Get newest file
@@ -671,7 +682,20 @@ namespace Files.Filesystem
                     }
                     else
                     {
-                        Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+                        var fsResult = await PerformAdminOperation(new ValueSet()
+                        {
+                            { "Arguments", "FileOperation" },
+                            { "fileop", "RenameItem" },
+                            { "operationID", Guid.NewGuid().ToString() },
+                            { "filepath", source.Path },
+                            { "newName", newName },
+                            { "overwrite", collision == NameCollisionOption.ReplaceExisting }
+                        });
+                        if (fsResult)
+                        {
+                            errorCode?.Report(FileSystemStatusCode.Success);
+                            return new StorageHistory(FileOperationType.Rename, source, StorageItemHelpers.FromPathAndType(destination, source.ItemType));
+                        }
                     }
                 }
                 else if (renamed == FileSystemStatusCode.NotAFile || renamed == FileSystemStatusCode.NotAFolder)
@@ -702,6 +726,11 @@ namespace Files.Filesystem
                         CloseButtonText = "ItemAlreadyExistsDialogCloseButtonText".GetLocalized()
                     };
 
+                    if (UIHelpers.IsAnyContentDialogOpen())
+                    {
+                        // Only a single ContentDialog can be open at any time.
+                        return null;
+                    }
                     ContentDialogResult result = await ItemAlreadyExistsDialog.ShowAsync();
 
                     if (result == ContentDialogResult.Primary)
@@ -728,50 +757,52 @@ namespace Files.Filesystem
             FilesystemResult fsResult = FileSystemStatusCode.InProgress;
             errorCode?.Report(fsResult);
 
-            if (source.ItemType == FilesystemItemType.Directory)
+            fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination));
+
+            if (!fsResult)
             {
-                FilesystemResult<StorageFolder> sourceFolder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path);
-                FilesystemResult<StorageFolder> destinationFolder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(Path.GetDirectoryName(destination));
-
-                fsResult = sourceFolder.ErrorCode | destinationFolder.ErrorCode;
-                errorCode?.Report(fsResult);
-
-                if (fsResult)
+                if (source.ItemType == FilesystemItemType.Directory)
                 {
-                    fsResult = await FilesystemTasks.Wrap(() =>
+                    FilesystemResult<StorageFolder> sourceFolder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path);
+                    FilesystemResult<StorageFolder> destinationFolder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(Path.GetDirectoryName(destination));
+
+                    fsResult = sourceFolder.ErrorCode | destinationFolder.ErrorCode;
+                    errorCode?.Report(fsResult);
+
+                    if (fsResult)
                     {
-                        return MoveDirectoryAsync(sourceFolder.Result,
-                                                  destinationFolder.Result,
-                                                  Path.GetFileName(destination),
-                                                  CreationCollisionOption.FailIfExists,
-                                                  true);
-                    }); // TODO: we could use here FilesystemHelpers with registerHistory false?
+                        fsResult = await FilesystemTasks.Wrap(() => MoveDirectoryAsync(sourceFolder.Result, destinationFolder.Result, Path.GetFileName(destination),
+                            CreationCollisionOption.FailIfExists, true));
+                        // TODO: we could use here FilesystemHelpers with registerHistory false?
+                    }
+                    errorCode?.Report(fsResult);
                 }
-                errorCode?.Report(fsResult);
-            }
-            else
-            {
-                FilesystemResult<StorageFile> sourceFile = await associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path);
-                FilesystemResult<StorageFolder> destinationFolder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(Path.GetDirectoryName(destination));
-
-                fsResult = sourceFile.ErrorCode | destinationFolder.ErrorCode;
-                errorCode?.Report(fsResult);
-
-                if (fsResult)
+                else
                 {
-                    fsResult = await FilesystemTasks.Wrap(() =>
+                    FilesystemResult<StorageFile> sourceFile = await associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path);
+                    FilesystemResult<StorageFolder> destinationFolder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(Path.GetDirectoryName(destination));
+
+                    fsResult = sourceFile.ErrorCode | destinationFolder.ErrorCode;
+                    errorCode?.Report(fsResult);
+
+                    if (fsResult)
                     {
-                        return sourceFile.Result.MoveAsync(destinationFolder.Result,
-                                                           Path.GetFileName(destination),
-                                                           NameCollisionOption.GenerateUniqueName).AsTask();
+                        fsResult = await FilesystemTasks.Wrap(() => sourceFile.Result.MoveAsync(destinationFolder.Result, Path.GetFileName(destination), NameCollisionOption.GenerateUniqueName).AsTask());
+                    }
+                    errorCode?.Report(fsResult);
+                }
+                if (fsResult == FileSystemStatusCode.Unauthorized || fsResult == FileSystemStatusCode.ReadOnly)
+                {
+                    fsResult = await PerformAdminOperation(new ValueSet()
+                    {
+                        { "Arguments", "FileOperation" },
+                        { "fileop", "MoveItem" },
+                        { "operationID", Guid.NewGuid().ToString() },
+                        { "filepath", source.Path },
+                        { "destpath", destination },
+                        { "overwrite", false }
                     });
                 }
-                else if (fsResult == FileSystemStatusCode.Unauthorized)
-                {
-                    // Try again with MoveFileFromApp
-                    fsResult = (FilesystemResult)NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination);
-                }
-                errorCode?.Report(fsResult);
             }
 
             if (fsResult)
@@ -841,12 +872,34 @@ namespace Files.Filesystem
 
             if (deleteSource)
             {
-                await sourceFolder.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                await sourceFolder.DeleteAsync(StorageDeleteOption.Default);
             }
 
-            App.JumpList.RemoveFolder(sourceFolder.Path);
+            //App.JumpList.RemoveFolder(sourceFolder.Path);
 
             return createdRoot;
+        }
+
+        private async Task<FilesystemResult> PerformAdminOperation(ValueSet operation)
+        {
+            var elevateConfirmDialog = new Files.Dialogs.ElevateConfirmDialog();
+            var elevateConfirmResult = await elevateConfirmDialog.ShowAsync();
+            if (elevateConfirmResult == ContentDialogResult.Primary)
+            {
+                var connection = await AppServiceConnectionHelper.Instance;
+                if (connection != null && await connection.Elevate())
+                {
+                    // Try again with fulltrust process (admin)
+                    connection = await AppServiceConnectionHelper.Instance;
+                    if (connection != null)
+                    {
+                        var (status, response) = await connection.SendMessageForResponseAsync(operation);
+                        return (FilesystemResult)(status == AppServiceResponseStatus.Success
+                            && response.Get("Success", false));
+                    }
+                }
+            }
+            return (FilesystemResult)false;
         }
 
         #endregion Helpers
@@ -855,7 +908,6 @@ namespace Files.Filesystem
 
         public void Dispose()
         {
-            associatedInstance?.Dispose();
             recycleBinHelpers?.Dispose();
 
             recycleBinHelpers = null;
@@ -863,5 +915,125 @@ namespace Files.Filesystem
         }
 
         #endregion IDisposable
+
+        public async Task<IStorageHistory> CopyItemsAsync(IEnumerable<IStorageItem> source, IEnumerable<string> destination, IEnumerable<FileNameConflictResolveOptionType> collisions, IProgress<float> progress, IProgress<FileSystemStatusCode> errorCode, CancellationToken cancellationToken)
+        {
+            return await CopyItemsAsync(source.Select((item) => item.FromStorageItem()).ToList(), destination, collisions, progress, errorCode, cancellationToken);
+        }
+
+        public async Task<IStorageHistory> CopyItemsAsync(IEnumerable<IStorageItemWithPath> source, IEnumerable<string> destination, IEnumerable<FileNameConflictResolveOptionType> collisions, IProgress<float> progress, IProgress<FileSystemStatusCode> errorCode, CancellationToken token)
+        {
+            var rawStorageHistory = new List<IStorageHistory>();
+
+            for (int i = 0; i < source.Count(); i++)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                if (collisions.ElementAt(i) != FileNameConflictResolveOptionType.Skip)
+                {
+                    rawStorageHistory.Add(await CopyAsync(
+                        source.ElementAt(i),
+                        destination.ElementAt(i),
+                        collisions.ElementAt(i).Convert(),
+                        null,
+                        errorCode,
+                        token));
+                }
+
+                progress?.Report(i / (float)source.Count() * 100.0f);
+            }
+
+            if (rawStorageHistory.Any() && rawStorageHistory.TrueForAll((item) => item != null))
+            {
+                return new StorageHistory(
+                    rawStorageHistory[0].OperationType,
+                    rawStorageHistory.SelectMany((item) => item.Source).ToList(),
+                    rawStorageHistory.SelectMany((item) => item.Destination).ToList());
+            }
+            return null;
+        }
+
+        public async Task<IStorageHistory> MoveItemsAsync(IEnumerable<IStorageItem> source, IEnumerable<string> destination, IEnumerable<FileNameConflictResolveOptionType> collisions, IProgress<float> progress, IProgress<FileSystemStatusCode> errorCode, CancellationToken cancellationToken)
+        {
+            return await MoveItemsAsync(source.Select((item) => item.FromStorageItem()).ToList(), destination, collisions, progress, errorCode, cancellationToken);
+        }
+
+        public async Task<IStorageHistory> MoveItemsAsync(IEnumerable<IStorageItemWithPath> source, IEnumerable<string> destination, IEnumerable<FileNameConflictResolveOptionType> collisions, IProgress<float> progress, IProgress<FileSystemStatusCode> errorCode, CancellationToken token)
+        {
+            var rawStorageHistory = new List<IStorageHistory>();
+
+            for (int i = 0; i < source.Count(); i++)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                if (collisions.ElementAt(i) != FileNameConflictResolveOptionType.Skip)
+                {
+                    rawStorageHistory.Add(await MoveAsync(
+                        source.ElementAt(i),
+                        destination.ElementAt(i),
+                        collisions.ElementAt(i).Convert(),
+                        null,
+                        errorCode,
+                        token));
+                }
+
+                progress?.Report(i / (float)source.Count() * 100.0f);
+            }
+
+            if (rawStorageHistory.Any() && rawStorageHistory.TrueForAll((item) => item != null))
+            {
+                return new StorageHistory(
+                    rawStorageHistory[0].OperationType,
+                    rawStorageHistory.SelectMany((item) => item.Source).ToList(),
+                    rawStorageHistory.SelectMany((item) => item.Destination).ToList());
+            }
+            return null;
+        }
+
+        public async Task<IStorageHistory> DeleteItemsAsync(IEnumerable<IStorageItem> source, IProgress<float> progress, IProgress<FileSystemStatusCode> errorCode, bool permanently, CancellationToken cancellationToken)
+        {
+            return await DeleteItemsAsync(source.Select((item) => item.FromStorageItem()), progress, errorCode, permanently, cancellationToken);
+        }
+
+        public async Task<IStorageHistory> DeleteItemsAsync(IEnumerable<IStorageItemWithPath> source, IProgress<float> progress, IProgress<FileSystemStatusCode> errorCode, bool permanently, CancellationToken token)
+        {
+            bool originalPermanently = permanently;
+            var rawStorageHistory = new List<IStorageHistory>();
+
+            for (int i = 0; i < source.Count(); i++)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                if (recycleBinHelpers.IsPathUnderRecycleBin(source.ElementAt(i).Path))
+                {
+                    permanently = true;
+                }
+                else
+                {
+                    permanently = originalPermanently;
+                }
+
+                rawStorageHistory.Add(await DeleteAsync(source.ElementAt(i), null, errorCode, permanently, token));
+                progress?.Report((float)i / source.Count() * 100.0f);
+            }
+
+            if (rawStorageHistory.Any() && rawStorageHistory.TrueForAll((item) => item != null))
+            {
+                return new StorageHistory(
+                    rawStorageHistory[0].OperationType,
+                    rawStorageHistory.SelectMany((item) => item.Source).ToList(),
+                    rawStorageHistory.SelectMany((item) => item.Destination).ToList());
+            }
+            return null;
+        }
     }
 }

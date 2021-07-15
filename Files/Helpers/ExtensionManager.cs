@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,12 +6,13 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Files.Helpers
 {
     internal class ExtensionManager
     {
-        //private CoreDispatcher _dispatcher; // used to run code on the UI thread for code that may update UI
+        //private DispatcherQueue _dispatcher; // used to run code on the UI thread for code that may update UI
         private AppExtensionCatalog catalog; // the catalog of app extensions available to this host
 
         /// <summary>
@@ -125,9 +125,9 @@ namespace Files.Helpers
         /// </summary>
         /// <param name="sender">The catalog that the extensions belong to</param>
         /// <param name="args">Contains the package that is updating</param>
-        private async void Catalog_PackageUpdating(AppExtensionCatalog sender, AppExtensionPackageUpdatingEventArgs args)
+        private void Catalog_PackageUpdating(AppExtensionCatalog sender, AppExtensionPackageUpdatingEventArgs args)
         {
-            await UnloadExtensions(args.Package);
+            UnloadExtensions(args.Package);
         }
 
         /// <summary>
@@ -135,9 +135,9 @@ namespace Files.Helpers
         /// </summary>
         /// <param name="sender">The catalog that the extensions belong to</param>
         /// <param name="args">Contains the package that is uninstalling</param>
-        private async void Catalog_PackageUninstalling(AppExtensionCatalog sender, AppExtensionPackageUninstallingEventArgs args)
+        private void Catalog_PackageUninstalling(AppExtensionCatalog sender, AppExtensionPackageUninstallingEventArgs args)
         {
-            await RemoveExtensions(args.Package);
+            RemoveExtensions(args.Package);
         }
 
         /// <summary>
@@ -146,14 +146,14 @@ namespace Files.Helpers
         /// </summary>
         /// <param name="sender">The catalog that the extensions belong to</param>
         /// <param name="args">Contains the package that has changed status</param>
-        private async void Catalog_PackageStatusChanged(AppExtensionCatalog sender, AppExtensionPackageStatusChangedEventArgs args)
+        private void Catalog_PackageStatusChanged(AppExtensionCatalog sender, AppExtensionPackageStatusChangedEventArgs args)
         {
             if (!args.Package.Status.VerifyIsOK()) // If the package isn't ok, unload its extensions
             {
                 // if it's offline, unload its extensions
                 if (args.Package.Status.PackageOffline)
                 {
-                    await UnloadExtensions(args.Package);
+                    UnloadExtensions(args.Package);
                 }
                 else if (args.Package.Status.Servicing || args.Package.Status.DeploymentInProgress)
                 {
@@ -163,12 +163,12 @@ namespace Files.Helpers
                 {
                     // Deal with an invalid or tampered with package, or other issue, by removing the extensions
                     // Adding a UI glyph to the affected extensions could be a good user experience if you wish
-                    await RemoveExtensions(args.Package);
+                    RemoveExtensions(args.Package);
                 }
             }
             else // The package is now OK--attempt to load its extensions
             {
-                await LoadExtensions(args.Package);
+                LoadExtensions(args.Package);
             }
         }
 
@@ -184,7 +184,7 @@ namespace Files.Helpers
 
             // load the extension if the package is OK
             if (!ext.Package.Status.VerifyIsOK()
-                /* This is a good place to do package signature verfication
+                /* This is a good place to do package signature verification
                    For the purpose of the sample, we ignore where the package is from
                    Here is an example of how you would ensure that you only load store-signed extensions:
                     && ext.Package.SignatureKind == PackageSignatureKind.Store */
@@ -225,7 +225,7 @@ namespace Files.Helpers
         /// </summary>
         /// <param name="package">Package containing the extensions to load</param>
         /// <returns></returns>
-        public async Task LoadExtensions(Package package)
+        public void LoadExtensions(Package package)
         {
             Extensions.Where(ext => ext.AppExtension.Package.Id.FamilyName == package.Id.FamilyName).ToList().ForEach(async e => { await e.MarkAsLoaded(); });
         }
@@ -235,11 +235,11 @@ namespace Files.Helpers
         /// </summary>
         /// <param name="package">Package containing the extensions to unload</param>
         /// <returns></returns>
-        public async Task UnloadExtensions(Package package)
+        public void UnloadExtensions(Package package)
         {
             Extensions.Where(ext => ext.AppExtension.Package.Id.FamilyName == package.Id.FamilyName).ToList().ForEach(e => { e.Unload(); });
             //// Run on the UI thread because the Extensions Tab UI updates as extensions are added or removed
-            //await _dispatcher.RunAsync(Microsoft.UI.Core.CoreDispatcherPriority.Normal, () => {
+            //await _dispatcher.RunAsync(() => {
             //});
         }
 
@@ -249,7 +249,7 @@ namespace Files.Helpers
         /// </summary>
         /// <param name="package">The package containing the extensions to remove</param>
         /// <returns></returns>
-        public async Task RemoveExtensions(Package package)
+        public void RemoveExtensions(Package package)
         {
             Extensions.Where(ext => ext.AppExtension.Package.Id.FamilyName == package.Id.FamilyName).ToList().ForEach(e => { e.Unload(); Extensions.Remove(e); });
         }

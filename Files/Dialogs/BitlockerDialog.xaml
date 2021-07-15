@@ -9,12 +9,13 @@
     x:Uid="BitlockerDialog"
     Title="Enter password to unlock the drive"
     BorderThickness="0"
-    CornerRadius="4"
+    CornerRadius="{StaticResource OverlayCornerRadius}"
     DefaultButton="None"
     PrimaryButtonClick="BitlockerDialog_PrimaryButtonClick"
     PrimaryButtonText="Unlock"
     RequestedTheme="{x:Bind local2:ThemeHelper.RootTheme}"
     SecondaryButtonText="Cancel"
+    Style="{StaticResource DefaultContentDialogStyle}"
     mc:Ignorable="d">
 
     <ContentDialog.PrimaryButtonStyle>
@@ -23,10 +24,7 @@
                 <Setter.Value>
                     <DataTemplate x:DataType="Button">
                         <StackPanel Orientation="Horizontal" Spacing="5">
-                            <FontIcon
-                                FontFamily="{StaticResource FluentUIGlyphs}"
-                                FontSize="14"
-                                Glyph="&#xEB67;" />
+                            <FontIcon FontSize="14" Glyph="&#xEA18;" />
                             <TextBlock Text="{Binding PrimaryButtonText, ElementName=BitlockerDriveDialog}" />
                         </StackPanel>
                     </DataTemplate>
@@ -41,7 +39,6 @@
                 x:Name="PasswordInput"
                 x:Uid="BitlockerDialogInputText"
                 Height="35"
-                IsPasswordRevealButtonEnabled="True"
                 PasswordChanged="BitlockerInput_TextChanged"
                 PasswordRevealMode="Peek"
                 PlaceholderText="Password" />

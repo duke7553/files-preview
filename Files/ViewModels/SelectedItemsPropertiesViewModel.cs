@@ -1,13 +1,17 @@
 using ByteSizeLib;
 using Files.Extensions;
+using Files.Filesystem.Permissions;
 using Files.ViewModels.Properties;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using System;
-using System.Collections.ObjectModel;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Files.ViewModels
 {
@@ -37,20 +41,20 @@ namespace Files.ViewModels
             set => SetProperty(ref loadCombinedItemsGlyph, value);
         }
 
-        private string driveItemGlyphSource;
+        private Uri customIconSource;
 
-        public string DriveItemGlyphSource
+        public Uri CustomIconSource
         {
-            get => driveItemGlyphSource;
-            set => SetProperty(ref driveItemGlyphSource, value);
+            get => customIconSource;
+            set => SetProperty(ref customIconSource, value);
         }
 
-        private bool loadDriveItemGlyph;
+        private bool loadCustomIcon;
 
-        public bool LoadDriveItemGlyph
+        public bool LoadCustomIcon
         {
-            get => loadDriveItemGlyph;
-            set => SetProperty(ref loadDriveItemGlyph, value);
+            get => loadCustomIcon;
+            set => SetProperty(ref loadCustomIcon, value);
         }
 
         private bool loadFileIcon;
@@ -61,12 +65,11 @@ namespace Files.ViewModels
             set => SetProperty(ref loadFileIcon, value);
         }
 
-        private ImageSource fileIconSource;
-
-        public ImageSource FileIconSource
+        private byte[] iconData;
+        public byte[] IconData
         {
-            get => fileIconSource;
-            set => SetProperty(ref fileIconSource, value);
+            get => iconData;
+            set => SetProperty(ref iconData, value);
         }
 
         private string itemName;
@@ -230,6 +233,15 @@ namespace Files.ViewModels
         {
             get => itemMD5HashProgressVisibiity;
             set => SetProperty(ref itemMD5HashProgressVisibiity, value);
+        }
+
+        // For libraries
+        public int locationsCount;
+
+        public int LocationsCount
+        {
+            get => locationsCount;
+            set => SetProperty(ref locationsCount, value);
         }
 
         public int foldersCount;
@@ -396,26 +408,6 @@ namespace Files.ViewModels
             set => SetProperty(ref itemAccessedTimestampVisibility, value);
         }
 
-        public string itemFileOwner;
-
-        public string ItemFileOwner
-        {
-            get => itemFileOwner;
-            set
-            {
-                ItemFileOwnerVisibility = Visibility.Visible;
-                SetProperty(ref itemFileOwner, value);
-            }
-        }
-
-        private Visibility itemFileOwnerVisibility = Visibility.Collapsed;
-
-        public Visibility ItemFileOwnerVisibility
-        {
-            get => itemFileOwnerVisibility;
-            set => SetProperty(ref itemFileOwnerVisibility, value);
-        }
-
         private Visibility lastSeparatorVisibility = Visibility.Visible;
 
         public Visibility LastSeparatorVisibility
@@ -505,11 +497,8 @@ namespace Files.ViewModels
             set => SetProperty(ref isItemSelected, value);
         }
 
-        private BaseLayout contentPage = null;
-
-        public SelectedItemsPropertiesViewModel(BaseLayout contentPageParam)
+        public SelectedItemsPropertiesViewModel()
         {
-            contentPage = contentPageParam;
         }
 
         private bool isSelectedItemImage = false;
@@ -528,29 +517,24 @@ namespace Files.ViewModels
             set => SetProperty(ref isSelectedItemShortcut, value);
         }
 
-        public void CheckFileExtension()
+        public void CheckFileExtension(string itemExtension)
         {
             // Set properties to false
             IsSelectedItemImage = false;
             IsSelectedItemShortcut = false;
-            string ItemExtension = null;
-            //check if the selected item is an image file
-            App.mainWindow.DispatcherQueue.TryEnqueue(() =>
-            {
-                ItemExtension = contentPage?.SelectedItem?.FileExtension;
-            });
 
-            if (!string.IsNullOrEmpty(ItemExtension) && SelectedItemsCount == 1)
+            //check if the selected item is an image file
+            if (!string.IsNullOrEmpty(itemExtension) && SelectedItemsCount == 1)
             {
-                if (ItemExtension.Equals(".png", StringComparison.OrdinalIgnoreCase)
-                || ItemExtension.Equals(".jpg", StringComparison.OrdinalIgnoreCase)
-                || ItemExtension.Equals(".bmp", StringComparison.OrdinalIgnoreCase)
-                || ItemExtension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
+                if (itemExtension.Equals(".png", StringComparison.OrdinalIgnoreCase)
+                || itemExtension.Equals(".jpg", StringComparison.OrdinalIgnoreCase)
+                || itemExtension.Equals(".bmp", StringComparison.OrdinalIgnoreCase)
+                || itemExtension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
                 {
                     // Since item is an image, set the IsSelectedItemImage property to true
                     IsSelectedItemImage = true;
                 }
-                else if (ItemExtension.Equals(".lnk", StringComparison.OrdinalIgnoreCase))
+                else if (itemExtension.Equals(".lnk", StringComparison.OrdinalIgnoreCase))
                 {
                     // The selected item is a shortcut, so set the IsSelectedItemShortcut property to true
                     IsSelectedItemShortcut = true;

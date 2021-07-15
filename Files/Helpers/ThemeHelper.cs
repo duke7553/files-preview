@@ -1,6 +1,12 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using Files.Extensions;
+using System;
 using Windows.Storage;
+using Microsoft.UI;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
+using Windows.UI;
+using CommunityToolkit.WinUI;
 
 namespace Files.Helpers
 {
@@ -10,30 +16,6 @@ namespace Files.Helpers
     public static class ThemeHelper
     {
         private const string selectedAppThemeKey = "theme";
-        private static Window currentApplicationWindow;
-
-        // Keep reference so it does not get optimized/garbage collected
-        //public static UISettings UiSettings;
-
-        /// <summary>
-        /// Gets the current actual theme of the app based on the requested theme of the
-        /// root element, or if that value is Default, the requested theme of the Application.
-        /// </summary>
-        public static ElementTheme ActualTheme
-        {
-            get
-            {
-                if (App.mainWindow.Content is FrameworkElement rootElement)
-                {
-                    if (rootElement.RequestedTheme != ElementTheme.Default)
-                    {
-                        return rootElement.RequestedTheme;
-                    }
-                }
-
-                return Interacts.Interaction.GetEnum<ElementTheme>(Application.Current.RequestedTheme.ToString());
-            }
-        }
 
         /// <summary>
         /// Gets or sets (with LocalSettings persistence) the RequestedTheme of the root element.
@@ -42,93 +24,78 @@ namespace Files.Helpers
         {
             get
             {
+                var savedTheme = ApplicationData.Current.LocalSettings.Values[selectedAppThemeKey]?.ToString();
 
-                FrameworkElement rootfe = null;
-                rootfe = App.mainWindow.Content as FrameworkElement;
-          
-                if (rootfe != null)
+                if (!string.IsNullOrEmpty(savedTheme))
                 {
-                    return rootfe.RequestedTheme;
+                    return EnumExtensions.GetEnum<ElementTheme>(savedTheme);
                 }
-
-                return ElementTheme.Default;
+                else
+                {
+                    return ElementTheme.Default;
+                }
             }
             set
             {
-                FrameworkElement rootfe = App.mainWindow.Content as FrameworkElement;
-                if (rootfe != null)
-                {
-                    rootfe.RequestedTheme = value;
-                }
-
                 ApplicationData.Current.LocalSettings.Values[selectedAppThemeKey] = value.ToString();
-                UpdateTheme();
+                ApplyTheme();
             }
         }
 
         public static void Initialize()
         {
-            App.AppSettings.AcrylicTheme = new AcrylicTheme();
+            //Apply the desired theme based on what is set in the application settings
+            ApplyTheme();
 
-            // Set TitleBar background color
-            // TODO: Fix titlebar color here
-            //titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            //titleBar.ButtonBackgroundColor = Colors.Transparent;
-            //titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-
-            // Save reference as this might be null when the user is in another app
-            currentApplicationWindow = App.mainWindow;
-            string savedTheme = ApplicationData.Current.LocalSettings.Values[selectedAppThemeKey]?.ToString();
-
-            if (!string.IsNullOrEmpty(savedTheme))
-            {
-                RootTheme = Interacts.Interaction.GetEnum<ElementTheme>(savedTheme);
-            }
-            else
-            {
-                RootTheme = ElementTheme.Default;
-            }
-
-            // TODO: Registering to color changes, thus we notice when user changes theme system wide
-            //UiSettings = new UISettings();
-            //UiSettings.ColorValuesChanged += UiSettings_ColorValuesChanged;
+            // Registering to color changes, thus we notice when user changes theme system wide
+            // TODO
         }
 
-        //private static void UiSettings_ColorValuesChanged(UISettings sender, object args)
+        //private static async void UiSettings_ColorValuesChanged(UISettings sender, object args)
         //{
         //    // Make sure we have a reference to our window so we dispatch a UI change
-        //    if (currentApplicationWindow != null)
+        //    if (App.MainWindow != null)
         //    {
         //        // Dispatch on UI thread so that we have a current appbar to access and change
-        //        DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.High, () =>
+        //        await DispatcherQueue.GetForCurrentThread().EnqueueAsync(() =>
         //        {
-        //            UpdateTheme();
-        //        });
+        //            ApplyTheme();
+        //        }, DispatcherQueuePriority.High);
         //    }
         //}
 
-        public static void UpdateTheme()
+        private static void ApplyTheme()
         {
-            //switch (RootTheme)
-            //{
-            //    case ElementTheme.Default:
-            //        App.AppSettings.AcrylicTheme.SetDefaultTheme();
-            //        titleBar.ButtonHoverBackgroundColor = (Color)Application.Current.Resources["SystemBaseLowColor"];
-            //        titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemBaseHighColor"];
-            //        break;
+            var rootTheme = RootTheme;
 
-            //    case ElementTheme.Light:
-            //        App.AppSettings.AcrylicTheme.SetLightTheme();
-            //        titleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 0, 0, 0);
-            //        titleBar.ButtonForegroundColor = Colors.Black;
-            //        break;
+            if (App.MainWindow.Content is FrameworkElement rootElement)
+            {
+                rootElement.RequestedTheme = rootTheme;
+            }
 
-            //    case ElementTheme.Dark:
-            //        App.AppSettings.AcrylicTheme.SetDarkTheme();
-            //        titleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 255, 255, 255);
-            //        titleBar.ButtonForegroundColor = Colors.White;
-            //        break;
-            //}
+            //titleBar.ButtonBackgroundColor = Colors.Transparent;
+            //titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+
+            switch (rootTheme)
+            {
+                case ElementTheme.Default:
+                    App.AppSettings.AcrylicTheme.SetDefaultTheme();
+                    //titleBar.ButtonHoverBackgroundColor = (Color)Application.Current.Resources["SystemBaseLowColor"];
+                    //titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemBaseHighColor"];
+                    break;
+
+                case ElementTheme.Light:
+                    App.AppSettings.AcrylicTheme.SetLightTheme();
+                    //titleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 0, 0, 0);
+                    //titleBar.ButtonForegroundColor = Colors.Black;
+                    break;
+
+                case ElementTheme.Dark:
+                    App.AppSettings.AcrylicTheme.SetDarkTheme();
+                    //titleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 255, 255, 255);
+                    //titleBar.ButtonForegroundColor = Colors.White;
+                    break;
+            }
             App.AppSettings.UpdateThemeElements.Execute(null);
         }
     }

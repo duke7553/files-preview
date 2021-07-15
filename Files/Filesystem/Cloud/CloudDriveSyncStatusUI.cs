@@ -24,6 +24,7 @@ namespace Files.Filesystem.Cloud
         }
 
         private string syncStatusString = "CloudDriveSyncStatus_Unknown".GetLocalized();
+
         public string SyncStatusString
         {
             get => syncStatusString;
@@ -38,10 +39,12 @@ namespace Files.Filesystem.Cloud
             set => SetProperty(ref foreground, value);
         }
 
+        public CloudDriveSyncStatus SyncStatus { get; set; }
+
         public static CloudDriveSyncStatusUI FromCloudDriveSyncStatus(CloudDriveSyncStatus syncStatus)
         {
             var statusUI = new CloudDriveSyncStatusUI();
-
+            statusUI.SyncStatus = syncStatus;
             switch (syncStatus)
             {
                 // File

@@ -1,12 +1,15 @@
 ﻿using Files.Filesystem;
+using Files.Helpers;
 using Files.ViewModels.Properties;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
+using Microsoft.UI.Xaml;
 
 namespace Files.ViewModels.Previews
 {
@@ -15,66 +18,103 @@ namespace Files.ViewModels.Previews
         public BasePreviewModel(ListedItem item) : base()
         {
             Item = item;
-            Load();
         }
 
         public ListedItem Item { get; internal set; }
 
-        public StorageFile ItemFile { get; internal set; }
+        public List<FileProperty> DetailsFromPreview { get; set; }
 
+        /// <summary>
+        /// This is cancelled when the user has selected another file or closed the pane.
+        /// </summary>
         public CancellationTokenSource LoadCancelledTokenSource { get; } = new CancellationTokenSource();
 
+        /// <summary>
+        /// Override this if the preview control needs to handle the unloaded event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public virtual void PreviewControlBase_Unloaded(object sender, RoutedEventArgs e)
         {
             LoadCancelledTokenSource.Cancel();
         }
 
-        public abstract void LoadPreviewAndDetails();
+        /// <summary>
+        /// Override this and place the code to load the file preview here.
+        /// You can return details that may have been obtained while loading the preview (eg. word count).
+        /// This details will be displayed *before* the system file properties.
+        /// If there are none, return an empty list.
+        /// </summary>
+        /// <returns>A list of details</returns>
+        public async virtual Task<List<FileProperty>> LoadPreviewAndDetails()
+        {
+            var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, 400);
 
-        public async void LoadSystemFileProperties()
+            if (iconData != null)
+            {
+                Item.FileImage = await iconData.ToBitmapAsync();
+            }
+            else
+            {
+                using var icon = await Item.ItemFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 400);
+                Item.FileImage ??= new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
+                await Item.FileImage.SetSourceAsync(icon);
+            }
+
+            return new List<FileProperty>();
+        }
+
+        private async Task<List<FileProperty>> GetSystemFileProperties()
         {
             if (Item.IsShortcutItem)
             {
-                return;
+                return null;
             }
 
-            try
-            {
-                var list = await FileProperty.RetrieveAndInitializePropertiesAsync(ItemFile);
+            var list = await FileProperty.RetrieveAndInitializePropertiesAsync(Item.ItemFile, Constants.ResourceFilePaths.PreviewPaneDetailsPropertiesJsonPath);
 
-                list.Find(x => x.ID == "address").Value = await FileProperties.GetAddressFromCoordinatesAsync((double?)list.Find(x => x.Property == "System.GPS.LatitudeDecimal").Value,
-                                                                                               (double?)list.Find(x => x.Property == "System.GPS.LongitudeDecimal").Value);
-
-                list.Where(i => i.Value != null).ToList().ForEach(x => Item.FileDetails.Add(x));
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
+            list.Find(x => x.ID == "address").Value = await FileProperties.GetAddressFromCoordinatesAsync((double?)list.Find(x => x.Property == "System.GPS.LatitudeDecimal").Value,
+                                                                                            (double?)list.Find(x => x.Property == "System.GPS.LongitudeDecimal").Value);
+            return list.Where(i => i.ValueText != null).ToList();
         }
 
-        private async void Load()
+        /// <summary>
+        /// Call this function when you are ready to load the preview and details.
+        /// Override if you need custom loading code.
+        /// </summary>
+        /// <returns>The task to run</returns>
+        public virtual async Task LoadAsync()
         {
-            // Files can be corrupt, in use, and stuff
-            try
-            {
-                ItemFile ??= await StorageFile.GetFileFromPathAsync(Item.ItemPath);
-                LoadPreviewAndDetails();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-        }
+            var detailsFull = new List<FileProperty>();
+            Item.ItemFile ??= await StorageFile.GetFileFromPathAsync(Item.ItemPath);
+            DetailsFromPreview = await LoadPreviewAndDetails();
+            var props = await GetSystemFileProperties();
 
-        public event LoadedEventHandler LoadedEvent;
+            // Add the details from the preview function, then the system file properties
+            DetailsFromPreview?.ForEach(i => detailsFull.Add(i));
+            props?.ForEach(i => detailsFull.Add(i));
+
+            Item.FileDetails = new System.Collections.ObjectModel.ObservableCollection<FileProperty>(detailsFull);
+        }
 
         public delegate void LoadedEventHandler(object sender, EventArgs e);
 
-        protected virtual void RaiseLoadedEvent()
+        public static async Task LoadDetailsOnly(ListedItem item, List<FileProperty> details = null)
         {
-            // Raise the event in a thread-safe manner using the ?. operator.
-            LoadedEvent?.Invoke(this, new EventArgs());
+            var temp = new DetailsOnlyPreviewModel(item) { DetailsFromPreview = details };
+            await temp.LoadAsync();
+        }
+
+        internal class DetailsOnlyPreviewModel : BasePreviewModel
+        {
+            public DetailsOnlyPreviewModel(ListedItem item) : base(item)
+            {
+            }
+
+            public override Task<List<FileProperty>> LoadPreviewAndDetails()
+            {
+                return Task.FromResult(DetailsFromPreview);
+            }
         }
     }
 }

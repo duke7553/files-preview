@@ -1,8 +1,6 @@
 ﻿using ByteSizeLib;
 using Files.Enums;
 using Files.Extensions;
-using Files.Filesystem;
-using Microsoft.UI.Dispatching;
 using CommunityToolkit.WinUI;
 using System;
 using System.Collections.Generic;
@@ -11,8 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+
 using static Files.Helpers.NativeFindStorageItemHelper;
 using FileAttributes = System.IO.FileAttributes;
+using Microsoft.UI.Dispatching;
 
 namespace Files.ViewModels.Properties
 {
@@ -23,8 +23,6 @@ namespace Files.ViewModels.Properties
 
         public CancellationTokenSource TokenSource { get; set; }
 
-        public DispatcherQueue Dispatcher { get; set; }
-
         public abstract void GetBaseProperties();
 
         public abstract void GetSpecialProperties();
@@ -32,23 +30,15 @@ namespace Files.ViewModels.Properties
         public async void GetOtherProperties(StorageItemContentProperties properties)
         {
             string dateAccessedProperty = "System.DateAccessed";
-            string fileOwnerProperty = "System.FileOwner";
             List<string> propertiesName = new List<string>();
             propertiesName.Add(dateAccessedProperty);
-            propertiesName.Add(fileOwnerProperty);
             IDictionary<string, object> extraProperties = await properties.RetrievePropertiesAsync(propertiesName);
 
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             string returnformat = Enum.Parse<TimeStyle>(localSettings.Values[Constants.LocalSettings.DateTimeFormat].ToString()) == TimeStyle.Application ? "D" : "g";
 
             // Cannot get date and owner in MTP devices
-            ViewModel.ItemAccessedTimestamp = ListedItem.GetFriendlyDateFromFormat((DateTimeOffset)(extraProperties[dateAccessedProperty] ?? DateTimeOffset.Now), returnformat);
-
-            if (App.AppSettings.ShowFileOwner)
-            {
-                // Cannot get date and owner in MTP devices
-                ViewModel.ItemFileOwner = extraProperties[fileOwnerProperty]?.ToString();
-            }
+            ViewModel.ItemAccessedTimestamp = ((DateTimeOffset)(extraProperties[dateAccessedProperty] ?? DateTimeOffset.Now)).GetFriendlyDateFromFormat(returnformat);
         }
 
         public async Task<long> CalculateFolderSizeAsync(string path, CancellationToken token)
@@ -92,12 +82,12 @@ namespace Files.ViewModels.Properties
 
                     if (size > ViewModel.ItemSizeBytes)
                     {
-                        App.mainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+                        await DispatcherQueue.GetForCurrentThread().EnqueueAsync(() =>
                         {
                             ViewModel.ItemSizeBytes = size;
                             ViewModel.ItemSize = ByteSize.FromBytes(size).ToBinaryString().ConvertSizeAbbreviation();
                             SetItemsCountString();
-                        });
+                        }, DispatcherQueuePriority.Low);
                     }
 
                     if (token.IsCancellationRequested)
@@ -116,8 +106,14 @@ namespace Files.ViewModels.Properties
 
         public void SetItemsCountString()
         {
-            ViewModel.FilesAndFoldersCountString = string.Format(
-                "PropertiesFilesAndFoldersCountString".GetLocalized(), ViewModel.FilesCount, ViewModel.FoldersCount);
+            if (ViewModel.LocationsCount > 0)
+            {
+                ViewModel.FilesAndFoldersCountString = string.Format("PropertiesFilesFoldersAndLocationsCountString".GetLocalized(), ViewModel.FilesCount, ViewModel.FoldersCount, ViewModel.LocationsCount);
+            }
+            else
+            {
+                ViewModel.FilesAndFoldersCountString = string.Format("PropertiesFilesAndFoldersCountString".GetLocalized(), ViewModel.FilesCount, ViewModel.FoldersCount);
+            }
         }
     }
 }

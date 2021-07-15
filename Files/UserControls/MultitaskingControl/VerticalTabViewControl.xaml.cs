@@ -1,11 +1,11 @@
-﻿using Files.Interacts;
-using Files.Views;
+﻿using Files.Helpers;
+using Files.ViewModels;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
+using Microsoft.UI.Xaml;
 
 namespace Files.UserControls.MultitaskingControl
 {
@@ -23,15 +23,23 @@ namespace Files.UserControls.MultitaskingControl
 
         private void VerticalTabView_TabItemsChanged(TabView sender, Windows.Foundation.Collections.IVectorChangedEventArgs args)
         {
-            switch (args.CollectionChange)
+            if (args.CollectionChange == Windows.Foundation.Collections.CollectionChange.ItemRemoved)
             {
-                case Windows.Foundation.Collections.CollectionChange.ItemRemoved:
-                    App.InteractionViewModel.TabStripSelectedIndex = Items.IndexOf(VerticalTabView.SelectedItem as TabItem);
-                    break;
+                App.MainViewModel.TabStripSelectedIndex = Items.IndexOf(VerticalTabView.SelectedItem as TabItem);
+            }
 
-                case Windows.Foundation.Collections.CollectionChange.ItemInserted:
-                    App.InteractionViewModel.TabStripSelectedIndex = (int)args.Index;
-                    break;
+            if (App.MainViewModel.TabStripSelectedIndex >= 0 && App.MainViewModel.TabStripSelectedIndex < Items.Count)
+            {
+                CurrentSelectedAppInstance = GetCurrentSelectedTabInstance();
+
+                if (CurrentSelectedAppInstance != null)
+                {
+                    OnCurrentInstanceChanged(new CurrentInstanceChangedEventArgs()
+                    {
+                        CurrentInstance = CurrentSelectedAppInstance,
+                        PageInstances = GetAllTabInstances()
+                    });
+                }
             }
         }
 
@@ -97,7 +105,7 @@ namespace Files.UserControls.MultitaskingControl
             VerticalTabView.CanReorderTabs = true;
         }
 
-        private void TabStrip_TabStripDrop(object sender, DragEventArgs e)
+        private async void TabStrip_TabStripDrop(object sender, DragEventArgs e)
         {
             VerticalTabView.CanReorderTabs = true;
             if (!(sender is TabView tabStrip))
@@ -125,7 +133,7 @@ namespace Files.UserControls.MultitaskingControl
 
             var tabViewItemArgs = TabItemArguments.Deserialize(tabViewItemString);
             ApplicationData.Current.LocalSettings.Values[TabDropHandledIdentifier] = true;
-            MainWindow.AddNewTabByParam(tabViewItemArgs.InitialPageType, tabViewItemArgs.NavigationArg, index);
+            await MainPageViewModel.AddNewTabByParam(tabViewItemArgs.InitialPageType, tabViewItemArgs.NavigationArg, index);
         }
 
         private void TabStrip_TabDragCompleted(TabView sender, TabViewTabDragCompletedEventArgs args)
@@ -133,7 +141,7 @@ namespace Files.UserControls.MultitaskingControl
             if (ApplicationData.Current.LocalSettings.Values.ContainsKey(TabDropHandledIdentifier) &&
                 (bool)ApplicationData.Current.LocalSettings.Values[TabDropHandledIdentifier])
             {
-                RemoveTab(args.Item as TabItem);
+                CloseTab(args.Item as TabItem);
             }
             else
             {
@@ -156,12 +164,14 @@ namespace Files.UserControls.MultitaskingControl
             var indexOfTabViewItem = sender.TabItems.IndexOf(args.Tab);
             var tabViewItemArgs = (args.Item as TabItem).TabItemArguments;
             var selectedTabViewItemIndex = sender.SelectedIndex;
-            RemoveTab(args.Item as TabItem);
-            if (!await Interaction.OpenTabInNewWindowAsync(tabViewItemArgs.Serialize()))
+            CloseTab(args.Item as TabItem);
+            if (!await NavigationHelpers.OpenTabInNewWindowAsync(tabViewItemArgs.Serialize()))
             {
                 sender.TabItems.Insert(indexOfTabViewItem, args.Tab);
                 sender.SelectedIndex = selectedTabViewItemIndex;
             }
         }
+
+        public override DependencyObject ContainerFromItem(ITabItem item) => VerticalTabView.ContainerFromItem(item);
     }
 }

@@ -1,0 +1,43 @@
+﻿using CommunityToolkit.WinUI;
+using Microsoft.UI.Dispatching;
+using System;
+using System.Diagnostics;
+using System.IO;
+using Windows.ApplicationModel.Core;
+using Windows.Foundation.Collections;
+
+
+namespace Files.Helpers
+{
+    public static class QuickLookHelpers
+    {
+        public static async void ToggleQuickLook(IShellPage associatedInstance)
+        {
+            try
+            {
+                if (associatedInstance.SlimContentPage.IsItemSelected && !associatedInstance.SlimContentPage.IsRenamingItem)
+                {
+                    Debug.WriteLine("Toggle QuickLook");
+                    if (associatedInstance.ServiceConnection != null)
+                    {
+                        await associatedInstance.ServiceConnection.SendMessageAsync(new ValueSet()
+                        {
+                            { "path", associatedInstance.SlimContentPage.SelectedItem.ItemPath },
+                            { "Arguments", "ToggleQuickLook" }
+                        });
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                await DialogDisplayHelper.ShowDialogAsync("FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundPreviewDialog/Text".GetLocalized());
+                associatedInstance.NavToolbarViewModel.CanRefresh = false;
+                await DispatcherQueue.GetForCurrentThread().EnqueueAsync(() =>
+                {
+                    var ContentOwnedViewModelInstance = associatedInstance.FilesystemViewModel;
+                    ContentOwnedViewModelInstance?.RefreshItems(null);
+                });
+            }
+        }
+    }
+}

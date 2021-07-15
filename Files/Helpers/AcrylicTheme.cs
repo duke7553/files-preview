@@ -1,6 +1,7 @@
-﻿using Microsoft.UI;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Windows.UI;
 
 namespace Files.Helpers
@@ -8,8 +9,6 @@ namespace Files.Helpers
     public class AcrylicTheme : INotifyPropertyChanged
     {
         private Color fallbackColor;
-        private Color tintColor;
-        private double tintOpacity;
 
         public Color FallbackColor
         {
@@ -18,26 +17,6 @@ namespace Files.Helpers
             {
                 fallbackColor = value;
                 NotifyPropertyChanged(nameof(FallbackColor));
-            }
-        }
-
-        public Color TintColor
-        {
-            get { return tintColor; }
-            set
-            {
-                tintColor = value;
-                NotifyPropertyChanged(nameof(TintColor));
-            }
-        }
-
-        public double TintOpacity
-        {
-            get { return tintOpacity; }
-            set
-            {
-                tintOpacity = value;
-                NotifyPropertyChanged(nameof(TintOpacity));
             }
         }
 
@@ -50,32 +29,29 @@ namespace Files.Helpers
 
         public AcrylicTheme()
         {
+            FallbackColor = (Color)App.Current.Resources["SolidBackgroundFillColorBase"];
         }
 
         public void SetDefaultTheme()
         {
-            //if (App.Current.RequestedTheme == ApplicationTheme.Light)
-            //{
-            SetLightTheme();
-            //}
-            //else if (App.Current.RequestedTheme == ApplicationTheme.Dark)
-            //{
-            //    SetDarkTheme();
-            //}
+            if (Application.Current.RequestedTheme == ApplicationTheme.Light)
+            {
+                SetLightTheme();
+            }
+            else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
+            {
+                SetDarkTheme();
+            }
         }
 
         public void SetLightTheme()
         {
-            FallbackColor = Color.FromArgb(255, 250, 249, 248);
-            TintColor = Colors.White;
-            TintOpacity = 0.9;
+            FallbackColor = (Color)App.Current.Resources["SolidBackgroundFillColorBase"];
         }
 
         public void SetDarkTheme()
         {
-            FallbackColor = Color.FromArgb(255, 50, 49, 48);
-            TintColor = Colors.Black;
-            TintOpacity = 0.7;
+            FallbackColor = (Color)App.Current.Resources["SolidBackgroundFillColorBase"];
         }
     }
 }

@@ -1,19 +1,25 @@
-﻿using Files.Filesystem;
-using Files.Interacts;
+﻿using Files.DataModels.NavigationControlItems;
+using Files.Filesystem;
+using Files.Helpers;
 using Files.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Hosting;
+using Files.ViewModels.Widgets;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.CompilerServices;
+using Windows.Foundation.Collections;
+using Windows.System;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Input;
+using Windows.UI.Core;
 
 namespace Files.UserControls.Widgets
 {
-    public sealed partial class DrivesWidget : UserControl, INotifyPropertyChanged
+    public sealed partial class DrivesWidget : UserControl, IWidgetItemModel, INotifyPropertyChanged
     {
         public SettingsViewModel AppSettings => App.AppSettings;
 
@@ -44,6 +50,10 @@ namespace Files.UserControls.Widgets
             }
         }
 
+        public string WidgetName => nameof(DrivesWidget);
+
+        public bool IsWidgetSettingEnabled => App.AppSettings.ShowDrivesWidget;
+
         public DrivesWidget()
         {
             InitializeComponent();
@@ -57,33 +67,40 @@ namespace Files.UserControls.Widgets
         private async void EjectDevice_Click(object sender, RoutedEventArgs e)
         {
             var item = ((MenuFlyoutItem)sender).DataContext as DriveItem;
-            await Interaction.EjectDeviceAsync(item.Path);
+            await DriveHelpers.EjectDeviceAsync(item.Path);
         }
 
-        private void OpenInNewTab_Click(object sender, RoutedEventArgs e)
+        private async void OpenInNewTab_Click(object sender, RoutedEventArgs e)
         {
             var item = ((MenuFlyoutItem)sender).DataContext as DriveItem;
-            Interaction.OpenPathInNewTab(item.Path);
+            await NavigationHelpers.OpenPathInNewTab(item.Path);
         }
 
         private async void OpenInNewWindow_Click(object sender, RoutedEventArgs e)
         {
             var item = ((MenuFlyoutItem)sender).DataContext as DriveItem;
-            await Interaction.OpenPathInNewWindowAsync(item.Path);
+            await NavigationHelpers.OpenPathInNewWindowAsync(item.Path);
         }
 
         private async void OpenDriveProperties_Click(object sender, RoutedEventArgs e)
         {
             var item = ((MenuFlyoutItem)sender).DataContext as DriveItem;
-            await AppInstance.InteractionOperations.OpenPropertiesWindowAsync(item);
+            FilePropertiesHelpers.OpenPropertiesWindow(item, associatedInstance);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             string NavigationPath = ""; // path to navigate
             string ClickedCard = (sender as Button).Tag.ToString();
 
             NavigationPath = ClickedCard;
+
+            var ctrlPressed = KeyboardInput.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
+            if (ctrlPressed)
+            {
+                await NavigationHelpers.OpenPathInNewTab(NavigationPath);
+                return;
+            }
 
             DrivesWidgetInvoked?.Invoke(this, new DrivesWidgetInvokedEventArgs()
             {
@@ -91,40 +108,23 @@ namespace Files.UserControls.Widgets
             });
         }
 
+        private async void Button_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.GetCurrentPoint(null).Properties.IsMiddleButtonPressed) // check middle click
+            {
+                string navigationPath = (sender as Button).Tag.ToString();
+                await NavigationHelpers.OpenPathInNewTab(navigationPath);
+            }
+        }
+
         public class DrivesWidgetInvokedEventArgs : EventArgs
         {
             public string Path { get; set; }
         }
 
-        private void GridScaleUp(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-        {
-            // Source for the scaling: https://github.com/windows-toolkit/WindowsCommunityToolkit/blob/master/CommunityToolkit.WinUI.SampleApp/SamplePages/Implicit%20Animations/ImplicitAnimationsPage.xaml.cs
-            // Search for "Scale Element".
-            var element = sender as UIElement;
-            var visual = ElementCompositionPreview.GetElementVisual(element);
-            visual.Scale = new Vector3(1.02f, 1.02f, 1);
-        }
-
-        private void GridScaleNormal(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-        {
-            var element = sender as UIElement;
-            var visual = ElementCompositionPreview.GetElementVisual(element);
-            visual.Scale = new Vector3(1);
-        }
-
-        private bool showMultiPaneControls;
-
         public bool ShowMultiPaneControls
         {
-            get => showMultiPaneControls;
-            set
-            {
-                if (value != showMultiPaneControls)
-                {
-                    showMultiPaneControls = value;
-                    NotifyPropertyChanged(nameof(ShowMultiPaneControls));
-                }
-            }
+            get => AppInstance.PaneHolder?.IsMultiPaneEnabled ?? false;
         }
 
         private void OpenInNewPane_Click(object sender, RoutedEventArgs e)
@@ -140,6 +140,42 @@ namespace Files.UserControls.Widgets
         {
             var newPaneMenuItem = (sender as MenuFlyout).Items.Single(x => x.Name == "OpenInNewPane");
             newPaneMenuItem.Visibility = ShowMultiPaneControls ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private async void MapNetworkDrive_Click(object sender, RoutedEventArgs e)
+        {
+            if (AppInstance.ServiceConnection != null)
+            {
+                await AppInstance.ServiceConnection.SendMessageAsync(new ValueSet()
+                    {
+                        { "Arguments", "NetworkDriveOperation" },
+                        { "netdriveop", "OpenMapNetworkDriveDialog" },
+                        { "HWND", NativeWinApiHelper.CoreWindowHandle.ToInt64() }
+                    });
+            }
+        }
+
+        private async void DisconnectNetworkDrive_Click(object sender, RoutedEventArgs e)
+        {
+            var item = ((MenuFlyoutItem)sender).DataContext as DriveItem;
+            if (AppInstance.ServiceConnection != null)
+            {
+                await AppInstance.ServiceConnection.SendMessageAsync(new ValueSet()
+                    {
+                        { "Arguments", "NetworkDriveOperation" },
+                        { "netdriveop", "DisconnectNetworkDrive" },
+                        { "drive", item.Path }
+                    });
+            }
+        }
+
+        private async void GoToStorageSense_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri("ms-settings:storagesense"));
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

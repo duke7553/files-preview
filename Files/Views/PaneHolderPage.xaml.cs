@@ -1,10 +1,7 @@
-﻿using Files.UserControls.MultitaskingControl;
+﻿using Files.Filesystem;
+using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -12,52 +9,54 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Navigation;
+
 namespace Files.Views
 {
-    public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabItemContent, INotifyPropertyChanged
+    public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabItemContent
     {
+        public bool IsLeftPaneActive => ActivePane == PaneLeft;
+        public bool IsRightPaneActive => ActivePane == PaneRight;
+
+        public event EventHandler<TabItemArguments> ContentChanged;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public SettingsViewModel AppSettings => App.AppSettings;
+        public IFilesystemHelpers FilesystemHelpers => ActivePane?.FilesystemHelpers;
 
-        public PaneHolderPage()
+        private TabItemArguments tabItemArguments;
+
+        public TabItemArguments TabItemArguments
         {
-            this.InitializeComponent();
-
-            AppSettings.PropertyChanged += AppSettings_PropertyChanged;
-            App.mainWindow.SizeChanged += Current_SizeChanged;
-            Current_SizeChanged(null, null);
-
-            this.ActivePane = PaneLeft;
-            this.IsRightPaneVisible = IsMultiPaneEnabled && AppSettings.AlwaysOpenDualPaneInNewTab;
-        }
-
-        private void AppSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
+            get => tabItemArguments;
+            set
             {
-                case nameof(AppSettings.IsDualPaneEnabled):
-                    NotifyPropertyChanged(nameof(IsMultiPaneEnabled));
-                    break;
+                if (tabItemArguments != value)
+                {
+                    tabItemArguments = value;
+                    ContentChanged?.Invoke(this, value);
+                }
             }
         }
 
-        private void Current_SizeChanged(object sender, WindowSizeChangedEventArgs e)
+        private bool _windowIsCompact = App.MainWindow.Bounds.Width <= 750;
+
+        private bool windowIsCompact
         {
-            IsWindowCompactSize = App.mainWindow.Bounds.Width <= 800;
-        }
-
-        private bool wasRightPaneVisible;
-
-        private bool isWindowCompactSize;
-
-        public bool IsWindowCompactSize
-        {
-            get => isWindowCompactSize;
+            get
+            {
+                return _windowIsCompact;
+            }
             set
             {
-                if (isWindowCompactSize != value)
+                if (value != _windowIsCompact)
                 {
-                    isWindowCompactSize = value;
-                    if (isWindowCompactSize)
+                    _windowIsCompact = value;
+                    if (value)
                     {
                         wasRightPaneVisible = isRightPaneVisible;
                         IsRightPaneVisible = false;
@@ -67,15 +66,18 @@ namespace Files.Views
                         IsRightPaneVisible = true;
                         wasRightPaneVisible = false;
                     }
-                    NotifyPropertyChanged(nameof(IsWindowCompactSize));
                     NotifyPropertyChanged(nameof(IsMultiPaneEnabled));
                 }
             }
         }
 
+        private bool wasRightPaneVisible;
+
+        public bool IsMultiPaneActive => IsRightPaneVisible;
+
         public bool IsMultiPaneEnabled
         {
-            get => AppSettings.IsDualPaneEnabled && !IsWindowCompactSize;
+            get => AppSettings.IsDualPaneEnabled && !(App.MainWindow.Bounds.Width <= 750);
         }
 
         private string navParamsLeft;
@@ -130,13 +132,10 @@ namespace Files.Views
                     NotifyPropertyChanged(nameof(ActivePane));
                     NotifyPropertyChanged(nameof(IsLeftPaneActive));
                     NotifyPropertyChanged(nameof(IsRightPaneActive));
+                    NotifyPropertyChanged(nameof(FilesystemHelpers));
                 }
             }
         }
-
-        public bool IsLeftPaneActive => ActivePane == PaneLeft;
-
-        public bool IsRightPaneActive => ActivePane == PaneRight;
 
         private bool isRightPaneVisible;
 
@@ -154,6 +153,7 @@ namespace Files.Views
                     }
                     Pane_ContentChanged(null, null);
                     NotifyPropertyChanged(nameof(IsRightPaneVisible));
+                    NotifyPropertyChanged(nameof(IsMultiPaneActive));
                 }
             }
         }
@@ -178,18 +178,26 @@ namespace Files.Views
             }
         }
 
-        public event EventHandler<TabItemArguments> ContentChanged;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        public PaneHolderPage()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            this.InitializeComponent();
+            App.MainWindow.SizeChanged += Current_SizeChanged;
+            this.ActivePane = PaneLeft;
+            this.IsRightPaneVisible = IsMultiPaneEnabled && AppSettings.AlwaysOpenDualPaneInNewTab;
+            App.AppSettings.PropertyChanged += AppSettings_PropertyChanged;
+
+            // TODO: fallback / error when failed to get NavigationViewCompactPaneLength value?
+        }
+
+        private void Current_SizeChanged(object sender, WindowSizeChangedEventArgs e)
+        {
+            windowIsCompact = App.MainWindow.Bounds.Width <= 750;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs eventArgs)
         {
             base.OnNavigatedTo(eventArgs);
+
             if (eventArgs.Parameter is string navPath)
             {
                 NavParamsLeft = navPath;
@@ -201,14 +209,26 @@ namespace Files.Views
                 NavParamsRight = paneArgs.RightPaneNavPathParam;
                 IsRightPaneVisible = IsMultiPaneEnabled && paneArgs.RightPaneNavPathParam != null;
             }
+
+            TabItemArguments = new TabItemArguments()
+            {
+                InitialPageType = typeof(PaneHolderPage),
+                NavigationArg = new PaneNavigationArguments()
+                {
+                    LeftPaneNavPathParam = NavParamsLeft,
+                    RightPaneNavPathParam = IsRightPaneVisible ? NavParamsRight : null
+                }
+            };
         }
 
-        public void Dispose()
+        private void AppSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            PaneLeft?.Dispose();
-            PaneRight?.Dispose();
-            App.mainWindow.SizeChanged -= Current_SizeChanged;
-            AppSettings.PropertyChanged -= AppSettings_PropertyChanged;
+            switch (e.PropertyName)
+            {
+                case nameof(App.AppSettings.IsDualPaneEnabled):
+                    NotifyPropertyChanged(nameof(IsMultiPaneEnabled));
+                    break;
+            }
         }
 
         private void PaneLeft_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -228,21 +248,6 @@ namespace Files.Views
             if (PaneRight != null && PaneRight.ActualWidth <= 300)
             {
                 IsRightPaneVisible = false;
-            }
-        }
-
-        private TabItemArguments tabItemArguments;
-
-        public TabItemArguments TabItemArguments
-        {
-            get => tabItemArguments;
-            set
-            {
-                if (tabItemArguments != value)
-                {
-                    tabItemArguments = value;
-                    ContentChanged?.Invoke(this, value);
-                }
             }
         }
 
@@ -322,6 +327,25 @@ namespace Files.Views
                     }
                     break;
             }
+        }
+
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
+            App.AppSettings.PropertyChanged -= AppSettings_PropertyChanged;
+            App.MainWindow.SizeChanged -= Current_SizeChanged;
+            PaneLeft?.Dispose();
+            PaneRight?.Dispose();
+        }
+
+        public void CloseActivePane()
+        {
+            // Can only close right pane atm
+            IsRightPaneVisible = false;
         }
     }
 

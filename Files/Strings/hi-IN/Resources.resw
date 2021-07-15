@@ -12,29 +12,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ConfirmDeleteDialog.Title" xml:space="preserve">
-    <value>वस्तु(ओं) को हटाएं</value>
-  </data>
-  <data name="ConfirmDeleteDialogCancelButton.Content" xml:space="preserve">
-    <value>रद्द करें</value>
-  </data>
-  <data name="ConfirmDeleteDialogDeleteButton.Content" xml:space="preserve">
-    <value>हटाएँ</value>
-  </data>
-  <data name="ConfirmDeleteDialogPermanentlyDeleteCheckBox.Content" xml:space="preserve">
-    <value>स्थायी रूप से हटाएं</value>
-  </data>
   <data name="SideBarOpenInNewTab.Text" xml:space="preserve">
     <value>नए टैब में खोलें</value>
   </data>
   <data name="SideBarOpenInNewWindow.Text" xml:space="preserve">
     <value>नई विंडो में खोलें</value>
-  </data>
-  <data name="NavigationToolbarNewTab.Text" xml:space="preserve">
-    <value>नया टैब</value>
-  </data>
-  <data name="NavigationToolbarNewWindow.Text" xml:space="preserve">
-    <value>नई विंडो</value>
   </data>
   <data name="ModernNavigationToolbaNewFolder.Text" xml:space="preserve">
     <value>फ़ोल्डर</value>
@@ -44,12 +26,6 @@
   </data>
   <data name="ModernNavigationToolbaNewTextDocument.Text" xml:space="preserve">
     <value>लिखित दस्तावेज़</value>
-  </data>
-  <data name="NavigationToolbarCopyPath.Text" xml:space="preserve">
-    <value>मार्ग प्रतिलिपि</value>
-  </data>
-  <data name="NavigationToolbarPaste.Text" xml:space="preserve">
-    <value>चिपकाएँ</value>
   </data>
   <data name="SidebarDrives" xml:space="preserve">
     <value>ड्राइव्ज़</value>
@@ -65,9 +41,6 @@
   </data>
   <data name="sizeColumn.Header" xml:space="preserve">
     <value>आकार</value>
-  </data>
-  <data name="NavigationToolbarOpenInTerminal.Text" xml:space="preserve">
-    <value>टर्मिनल में खोलें ...</value>
   </data>
   <data name="PropertiesCreated.Text" xml:space="preserve">
     <value>बनाया गया:</value>
@@ -99,13 +72,13 @@
   <data name="PropertiesItemType.Text" xml:space="preserve">
     <value>वस्तु प्रकार:</value>
   </data>
-  <data name="StatusBarControlSelectAll.Text" xml:space="preserve">
+  <data name="NavToolbarSelectAll.Text" xml:space="preserve">
     <value>सभी चयन करें</value>
   </data>
-  <data name="StatusBarControlInvertSelection.Text" xml:space="preserve">
+  <data name="NavToolbarInvertSelection.Text" xml:space="preserve">
     <value>उलटा चयन</value>
   </data>
-  <data name="StatusBarControlClearSelection.Text" xml:space="preserve">
+  <data name="NavToolbarClearSelection.Text" xml:space="preserve">
     <value>चयन खाली करें</value>
   </data>
   <data name="BaseLayoutContextFlyoutDetails.Text" xml:space="preserve">
@@ -116,9 +89,6 @@
   </data>
   <data name="PropertiesAccessed.Text" xml:space="preserve">
     <value>एक्सेस किया गया:</value>
-  </data>
-  <data name="PropertiesOwner.Text" xml:space="preserve">
-    <value>मालिक:</value>
   </data>
   <data name="RecentItemClearAll.Text" xml:space="preserve">
     <value>सभी वस्तुओं को साफ़ करें</value>
@@ -138,17 +108,8 @@
   <data name="RecentItemRemove.Text" xml:space="preserve">
     <value>इस वस्तु को निकालें</value>
   </data>
-  <data name="RecentItems.Text" xml:space="preserve">
-    <value>हाल ही का वस्तु</value>
-  </data>
-  <data name="SettingsAboutAppName.Text" xml:space="preserve">
-    <value>Files UWP</value>
-  </data>
   <data name="SettingsAboutSubmitFeedback.Text" xml:space="preserve">
     <value>प्रतिक्रिया सबमिट करें</value>
-  </data>
-  <data name="SettingsAboutSubmitFeedbackDescription.Text" xml:space="preserve">
-    <value>डेवलपर्स को अधिक जानकारी के साथ एक समस्या रिपोर्ट भेजें</value>
   </data>
   <data name="SettingsAboutThirdPartyLicenses.Text" xml:space="preserve">
     <value>तृतीय पक्ष लाइसेंस</value>
@@ -164,9 +125,6 @@
   </data>
   <data name="SettingsExperimentalTitle.Text" xml:space="preserve">
     <value>प्रयोगात्मक</value>
-  </data>
-  <data name="SettingsPageHeader.Text" xml:space="preserve">
-    <value>सेटिंग्स</value>
   </data>
   <data name="SettingsNavAbout.Content" xml:space="preserve">
     <value>बारे में</value>
@@ -264,9 +222,6 @@
   <data name="PropertiesItemMD5Hash.Text" xml:space="preserve">
     <value>MD5 हैश:</value>
   </data>
-  <data name="BaseLayoutContextFlyoutNew.Text" xml:space="preserve">
-    <value>नया</value>
-  </data>
   <data name="BaseLayoutContextFlyoutNewFolder.Text" xml:space="preserve">
     <value>फ़ोल्डर</value>
   </data>
@@ -303,14 +258,8 @@
   <data name="BaseLayoutItemContextFlyoutRename.Text" xml:space="preserve">
     <value>पुनर्नाम</value>
   </data>
-  <data name="BaseLayoutItemContextFlyoutPinToSidebar.Text" xml:space="preserve">
-    <value>साइडबार मे पिन करें</value>
-  </data>
   <data name="BaseLayoutItemContextFlyoutProperties.Text" xml:space="preserve">
     <value>गुण</value>
-  </data>
-  <data name="BaseLayoutItemContextFlyoutQuickLook.Text" xml:space="preserve">
-    <value>क्विकलुक</value>
   </data>
   <data name="WelcomeDialog.Title" xml:space="preserve">
     <value>Files UWP में आपका स्वागत है</value>
@@ -377,9 +326,6 @@
   </data>
   <data name="NavSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>खोजें</value>
-  </data>
-  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>अधिक विकल्प</value>
   </data>
   <data name="PropertiesTitle" xml:space="preserve">
     <value>गुण</value>
@@ -462,9 +408,6 @@
   <data name="FileInUseDeleteDialog.SecondaryButtonText" xml:space="preserve">
     <value>ठीक है</value>
   </data>
-  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>चयन विकल्प</value>
-  </data>
   <data name="BaseLayoutContextFlyoutEmptyRecycleBin.Text" xml:space="preserve">
     <value>रीसायकल बिन खाली करें</value>
   </data>
@@ -513,12 +456,6 @@
   <data name="RenameDialogSymbolsTip.Text" xml:space="preserve">
     <value>आइटम नाम में निम्नलिखित वर्ण नहीं होने चाहिए: \/:*? " &lt; &gt; |</value>
   </data>
-  <data name="SettingsAboutOpenLogLocationButton.Content" xml:space="preserve">
-    <value>लॉग स्थान खोलें</value>
-  </data>
-  <data name="TabStripAddNewTab.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>नया टैब (Ctrl + T)</value>
-  </data>
   <data name="ItemSelected.Text" xml:space="preserve">
     <value>चयनित वस्तु</value>
   </data>
@@ -539,9 +476,6 @@
   </data>
   <data name="RecycleInProgress.Title" xml:space="preserve">
     <value>फ़ाइलों को रीसायकल बिन में ले जा रहा है</value>
-  </data>
-  <data name="BaseLayoutContextFlyoutPinDirectoryToSidebar.Text" xml:space="preserve">
-    <value>डायरेक्ट्री को साइडबार मे पिन करें</value>
   </data>
   <data name="ConfirmEmptyBinDialog.PrimaryButtonText" xml:space="preserve">
     <value>ठीक है</value>
@@ -579,7 +513,7 @@
   <data name="BaseLayoutContextFlyoutRunAsAdmin.Text" xml:space="preserve">
     <value>प्रशासक के रूप में भागो</value>
   </data>
-  <data name="SettingsAppearanceDateFormatsTip.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SettingsDateFormatsTip.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>तारीख प्रारूपों के बारे में अधिक जानें</value>
   </data>
   <data name="BitlockerDialog.PrimaryButtonText" xml:space="preserve">
@@ -633,9 +567,6 @@
   <data name="JumpListRecentGroupHeader" xml:space="preserve">
     <value>हाल में</value>
   </data>
-  <data name="SettingsPreferencesAppLanguage.Text" xml:space="preserve">
-    <value>ऐप लैंग्वेज</value>
-  </data>
   <data name="syncStatusColumn.Header" xml:space="preserve">
     <value>स्थिति</value>
   </data>
@@ -688,7 +619,7 @@
     <value>तर्क</value>
   </data>
   <data name="PropertiesShortcutItemPath.Text" xml:space="preserve">
-    <value>गंतव्य</value>
+    <value>मंजिल:</value>
   </data>
   <data name="PropertiesShortcutItemWorkingDir.Text" xml:space="preserve">
     <value>कार्य निर्देशिका:</value>
@@ -750,17 +681,8 @@
   <data name="PropertiesDialogCancelButton.Content" xml:space="preserve">
     <value>रद्द करें</value>
   </data>
-  <data name="ConfirmDeleteDialogDeleteOneItem.Text" xml:space="preserve">
-    <value>क्‍या आप वाकई यह आइटम हटाना चाहते हैं?</value>
-  </data>
-  <data name="SettingsMultitaskingHorizontal.Content" xml:space="preserve">
-    <value>क्षैतिज्य</value>
-  </data>
   <data name="SettingsMultitaskingTitle.Text" xml:space="preserve">
     <value>मल्टिटास्किंग</value>
-  </data>
-  <data name="SettingsMultitaskingVertical.Content" xml:space="preserve">
-    <value>अनुलंब</value>
   </data>
   <data name="SettingsNavMultitasking.Content" xml:space="preserve">
     <value>मल्टिटास्किंग</value>
@@ -789,23 +711,11 @@
   <data name="NavForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>आगे नेविगेट करें</value>
   </data>
-  <data name="SettingsPreferencesAppLanguage.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>ऐप भाषा</value>
-  </data>
-  <data name="SettingsPreferencesAppLanguage.Header" xml:space="preserve">
-    <value>ऐप भाषा</value>
-  </data>
   <data name="AccessDeniedCreateDialog.Title" xml:space="preserve">
     <value>प्रवेश निषेध</value>
   </data>
-  <data name="SettingsAppearanceDateFormat.Header" xml:space="preserve">
+  <data name="SettingsDateFormat.Header" xml:space="preserve">
     <value>दिनांक स्वरूप</value>
-  </data>
-  <data name="NavMoreButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>अधिक विकल्प</value>
-  </data>
-  <data name="StatusBarControlSelectionOptions.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>चयन विकल्प</value>
   </data>
   <data name="FileItemAutomation" xml:space="preserve">
     <value>फ़ाइल</value>
@@ -818,18 +728,6 @@
   </data>
   <data name="DrivesWidgetDescription.Text" xml:space="preserve">
     <value>ड्राइव:</value>
-  </data>
-  <data name="SettingsWidgetsTitle.Text" xml:space="preserve">
-    <value>विजेट्स</value>
-  </data>
-  <data name="SettingsWidgets.Content" xml:space="preserve">
-    <value>विजेट्स</value>
-  </data>
-  <data name="SettingsFilesAndFoldersShowHiddenItems.Header" xml:space="preserve">
-    <value>छुपी हुई फ़ाइलें और फ़ोल्डर दिखाएँ</value>
-  </data>
-  <data name="SettingsFilesAndFoldersShowHiddenItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>छुपी हुई फ़ाइलें और फ़ोल्डर दिखाएँ</value>
   </data>
   <data name="SideBarEjectDevice.Text" xml:space="preserve">
     <value>बाहर निकालें</value>
@@ -848,6 +746,12 @@
   </data>
   <data name="PropertiesDialogHidden.Text" xml:space="preserve">
     <value>छुपे हुए</value>
+  </data>
+  <data name="PropertyRatingText" xml:space="preserve">
+    <value>रेटिंग</value>
+  </data>
+  <data name="PropertyItemTypeText" xml:space="preserve">
+    <value>आइटम प्रकार</value>
   </data>
   <data name="PropertyTitle" xml:space="preserve">
     <value>शीर्षक</value>
@@ -876,6 +780,9 @@
   <data name="PropertyVerticalSize" xml:space="preserve">
     <value>अनुलंब आकार</value>
   </data>
+  <data name="PropertyCompressionText" xml:space="preserve">
+    <value>संकुचन</value>
+  </data>
   <data name="PropertyLatitude" xml:space="preserve">
     <value>अक्षांश</value>
   </data>
@@ -896,6 +803,9 @@
   </data>
   <data name="PropertySampleRate" xml:space="preserve">
     <value>नमूना दर</value>
+  </data>
+  <data name="PropertyDisplayArtist" xml:space="preserve">
+    <value>कलाकार:</value>
   </data>
   <data name="PropertyAlbumArtist" xml:space="preserve">
     <value>एल्बम कलाकार:</value>
@@ -1029,21 +939,6 @@
   <data name="PropertyColorSpace_Value65535" xml:space="preserve">
     <value>अनिर्दिष्ट.</value>
   </data>
-  <data name="SettingsAboutLicense.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>लायसेंस</value>
-  </data>
-  <data name="SettingsAboutLicense.Content" xml:space="preserve">
-    <value>लायसेंस</value>
-  </data>
-  <data name="SettingsAboutWebsite.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>वेबसाइट</value>
-  </data>
-  <data name="SettingsAboutWebsite.Content" xml:space="preserve">
-    <value>वेबसाइट</value>
-  </data>
-  <data name="DragDropWindowText" xml:space="preserve">
-    <value>यहाँ छोड़ें...</value>
-  </data>
   <data name="SearchTabHeaderText" xml:space="preserve">
     <value>खोज परिणाम</value>
   </data>
@@ -1058,12 +953,6 @@
   </data>
   <data name="UpdateConsentDialogTitle" xml:space="preserve">
     <value>अद्यतन उपलब्ध</value>
-  </data>
-  <data name="SettingsFilesAndFoldersHideSystemItems.Header" xml:space="preserve">
-    <value>रक्षित ऑपरेटिंग सिस्टम फ़ाइलें छुपाएँ (अनुशंसित)</value>
-  </data>
-  <data name="SettingsFilesAndFoldersHideSystemItems.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>रक्षित ऑपरेटिंग सिस्टम फ़ाइलें छुपाएँ (अनुशंसित)</value>
   </data>
   <data name="BaseLayoutContextFlyoutNewFile.Text" xml:space="preserve">
     <value>फ़ाइल</value>
@@ -1085,5 +974,161 @@
   </data>
   <data name="ItemAlreadyExistsDialogCloseButtonText" xml:space="preserve">
     <value>रद्द करें</value>
+  </data>
+  <data name="FolderWidgetDescription.Text" xml:space="preserve">
+    <value>फ़ोल्डर्स</value>
+  </data>
+  <data name="NavToolbarDetailsView.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>विवरण दृश्‍य</value>
+  </data>
+  <data name="NavToolbarDisplayOptions.Text" xml:space="preserve">
+    <value>विकल्प प्रदर्शित करें</value>
+  </data>
+  <data name="NavToolbarShowFileExtensions.Header" xml:space="preserve">
+    <value>फ़ाइल एक्स्टेंशन्स दिखाएँ</value>
+  </data>
+  <data name="PropertyItemPathDisplay" xml:space="preserve">
+    <value>मद पथ</value>
+  </data>
+  <data name="NavToolbarDetailsView.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>विवरण दृश्‍य</value>
+  </data>
+  <data name="BaseLayoutContextFlyoutSortByDateDeleted.Text" xml:space="preserve">
+    <value>हटाए जाने की तिथि</value>
+  </data>
+  <data name="dateDeletedColumn.Header" xml:space="preserve">
+    <value>हटाए जाने की तिथि</value>
+  </data>
+  <data name="BundlesWidgetAddBundleConfirm.Content" xml:space="preserve">
+    <value>पुष्टि करें</value>
+  </data>
+  <data name="BundlesWidgetRenameBundleDialogCloseButtonText" xml:space="preserve">
+    <value>रद्द करें</value>
+  </data>
+  <data name="BundlesWidgetRenameBundleDialogPrimaryButtonText" xml:space="preserve">
+    <value>पुष्टि करें</value>
+  </data>
+  <data name="BundlesWidgetRenameBundleDialogTitleText" xml:space="preserve">
+    <value>"{0}" का नाम बदलें</value>
+  </data>
+  <data name="BundlesWidgetCreateBundleDialogCloseButtonText" xml:space="preserve">
+    <value>रद्द करें</value>
+  </data>
+  <data name="BundlesWidgetCreateBundleDialogPrimaryButtonText" xml:space="preserve">
+    <value>पुष्टि करें</value>
+  </data>
+  <data name="BundlesWidgetCreateBundleDialogSubtitleText" xml:space="preserve">
+    <value>बंडल जोड़ें</value>
+  </data>
+  <data name="BundleItemFlyouOpenInNewTabMenuItem.Text" xml:space="preserve">
+    <value>नए टैब में खोलें</value>
+  </data>
+  <data name="BundlesWidgetHeader.Text" xml:space="preserve">
+    <value>बंडल्स</value>
+  </data>
+  <data name="BundlesWidgetCreateBundleConfirmButton.Content" xml:space="preserve">
+    <value>पुष्टि करें</value>
+  </data>
+  <data name="BundlesWidgetMoreOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>अधिक विकल्प</value>
+  </data>
+  <data name="PropertyItemName" xml:space="preserve">
+    <value>आइटम नाम</value>
+  </data>
+  <data name="Network" xml:space="preserve">
+    <value>नेटवर्क</value>
+  </data>
+  <data name="DrivesWidgetContextFlyoutPropertiesMenuItem.Text" xml:space="preserve">
+    <value>गुण</value>
+  </data>
+  <data name="PreviewPaneFileDetails.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>फ़ाइल विवरण</value>
+  </data>
+  <data name="SettingsAboutDocumentation.Text" xml:space="preserve">
+    <value>दस्तावेज़ीकरण</value>
+  </data>
+  <data name="CloudDriveSyncStatus_Online" xml:space="preserve">
+    <value>ऑनलाइन होने पर उपलब्ध</value>
+  </data>
+  <data name="CloudDriveSyncStatus_Offline" xml:space="preserve">
+    <value>ऑफ़लाइन उपलब्‍ध</value>
+  </data>
+  <data name="CloudDriveSyncStatus_Sync" xml:space="preserve">
+    <value>सिंक्रनाइज़ हो रहा है</value>
+  </data>
+  <data name="CloudDriveSyncStatus_Unknown" xml:space="preserve">
+    <value>अज्ञात</value>
+  </data>
+  <data name="DriveTypeFloppyDisk" xml:space="preserve">
+    <value>फ़्लॉपी डिस्क ड्राइव</value>
+  </data>
+  <data name="DriveTypeNetwork" xml:space="preserve">
+    <value>नेटवर्क ड्राइव</value>
+  </data>
+  <data name="DriveTypeUnknown" xml:space="preserve">
+    <value>अज्ञात</value>
+  </data>
+  <data name="BaseLayoutContextFlyoutSortByDateCreated.Text" xml:space="preserve">
+    <value>निर्माण दिनांक</value>
+  </data>
+  <data name="DateCreatedColumn.Header" xml:space="preserve">
+    <value>निर्माण दिनांक</value>
+  </data>
+  <data name="DrivesWidgetMoreOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>अधिक विकल्प</value>
+  </data>
+  <data name="DrivesWidgetOptionsFlyoutMapNetDriveMenuItem.Text" xml:space="preserve">
+    <value>नेटवर्क ड्राइव मैप करें</value>
+  </data>
+  <data name="SideBarDisconnectNetworkDrive.Text" xml:space="preserve">
+    <value>डिस्कनेक्ट करें</value>
+  </data>
+  <data name="SidebarFavorites" xml:space="preserve">
+    <value>पसंदीदा</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>ब्राउज़</value>
+  </data>
+  <data name="DetailsPanePreviewNotAvaliableText" xml:space="preserve">
+    <value>कोई पूर्वावलोकन उपलब्ध नहीं</value>
+  </data>
+  <data name="PreviewPaneDetailsNotAvailableText" xml:space="preserve">
+    <value>कोई विवरण उपलब्ध नहीं.</value>
+  </data>
+  <data name="NoItemSelected" xml:space="preserve">
+    <value>कोई आइटम चयनित नहीं</value>
+  </data>
+  <data name="PropertyItemTarget" xml:space="preserve">
+    <value>लक्ष्य</value>
+  </data>
+  <data name="PropertyItemArguments" xml:space="preserve">
+    <value>तर्क</value>
+  </data>
+  <data name="SidebarLibraries" xml:space="preserve">
+    <value>लायब्रेरीज़</value>
+  </data>
+  <data name="PropertyItemCount" xml:space="preserve">
+    <value>आइटम संख्या</value>
+  </data>
+  <data name="StatusUnknownError" xml:space="preserve">
+    <value>कोई अज्ञात त्रुटि उत्पन्न हुई.</value>
+  </data>
+  <data name="ElevateConfirmDialog.CloseButtonText" xml:space="preserve">
+    <value>नहीं</value>
+  </data>
+  <data name="ElevateConfirmDialog.PrimaryButtonText" xml:space="preserve">
+    <value>हाँ</value>
+  </data>
+  <data name="HorizontalMultitaskingControlCloseTabsToTheRight.Text" xml:space="preserve">
+    <value>दाईं ओर टैब को बंद करें</value>
+  </data>
+  <data name="FullTrustStatusTeachingTip.Title" xml:space="preserve">
+    <value>व्यवस्थापक</value>
+  </data>
+  <data name="NavToolbarSelectionOptions.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>चयन विकल्प</value>
+  </data>
+  <data name="NavToolbarSelectionOptions.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>चयन विकल्प</value>
   </data>
 </root>

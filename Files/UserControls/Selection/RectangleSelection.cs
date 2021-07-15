@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.WinUI.UI.Controls;
-using Microsoft.UI.Input.Experimental;
+using System;
+using Windows.Foundation;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Shapes;
-using System;
-using Windows.Foundation;
+using Microsoft.UI.Input.Experimental;
 
 namespace Files.UserControls.Selection
 {
@@ -35,10 +36,6 @@ namespace Files.UserControls.Selection
             {
                 return new RectangleSelection_ListViewBase(uiElement as ListViewBase, selectionRectangle, selectionChanged);
             }
-            else if (uiElement is DataGrid)
-            {
-                return new RectangleSelection_DataGrid(uiElement as DataGrid, selectionRectangle, selectionChanged);
-            }
             else
             {
                 throw new ArgumentException("uiElement must derive from ListViewBase or DataGrid");
@@ -68,17 +65,18 @@ namespace Files.UserControls.Selection
             Active
         }
 
-        protected void DrawRectangle(ExpPointerPoint currentPoint, Point originDragPointShifted)
+        protected void DrawRectangle(ExpPointerPoint currentPoint, Point originDragPointShifted, UIElement uiElement)
         {
             // Redraw selection rectangle according to the new point
             if (currentPoint.Position.X >= originDragPointShifted.X)
             {
+                double maxWidth = uiElement.ActualSize.X - originDragPointShifted.X;
                 if (currentPoint.Position.Y <= originDragPointShifted.Y)
                 {
                     // Pointer was moved up and right
                     Canvas.SetLeft(selectionRectangle, Math.Max(0, originDragPointShifted.X));
                     Canvas.SetTop(selectionRectangle, Math.Max(0, currentPoint.Position.Y));
-                    selectionRectangle.Width = Math.Max(0, currentPoint.Position.X - Math.Max(0, originDragPointShifted.X));
+                    selectionRectangle.Width = Math.Max(0, Math.Min(currentPoint.Position.X - Math.Max(0, originDragPointShifted.X), maxWidth));
                     selectionRectangle.Height = Math.Max(0, originDragPointShifted.Y - Math.Max(0, currentPoint.Position.Y));
                 }
                 else
@@ -86,7 +84,7 @@ namespace Files.UserControls.Selection
                     // Pointer was moved down and right
                     Canvas.SetLeft(selectionRectangle, Math.Max(0, originDragPointShifted.X));
                     Canvas.SetTop(selectionRectangle, Math.Max(0, originDragPointShifted.Y));
-                    selectionRectangle.Width = Math.Max(0, currentPoint.Position.X - Math.Max(0, originDragPointShifted.X));
+                    selectionRectangle.Width = Math.Max(0, Math.Min(currentPoint.Position.X - Math.Max(0, originDragPointShifted.X), maxWidth));
                     selectionRectangle.Height = Math.Max(0, currentPoint.Position.Y - Math.Max(0, originDragPointShifted.Y));
                 }
             }

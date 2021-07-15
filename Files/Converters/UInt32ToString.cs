@@ -1,5 +1,5 @@
-﻿using Microsoft.UI.Xaml.Data;
-using System;
+﻿using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace Files.Converters
 {
@@ -21,7 +21,7 @@ namespace Files.Converters
             {
                 return UInt32.Parse(value as string);
             }
-            catch (FormatException e)
+            catch (FormatException)
             {
                 return null;
             }

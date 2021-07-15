@@ -70,6 +70,7 @@
                 VerticalAlignment="Stretch">
                 <usercontrols:FileIcon
                     AutomationProperties.AccessibilityView="Raw"
+                    FileIconImageData="{x:Bind ViewModel.IconData, Mode=OneWay}"
                     ItemSize="80"
                     ViewModel="{x:Bind ViewModel}" />
             </Grid>
@@ -310,21 +311,6 @@
                 Text="{x:Bind ViewModel.ItemAccessedTimestamp, Mode=OneWay}"
                 Visibility="{x:Bind ViewModel.ItemAccessedTimestampVisibility, Mode=OneWay}" />
 
-            <TextBlock
-                x:Uid="PropertiesOwner"
-                Grid.Row="14"
-                Grid.Column="0"
-                Style="{StaticResource PropertyName}"
-                Text="Owner:"
-                Visibility="{x:Bind ViewModel.ItemFileOwnerVisibility, Mode=OneWay}" />
-            <TextBlock
-                x:Uid="ItemFileOwnerValue"
-                Grid.Row="14"
-                Grid.Column="1"
-                Style="{StaticResource PropertyValueTextBlock}"
-                Text="{x:Bind ViewModel.ItemFileOwner, Mode=OneWay}"
-                Visibility="{x:Bind ViewModel.ItemFileOwnerVisibility, Mode=OneWay}" />
-
             <MenuFlyoutSeparator
                 Grid.Row="15"
                 Grid.Column="0"
@@ -347,7 +333,7 @@
                 Text="{x:Bind ViewModel.DriveCapacity, Mode=OneWay}"
                 Visibility="{x:Bind ViewModel.DriveCapacityVisibiity, Mode=OneWay}" />
 
-            <!--<muxc:ProgressRing
+            <muxc:ProgressRing
                 Grid.Row="17"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
@@ -357,7 +343,7 @@
                 IsIndeterminate="False"
                 Maximum="{x:Bind ViewModel.DriveCapacityDoubleValue, Mode=OneWay}"
                 Visibility="{x:Bind ViewModel.DriveCapacityVisibiity, Mode=OneWay}"
-                Value="{x:Bind ViewModel.DriveUsedSpaceDoubleValue, Mode=OneWay}" />-->
+                Value="{x:Bind ViewModel.DriveUsedSpaceDoubleValue, Mode=OneWay}" />
 
             <TextBlock
                 x:Uid="PropertiesAttributes"

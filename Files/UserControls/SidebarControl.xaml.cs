@@ -1,24 +1,40 @@
 ﻿using Files.DataModels;
+using Files.DataModels.NavigationControlItems;
 using Files.Filesystem;
-using Files.Interacts;
+using Files.Helpers;
+using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.UI;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows.Input;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.DataTransfer.DragDrop;
+using Windows.Storage;
+using Windows.System;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
+using Microsoft.UI.Xaml.Shapes;
+using Windows.UI.Core;
+using Microsoft.UI.Input;
 
 namespace Files.UserControls
 {
-    public sealed partial class SidebarControl : UserControl, INotifyPropertyChanged
+    public sealed partial class SidebarControl : Microsoft.UI.Xaml.Controls.NavigationView, INotifyPropertyChanged
     {
+        public static SemaphoreSlim SideBarItemsSemaphore = new SemaphoreSlim(1, 1);
+
+        public static BulkConcurrentObservableCollection<INavigationControlItem> SideBarItems { get; private set; } = new BulkConcurrentObservableCollection<INavigationControlItem>();
+
         public SettingsViewModel AppSettings => App.AppSettings;
 
         public delegate void SidebarItemInvokedEventHandler(object sender, SidebarItemInvokedEventArgs e);
@@ -44,57 +60,58 @@ namespace Files.UserControls
         /// </summary>
         public SidebarPinnedModel SidebarPinnedModel => App.SidebarPinnedController.Model;
 
-        public static readonly DependencyProperty EmptyRecycleBinCommandProperty = DependencyProperty.Register(
-          "EmptyRecycleBinCommand",
-          typeof(ICommand),
-          typeof(SidebarControl),
-          new PropertyMetadata(null)
-        );
+        public static readonly DependencyProperty EmptyRecycleBinCommandProperty = DependencyProperty.Register(nameof(EmptyRecycleBinCommand), typeof(ICommand), typeof(SidebarControl), new PropertyMetadata(null));
 
         public ICommand EmptyRecycleBinCommand
         {
-            get
-            {
-                return (ICommand)GetValue(EmptyRecycleBinCommandProperty);
-            }
-            set
-            {
-                SetValue(EmptyRecycleBinCommandProperty, value);
-            }
+            get => (ICommand)GetValue(EmptyRecycleBinCommandProperty);
+            set => SetValue(EmptyRecycleBinCommandProperty, value);
         }
+
+        public readonly RelayCommand CreateLibraryCommand = new RelayCommand(LibraryHelper.ShowCreateNewLibraryDialog);
+
+        public readonly RelayCommand RestoreLibrariesCommand = new RelayCommand(LibraryHelper.ShowRestoreDefaultLibrariesDialog);
+
+        private bool IsInPointerPressed = false;
+
+        private Microsoft.UI.Dispatching.DispatcherQueueTimer dragOverSectionTimer, dragOverItemTimer;
 
         public SidebarControl()
         {
             this.InitializeComponent();
-            SidebarNavView.Loaded += SidebarNavView_Loaded;
+            this.Loaded += SidebarNavView_Loaded;
+
+            dragOverSectionTimer = DispatcherQueue.CreateTimer();
+            dragOverItemTimer = DispatcherQueue.CreateTimer();
         }
 
-        private INavigationControlItem selectedSidebarItem;
+        public static readonly DependencyProperty SelectedSidebarItemProperty = DependencyProperty.Register(nameof(SelectedSidebarItem), typeof(INavigationControlItem), typeof(SidebarControl), new PropertyMetadata(null));
 
         public INavigationControlItem SelectedSidebarItem
         {
-            get
-            {
-                return selectedSidebarItem;
-            }
+            get => (INavigationControlItem)GetValue(SelectedSidebarItemProperty);
             set
             {
-                if (value != selectedSidebarItem)
+                if (this.IsLoaded)
                 {
-                    selectedSidebarItem = value;
-                    NotifyPropertyChanged(nameof(SelectedSidebarItem));
+                    SetValue(SelectedSidebarItemProperty, value);
                 }
             }
+        }
+
+        public static readonly DependencyProperty TabContentProperty = DependencyProperty.Register(nameof(TabContent), typeof(UIElement), typeof(SidebarControl), new PropertyMetadata(null));
+
+        public UIElement TabContent
+        {
+            get => (UIElement)GetValue(TabContentProperty);
+            set => SetValue(TabContentProperty, value);
         }
 
         private bool canOpenInNewPane;
 
         public bool CanOpenInNewPane
         {
-            get
-            {
-                return canOpenInNewPane;
-            }
+            get => canOpenInNewPane;
             set
             {
                 if (value != canOpenInNewPane)
@@ -115,10 +132,7 @@ namespace Files.UserControls
         /// </summary>
         public bool ShowUnpinItem
         {
-            get
-            {
-                return showUnpinItem;
-            }
+            get => showUnpinItem;
             set
             {
                 if (value != showUnpinItem)
@@ -129,14 +143,26 @@ namespace Files.UserControls
             }
         }
 
+        private bool showHideSection;
+
+        public bool ShowHideSection
+        {
+            get => showHideSection;
+            set
+            {
+                if (value != showHideSection)
+                {
+                    showHideSection = value;
+                    NotifyPropertyChanged(nameof(ShowHideSection));
+                }
+            }
+        }
+
         private bool showProperties;
 
         public bool ShowProperties
         {
-            get
-            {
-                return showProperties;
-            }
+            get => showProperties;
             set
             {
                 if (value != showProperties)
@@ -151,10 +177,7 @@ namespace Files.UserControls
 
         public bool ShowEmptyRecycleBin
         {
-            get
-            {
-                return showEmptyRecycleBin;
-            }
+            get => showEmptyRecycleBin;
             set
             {
                 if (value != showEmptyRecycleBin)
@@ -169,10 +192,7 @@ namespace Files.UserControls
 
         public bool ShowEjectDevice
         {
-            get
-            {
-                return showEjectDevice;
-            }
+            get => showEjectDevice;
             set
             {
                 if (value != showEjectDevice)
@@ -187,10 +207,7 @@ namespace Files.UserControls
 
         public bool RecycleBinHasItems
         {
-            get
-            {
-                return recycleBinHasItems;
-            }
+            get => recycleBinHasItems;
             set
             {
                 if (value != recycleBinHasItems)
@@ -201,6 +218,38 @@ namespace Files.UserControls
             }
         }
 
+        private bool isLocationItem;
+
+        public bool IsLocationItem
+        {
+            get => isLocationItem;
+            set
+            {
+                if (value != isLocationItem)
+                {
+                    isLocationItem = value;
+                    NotifyPropertyChanged(nameof(IsLocationItem));
+                }
+            }
+        }
+
+        private bool isLibrariesHeader;
+
+        public bool IsLibrariesHeader
+        {
+            get => isLibrariesHeader;
+            set
+            {
+                if (value != isLibrariesHeader)
+                {
+                    isLibrariesHeader = value;
+                    NotifyPropertyChanged(nameof(IsLibrariesHeader));
+                }
+            }
+        }
+
+        public INavigationControlItem RightClickedItem;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -208,68 +257,198 @@ namespace Files.UserControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void Sidebar_ItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
+        public void HideSection_Click(object sender, RoutedEventArgs e)
         {
-            if (args.InvokedItem == null)
+            if ("SidebarLibraries".GetLocalized().Equals(RightClickedItem.Text))
             {
+                AppSettings.ShowLibrarySection = false;
+                App.LibraryManager.UpdateLibrariesSectionVisibility();
+            }
+            else if ("SidebarCloudDrives".GetLocalized().Equals(RightClickedItem.Text))
+            {
+                AppSettings.ShowCloudDrivesSection = false;
+                App.CloudDrivesManager.UpdateCloudDrivesSectionVisibility();
+            }
+            else if ("SidebarDrives".GetLocalized().Equals(RightClickedItem.Text))
+            {
+                AppSettings.ShowDrivesSection = false;
+                App.DrivesManager.UpdateDrivesSectionVisibility();
+            }
+            else if ("SidebarNetworkDrives".GetLocalized().Equals(RightClickedItem.Text))
+            {
+                AppSettings.ShowNetworkDrivesSection = false;
+                App.NetworkDrivesManager.UpdateNetworkDrivesSectionVisibility();
+            }
+            else if ("WSL".GetLocalized().Equals(RightClickedItem.Text))
+            {
+                AppSettings.ShowWslSection = false;
+                App.WSLDistroManager.UpdateWslSectionVisibility();
+            }
+        }
+
+        public void UnpinItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.Equals(AppSettings.RecycleBinPath, RightClickedItem.Path, StringComparison.OrdinalIgnoreCase))
+            {
+                AppSettings.PinRecycleBinToSideBar = false;
+            }
+            else if (RightClickedItem.Section == SectionType.Favorites)
+            {
+                App.SidebarPinnedController.Model.RemoveItem(RightClickedItem.Path.ToString());
+            }
+        }
+
+        public static GridLength GetSidebarCompactSize()
+        {
+            if (App.Current.Resources.TryGetValue("NavigationViewCompactPaneLength", out object paneLength))
+            {
+                if (paneLength is double paneLengthDouble)
+                {
+                    return new GridLength(paneLengthDouble);
+                }
+            }
+            return new GridLength(200);
+        }
+
+        private async void Sidebar_ItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
+        {
+            if (IsInPointerPressed || args.InvokedItem == null || args.InvokedItemContainer == null)
+            {
+                IsInPointerPressed = false;
                 return;
             }
+
+            var ctrlPressed = KeyboardInput.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
+            if (ctrlPressed && !(args.InvokedItemContainer.Tag is null))
+            {
+                string navigationPath = args.InvokedItemContainer.Tag.ToString();
+                await NavigationHelpers.OpenPathInNewTab(navigationPath);
+                return;
+            }
+
             SidebarItemInvoked?.Invoke(this, new SidebarItemInvokedEventArgs(args.InvokedItemContainer));
+        }
+
+        private async void Sidebar_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var properties = e.GetCurrentPoint(null).Properties;
+            var context = (sender as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext;
+            if (properties.IsMiddleButtonPressed && context is INavigationControlItem item)
+            {
+                IsInPointerPressed = true;
+                await NavigationHelpers.OpenPathInNewTab(item.Path);
+                e.Handled = true;
+            }
         }
 
         private void NavigationViewLocationItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            Microsoft.UI.Xaml.Controls.NavigationViewItem sidebarItem = (Microsoft.UI.Xaml.Controls.NavigationViewItem)sender;
+            var sidebarItem = sender as Microsoft.UI.Xaml.Controls.NavigationViewItem;
             var item = sidebarItem.DataContext as LocationItem;
 
-            ShowEmptyRecycleBin = false;
-            ShowUnpinItem = true;
-            ShowProperties = true;
-            ShowEjectDevice = false;
+            bool drivesHeader = "SidebarDrives".GetLocalized().Equals(item.Text);
+            bool networkDrivesHeader = "SidebarNetworkDrives".GetLocalized().Equals(item.Text);
+            bool cloudDrivesHeader = "SidebarCloudDrives".GetLocalized().Equals(item.Text);
+            bool librariesHeader = "SidebarLibraries".GetLocalized().Equals(item.Text);
+            bool wslHeader = "WSL".GetLocalized().Equals(item.Text);
+            bool favoritesHeader = "SidebarFavorites".GetLocalized().Equals(item.Text);
+            bool header = drivesHeader || networkDrivesHeader || cloudDrivesHeader || librariesHeader || wslHeader || favoritesHeader;
 
-            if (item.IsDefaultLocation)
+            if (!header)
             {
-                ShowProperties = false;
+                bool library = item.Section == SectionType.Library;
+                bool favorite = item.Section == SectionType.Favorites;
 
-                if (item.Path.Equals(App.AppSettings.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+                IsLocationItem = true;
+                ShowProperties = true;
+                IsLibrariesHeader = false;
+                ShowUnpinItem = ((library || favorite) && !item.IsDefaultLocation);
+                ShowHideSection = false;
+                ShowEjectDevice = false;
+
+                if (string.Equals(item.Path, "Home", StringComparison.OrdinalIgnoreCase))
+                {
+                    ShowProperties = false;
+                }
+
+                if (string.Equals(item.Path, AppSettings.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
                 {
                     RecycleBinItemRightTapped?.Invoke(this, EventArgs.Empty);
-
                     ShowEmptyRecycleBin = true;
+                    ShowUnpinItem = true;
+                    ShowProperties = false;
                 }
                 else
                 {
-                    ShowUnpinItem = false;
+                    ShowEmptyRecycleBin = false;
                 }
+
+                RightClickedItem = item;
+                SideBarItemContextFlyout.ShowAt(sidebarItem, e.GetPosition(sidebarItem));
+            }
+            else if (!favoritesHeader)
+            {
+                IsLocationItem = false;
+                ShowProperties = false;
+                IsLibrariesHeader = librariesHeader;
+                ShowUnpinItem = false;
+                ShowHideSection = true;
+                ShowEjectDevice = false;
+                ShowEmptyRecycleBin = false;
+
+                HideSectionItem.Text = string.Format("SideBarHideSectionFromSideBar/Text".GetLocalized(), item.Text);
+
+                RightClickedItem = item;
+                SideBarItemContextFlyout.ShowAt(sidebarItem, e.GetPosition(sidebarItem));
             }
 
-            SideBarItemContextFlyout.ShowAt(sidebarItem, e.GetPosition(sidebarItem));
-            App.RightClickedItem = item;
+            e.Handled = true;
         }
 
         private void NavigationViewDriveItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            Microsoft.UI.Xaml.Controls.NavigationViewItem sidebarItem = (Microsoft.UI.Xaml.Controls.NavigationViewItem)sender;
+            var sidebarItem = sender as Microsoft.UI.Xaml.Controls.NavigationViewItem;
             var item = sidebarItem.DataContext as DriveItem;
 
+            IsLocationItem = true;
+            IsLibrariesHeader = false;
             ShowEjectDevice = item.IsRemovable;
             ShowUnpinItem = false;
             ShowEmptyRecycleBin = false;
             ShowProperties = true;
 
+            RightClickedItem = item;
             SideBarItemContextFlyout.ShowAt(sidebarItem, e.GetPosition(sidebarItem));
 
-            App.RightClickedItem = item;
+            e.Handled = true;
         }
 
-        private void OpenInNewTab_Click(object sender, RoutedEventArgs e)
+        private void NavigationViewWSLItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            Interaction.OpenPathInNewTab(App.RightClickedItem.Path);
+            var sidebarItem = sender as Microsoft.UI.Xaml.Controls.NavigationViewItem;
+            var item = sidebarItem.DataContext as WslDistroItem;
+
+            IsLocationItem = true;
+            IsLibrariesHeader = false;
+            ShowEjectDevice = false;
+            ShowUnpinItem = false;
+            ShowEmptyRecycleBin = false;
+            ShowProperties = true;
+
+            RightClickedItem = item;
+            SideBarItemContextFlyout.ShowAt(sidebarItem, e.GetPosition(sidebarItem));
+
+            e.Handled = true;
+        }
+
+        private async void OpenInNewTab_Click(object sender, RoutedEventArgs e)
+        {
+            await NavigationHelpers.OpenPathInNewTab(RightClickedItem.Path);
         }
 
         private async void OpenInNewWindow_Click(object sender, RoutedEventArgs e)
         {
-            await Interaction.OpenPathInNewWindowAsync(App.RightClickedItem.Path);
+            await NavigationHelpers.OpenPathInNewWindowAsync(RightClickedItem.Path);
         }
 
         private void NavigationViewItem_DragStarting(UIElement sender, DragStartingEventArgs args)
@@ -284,29 +463,46 @@ namespace Files.UserControls
             args.Data.Properties.Add("sourceLocationItem", navItem);
         }
 
-        private object dragOverItem = null;
-
-        private DispatcherTimer dragOverTimer = new DispatcherTimer();
+        private object dragOverSection, dragOverItem = null;
 
         private void NavigationViewItem_DragEnter(object sender, DragEventArgs e)
         {
-            // TODO: Fix when debounce extension is added
-            //VisualStateManager.GoToState(sender as Microsoft.UI.Xaml.Controls.NavigationViewItem, "DragEnter", false);
+            VisualStateManager.GoToState(sender as Microsoft.UI.Xaml.Controls.NavigationViewItem, "DragEnter", false);
 
-            //if ((sender as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext is INavigationControlItem)
-            //{
-            //    dragOverItem = sender;
-            //    dragOverTimer.Stop();
-            //    dragOverTimer.Debounce(() =>
-            //    {
-            //        if (dragOverItem != null)
-            //        {
-            //            dragOverTimer.Stop();
-            //            SidebarItemInvoked?.Invoke(this, new SidebarItemInvokedEventArgs(dragOverItem as Microsoft.UI.Xaml.Controls.NavigationViewItem));
-            //            dragOverItem = null;
-            //        }
-            //    }, TimeSpan.FromMilliseconds(1000), false);
-            //}
+            if ((sender as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext is INavigationControlItem iNavItem)
+            {
+                if (string.IsNullOrEmpty(iNavItem.Path))
+                {
+                    dragOverSection = sender;
+                    dragOverSectionTimer.Stop();
+                    dragOverSectionTimer.Debounce(() =>
+                    {
+                        if (dragOverSection != null)
+                        {
+                            dragOverSectionTimer.Stop();
+                            if ((dragOverSection as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext is LocationItem section)
+                            {
+                                section.IsExpanded = true;
+                            }
+                            dragOverSection = null;
+                        }
+                    }, TimeSpan.FromMilliseconds(1000), false);
+                }
+                else
+                {
+                    dragOverItem = sender;
+                    dragOverItemTimer.Stop();
+                    dragOverItemTimer.Debounce(() =>
+                    {
+                        if (dragOverItem != null)
+                        {
+                            dragOverItemTimer.Stop();
+                            SidebarItemInvoked?.Invoke(this, new SidebarItemInvokedEventArgs(dragOverItem as Microsoft.UI.Xaml.Controls.NavigationViewItemBase));
+                            dragOverItem = null;
+                        }
+                    }, TimeSpan.FromMilliseconds(1000), false);
+                }
+            }
         }
 
         private void NavigationViewItem_DragLeave(object sender, DragEventArgs e)
@@ -319,6 +515,11 @@ namespace Files.UserControls
                 {
                     // Reset dragged over item
                     dragOverItem = null;
+                }
+                if (sender == dragOverSection)
+                {
+                    // Reset dragged over item
+                    dragOverSection = null;
                 }
             }
         }
@@ -340,23 +541,56 @@ namespace Files.UserControls
                 {
                     storageItems = await e.DataView.GetStorageItemsAsync();
                 }
-                catch (Exception ex) when ((uint)ex.HResult == 0x80040064)
+                catch (Exception ex) when ((uint)ex.HResult == 0x80040064 || (uint)ex.HResult == 0x8004006A)
                 {
+                    // Handled by FTP
+                    storageItems = new List<IStorageItem>();
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.Warn(ex, ex.Message);
                     e.AcceptedOperation = DataPackageOperation.None;
                     deferral.Complete();
                     return;
                 }
 
-                if (storageItems.Count == 0 ||
-                    locationItem.Path.Equals(App.AppSettings.RecycleBinPath, StringComparison.OrdinalIgnoreCase) ||
-                    storageItems.AreItemsAlreadyInFolder(locationItem.Path))
+                if (string.IsNullOrEmpty(locationItem.Path) ||
+                    (storageItems.Any() && storageItems.AreItemsAlreadyInFolder(locationItem.Path)))
                 {
                     e.AcceptedOperation = DataPackageOperation.None;
+                }
+                else if (!storageItems.Any())
+                {
+                    if (locationItem.Path.StartsWith(App.AppSettings.RecycleBinPath))
+                    {
+                        e.AcceptedOperation = DataPackageOperation.None;
+                    }
+                    else
+                    {
+                        e.DragUIOverride.IsCaptionVisible = true;
+                        e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), locationItem.Text);
+                        e.AcceptedOperation = DataPackageOperation.Copy;
+                    }
                 }
                 else
                 {
                     e.DragUIOverride.IsCaptionVisible = true;
-                    if (storageItems.AreItemsInSameDrive(locationItem.Path) || locationItem.IsDefaultLocation)
+                    if (locationItem.Path.StartsWith(App.AppSettings.RecycleBinPath))
+                    {
+                        e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), locationItem.Text);
+                        e.AcceptedOperation = DataPackageOperation.Move;
+                    }
+                    else if (e.Modifiers.HasFlag(DragDropModifiers.Control))
+                    {
+                        e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), locationItem.Text);
+                        e.AcceptedOperation = DataPackageOperation.Copy;
+                    }
+                    else if (e.Modifiers.HasFlag(DragDropModifiers.Shift))
+                    {
+                        e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), locationItem.Text);
+                        e.AcceptedOperation = DataPackageOperation.Move;
+                    }
+                    else if (storageItems.AreItemsInSameDrive(locationItem.Path) || locationItem.IsDefaultLocation)
                     {
                         e.AcceptedOperation = DataPackageOperation.Move;
                         e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), locationItem.Text);
@@ -402,6 +636,9 @@ namespace Files.UserControls
 
         private void NavigationViewLocationItem_Drop(object sender, DragEventArgs e)
         {
+            dragOverItem = null; // Reset dragged over item
+            dragOverSection = null; // Reset dragged over section
+
             if (!((sender as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext is LocationItem locationItem))
             {
                 return;
@@ -445,23 +682,44 @@ namespace Files.UserControls
             {
                 storageItems = await e.DataView.GetStorageItemsAsync();
             }
-            catch (Exception ex) when ((uint)ex.HResult == 0x80040064)
+            catch (Exception ex) when ((uint)ex.HResult == 0x80040064 || (uint)ex.HResult == 0x8004006A)
             {
+                // Handled by FTP
+                storageItems = new List<IStorageItem>();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.Warn(ex, ex.Message);
                 e.AcceptedOperation = DataPackageOperation.None;
                 deferral.Complete();
                 return;
             }
 
-            if (storageItems.Count == 0 ||
-                "DriveCapacityUnknown".GetLocalized().Equals(driveItem.SpaceText, StringComparison.OrdinalIgnoreCase) ||
-                storageItems.AreItemsAlreadyInFolder(driveItem.Path))
+            if ("DriveCapacityUnknown".GetLocalized().Equals(driveItem.SpaceText, StringComparison.OrdinalIgnoreCase) ||
+                (storageItems.Any() && storageItems.AreItemsAlreadyInFolder(driveItem.Path)))
             {
                 e.AcceptedOperation = DataPackageOperation.None;
+            }
+            else if (!storageItems.Any())
+            {
+                e.DragUIOverride.IsCaptionVisible = true;
+                e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), driveItem.Text);
+                e.AcceptedOperation = DataPackageOperation.Copy;
             }
             else
             {
                 e.DragUIOverride.IsCaptionVisible = true;
-                if (storageItems.AreItemsInSameDrive(driveItem.Path))
+                if (e.Modifiers.HasFlag(DragDropModifiers.Control))
+                {
+                    e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), driveItem.Text);
+                    e.AcceptedOperation = DataPackageOperation.Copy;
+                }
+                else if (e.Modifiers.HasFlag(DragDropModifiers.Shift))
+                {
+                    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), driveItem.Text);
+                    e.AcceptedOperation = DataPackageOperation.Move;
+                }
+                else if (storageItems.AreItemsInSameDrive(driveItem.Path))
                 {
                     e.AcceptedOperation = DataPackageOperation.Move;
                     e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), driveItem.Text);
@@ -478,6 +736,9 @@ namespace Files.UserControls
 
         private void NavigationViewDriveItem_Drop(object sender, DragEventArgs e)
         {
+            dragOverItem = null; // Reset dragged over item
+            dragOverSection = null; // Reset dragged over section
+
             if (!((sender as Microsoft.UI.Xaml.Controls.NavigationViewItem).DataContext is DriveItem driveItem))
             {
                 return;
@@ -501,37 +762,137 @@ namespace Files.UserControls
             SidebarItemPropertiesInvoked?.Invoke(this, new SidebarItemPropertiesInvokedEventArgs(item));
         }
 
-        private void SettingsButton_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Frame rootFrame = App.mainWindow.Content as Frame;
-            rootFrame.Navigate(typeof(Views.Settings));
-
-            return;
-        }
-
         private async void EjectDevice_Click(object sender, RoutedEventArgs e)
         {
-            await Interaction.EjectDeviceAsync(App.RightClickedItem.Path);
+            await DriveHelpers.EjectDeviceAsync(RightClickedItem.Path);
         }
 
         private void SidebarNavView_Loaded(object sender, RoutedEventArgs e)
         {
-            var settings = (Microsoft.UI.Xaml.Controls.NavigationViewItem)SidebarNavView.SettingsItem;
+            var settings = (Microsoft.UI.Xaml.Controls.NavigationViewItem)this.SettingsItem;
             settings.SelectsOnInvoked = false;
-            settings.Icon = new FontIcon()
-            {
-                FontSize = 18,
-                FontFamily = App.Current.Resources["FluentUIGlyphs"] as FontFamily,
-                Glyph = "\xEB5D"
-            };
 
-            SidebarNavView.Loaded -= SidebarNavView_Loaded;
+            (this.FindDescendant("TabContentBorder") as Border).Child = TabContent;
+        }
+
+        private void Border_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            var step = 1;
+            var ctrl = KeyboardInput.GetKeyStateForCurrentThread(VirtualKey.Control);
+            if (ctrl.HasFlag(CoreVirtualKeyStates.Down))
+            {
+                step = 5;
+            }
+
+            if (e.Key == VirtualKey.Left)
+            {
+                SetSize(-step);
+                e.Handled = true;
+            }
+            else if (e.Key == VirtualKey.Right)
+            {
+                SetSize(step);
+                e.Handled = true;
+            }
+
+            // if the user focuses the resizer and attempts to resize while the pane is closed, open it
+            if (!IsPaneOpen && DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Expanded && (e.Key == VirtualKey.Left || e.Key == VirtualKey.Right))
+            {
+                IsPaneOpen = true;
+            }
+
+            App.AppSettings.SidebarWidth = new GridLength(OpenPaneLength);
+        }
+
+        /// <summary>
+        /// true if the user is currently resizing the sidebar
+        /// </summary>
+        bool dragging;
+
+        double originalSize = 0;
+
+        private void Border_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Expanded)
+            {
+                SetSize(e.Cumulative.Translation.X);
+            }
+        }
+
+        private void Border_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (!dragging) // keep showing pressed event if currently resizing the sidebar
+            {
+                //App.MainWindow.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
+                VisualStateManager.GoToState((sender as Grid).FindAscendant<SplitView>(), "ResizerNormal", true);
+            }
+        }
+
+        private void SetSize(double val)
+        {
+            if (IsPaneOpen)
+            {
+                var newSize = originalSize + val;
+                if (newSize <= Constants.UI.MaximumSidebarWidth && newSize >= Constants.UI.MinimumSidebarWidth)
+                {
+                    OpenPaneLength = newSize; // passing a negative value will cause an exception
+                }
+
+                if (newSize < Constants.UI.MinimumSidebarWidth) // if the new size is below the minimum, check whether to toggle the pane
+                {
+                    if (Constants.UI.MinimumSidebarWidth + val <= CompactPaneLength) // collapse the sidebar
+                    {
+                        IsPaneOpen = false;
+                    }
+                }
+            }
+            else
+            {
+                if (val >= Constants.UI.MinimumSidebarWidth - CompactPaneLength)
+                {
+                    OpenPaneLength = Constants.UI.MinimumSidebarWidth + (val + CompactPaneLength - Constants.UI.MinimumSidebarWidth); // set open sidebar length to minimum value to keep it smooth
+                    IsPaneOpen = true;
+                }
+            }
+        }
+
+        private void Border_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Expanded)
+            {
+                //App.MainWindow.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.SizeWestEast, 0);
+                VisualStateManager.GoToState((sender as Grid).FindAscendant<SplitView>(), "ResizerPointerOver", true);
+            }
+        }
+
+        private void ResizeElementBorder_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            //App.MainWindow.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
+            VisualStateManager.GoToState((sender as Grid).FindAscendant<SplitView>(), "ResizerNormal", true);
+            App.AppSettings.SidebarWidth = new GridLength(OpenPaneLength);
+            dragging = false;
         }
 
         private void OpenInNewPane_Click(object sender, RoutedEventArgs e)
         {
             var item = (sender as MenuFlyoutItem).DataContext;
             SidebarItemNewPaneInvoked?.Invoke(this, new SidebarItemNewPaneInvokedEventArgs(item));
+        }
+
+        private void DragArea_Loaded(object sender, RoutedEventArgs e)
+        {
+            App.MainWindow.SetTitleBar(sender as Grid);
+        }
+
+        private void ResizeElementBorder_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            if (DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Expanded)
+            {
+                originalSize = IsPaneOpen ? AppSettings.SidebarWidth.Value : CompactPaneLength;
+                //App.MainWindow.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.SizeWestEast, 0);
+                VisualStateManager.GoToState((sender as Grid).FindAscendant<SplitView>(), "ResizerPressed", true);
+                dragging = true;
+            }
         }
     }
 

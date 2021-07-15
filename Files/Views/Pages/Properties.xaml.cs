@@ -1,28 +1,22 @@
-﻿using Files.Filesystem;
-using Files.Helpers;
-using Files.Interacts;
+﻿using Files.DataModels.NavigationControlItems;
+using Files.Filesystem;
 using Files.ViewModels;
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
+using Files.ViewModels.Properties;
+using CommunityToolkit.WinUI;
 using System;
 using System.Threading;
-using Windows.Foundation.Metadata;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.System;
-using Windows.UI;
-using Windows.UI.ViewManagement;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Markup;
 
 namespace Files.Views
 {
-    public sealed partial class Properties : Page
+    public partial class Properties : Window
     {
-        private static ApplicationViewTitleBar TitleBar;
-
         private CancellationTokenSource tokenSource = new CancellationTokenSource();
-        private ContentDialog propertiesDialog;
 
         private object navParameterItem;
         private IShellPage AppInstance;
@@ -30,12 +24,20 @@ namespace Files.Views
         private ListedItem listedItem;
 
         public SettingsViewModel AppSettings => App.AppSettings;
+        public PropertiesPageNavigationArguments displayArgs { get; set; }
 
         public Properties()
         {
             InitializeComponent();
-
-            //TODO: fix rtl here also
+            this.Closed += Properties_Closed;
+            AppInstance = displayArgs.AppInstanceArgument;
+            navParameterItem = displayArgs.Item;
+            listedItem = displayArgs.Item as ListedItem;
+            TabShorcut.Visibility = listedItem != null && listedItem.IsShortcutItem ? Visibility.Visible : Visibility.Collapsed;
+            TabLibrary.Visibility = listedItem != null && listedItem.IsLibraryItem ? Visibility.Visible : Visibility.Collapsed;
+            TabDetails.Visibility = listedItem != null && listedItem.FileExtension != null && !listedItem.IsShortcutItem && !listedItem.IsLibraryItem ? Visibility.Visible : Visibility.Collapsed;
+            TabSecurity.Visibility = displayArgs.Item is DriveItem ||
+                (listedItem != null && !listedItem.IsLibraryItem && !listedItem.IsRecycleBinItem) ? Visibility.Visible : Visibility.Collapsed;
             //var flowDirectionSetting = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
 
             //if (flowDirectionSetting == "RTL")
@@ -44,101 +46,20 @@ namespace Files.Views
             //}
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        private void Properties_Closed(object sender, WindowEventArgs displayArgs)
         {
-            var args = e.Parameter as PropertiesPageNavigationArguments;
-            AppInstance = args.AppInstanceArgument;
-            navParameterItem = args.Item;
-            TabShorcut.Visibility = args.Item is ShortcutItem ? Visibility.Visible : Visibility.Collapsed;
-            listedItem = args.Item as ListedItem;
-            TabDetails.Visibility = listedItem != null && listedItem.FileExtension != null && !listedItem.IsShortcutItem ? Visibility.Visible : Visibility.Collapsed;
-            SetBackground();
-            base.OnNavigatedTo(e);
-        }
-
-        private void Properties_Loaded(object sender, RoutedEventArgs e)
-        {
-            AppSettings.ThemeModeChanged += AppSettings_ThemeModeChanged;
-            AppSettings.PropertyChanged += AppSettings_PropertyChanged;
-
-            // TODO: Fix this when Windowing is added
-            //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            //{
-            //    // Set window size in the loaded event to prevent flickering
-            //    ApplicationView.GetForCurrentView().TryResizeView(new Windows.Foundation.Size(400, 550));
-            //    ApplicationView.GetForCurrentView().Consolidated += Properties_Consolidated;
-            //    TitleBar = ApplicationView.GetForCurrentView().TitleBar;
-            //    TitleBar.ButtonBackgroundColor = Colors.Transparent;
-            //    TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            //    MainWindow.dispatcherQueue.TryEnqueue(() => AppSettings.UpdateThemeElements.Execute(null));
-            //}
-            //else
-            //{
-            propertiesDialog = Interaction.FindParent<ContentDialog>(this);
-            propertiesDialog.Closed += PropertiesDialog_Closed;
-            //}
-        }
-
-        private void AppSettings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "IsAcrylicDisabled":
-                case "FallbackColor":
-                case "TintColor":
-                case "TintOpacity":
-                    SetBackground();
-                    break;
-            }
-        }
-
-        private void SetBackground()
-        {
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
-            {
-                var backgroundBrush = new SolidColorBrush()
-                {
-                    Color = AppSettings.AcrylicTheme.FallbackColor,
-                    
-                };
-
-                if (!(new AccessibilitySettings()).HighContrast)
-                {
-                    Background = backgroundBrush;
-                }
-                else
-                {
-                    Background = Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] as SolidColorBrush;
-                }
-            });
-        }
-
-        private void Properties_Consolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
-        {
-            AppSettings.ThemeModeChanged -= AppSettings_ThemeModeChanged;
-            AppSettings.PropertyChanged -= AppSettings_PropertyChanged;
-            // TODO: Replace this when windowing support is added
-            //ApplicationView.GetForCurrentView().Consolidated -= Properties_Consolidated;
-            //if (tokenSource != null && !tokenSource.IsCancellationRequested)
-            //{
-            //    tokenSource.Cancel();
-            //    tokenSource.Dispose();
-            //    tokenSource = null;
-            //}
-        }
-
-        private void PropertiesDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args)
-        {
-            AppSettings.ThemeModeChanged -= AppSettings_ThemeModeChanged;
-            AppSettings.PropertyChanged -= AppSettings_PropertyChanged;
-            sender.Closed -= PropertiesDialog_Closed;
+            (contentFrame.Content as PropertiesTab).Dispose();
             if (tokenSource != null && !tokenSource.IsCancellationRequested)
             {
                 tokenSource.Cancel();
-                tokenSource.Dispose();
                 tokenSource = null;
             }
-            propertiesDialog.Hide();
+        }
+
+        private async void Properties_Loaded(object sender, RoutedEventArgs e)
+        {
+            //AppSettings.ThemeModeChanged += AppSettings_ThemeModeChanged;
+            await DispatcherQueue.EnqueueAsync(() => AppSettings.UpdateThemeElements.Execute(null));
         }
 
         private void Properties_Unloaded(object sender, RoutedEventArgs e)
@@ -146,35 +67,34 @@ namespace Files.Views
             // Why is this not called? Are we cleaning up properly?
         }
 
-        private void AppSettings_ThemeModeChanged(object sender, EventArgs e)
-        {
-            var selectedTheme = ThemeHelper.RootTheme;
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
-            {
-                RequestedTheme = selectedTheme;
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                {
-                    switch (RequestedTheme)
-                    {
-                        case ElementTheme.Default:
-                            TitleBar.ButtonHoverBackgroundColor = (Color)Application.Current.Resources["SystemBaseLowColor"];
-                            TitleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemBaseHighColor"];
-                            break;
+        //private async void AppSettings_ThemeModeChanged(object sender, EventArgs e)
+        //{
+        //    var selectedTheme = ThemeHelper.RootTheme;
+        //    await DispatcherQueue.EnqueueAsync(() =>
+        //    {
+        //        RequestedTheme = selectedTheme;
+        //        //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        //        //{
+        //        //    switch (RequestedTheme)
+        //        //    {
+        //        //        case ElementTheme.Default:
+        //        //            TitleBar.ButtonHoverBackgroundColor = (Color)Application.Current.Resources["SystemBaseLowColor"];
+        //        //            TitleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemBaseHighColor"];
+        //        //            break;
 
-                        case ElementTheme.Light:
-                            TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 0, 0, 0);
-                            TitleBar.ButtonForegroundColor = Colors.Black;
-                            break;
+        //        //        case ElementTheme.Light:
+        //        //            TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 0, 0, 0);
+        //        //            TitleBar.ButtonForegroundColor = Colors.Black;
+        //        //            break;
 
-                        case ElementTheme.Dark:
-                            TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 255, 255, 255);
-                            TitleBar.ButtonForegroundColor = Colors.White;
-                            break;
-                    }
-                }
-                SetBackground();
-            });
-        }
+        //        //        case ElementTheme.Dark:
+        //        //            TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(51, 255, 255, 255);
+        //        //            TitleBar.ButtonForegroundColor = Colors.White;
+        //        //            break;
+        //        //    }
+        //        //}
+        //    });
+        //}
 
         private async void OKButton_Click(object sender, RoutedEventArgs e)
         {
@@ -182,54 +102,30 @@ namespace Files.Views
             {
                 await propertiesGeneral.SaveChangesAsync(listedItem);
             }
-            else if (contentFrame.Content is PropertiesDetails propertiesDetails)
+            else
             {
-                if (!await propertiesDetails.SaveChangesAsync())
+                if (!await (contentFrame.Content as PropertiesTab).SaveChangesAsync(listedItem))
                 {
                     return;
                 }
             }
-            // TODO: Addsupport for closing alongside the window itself
-            //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            //{
-            //    await ApplicationView.GetForCurrentView().TryConsolidateAsync();
-            //}
-            //else
-            //{
-            propertiesDialog?.Hide();
-            //}
+            this.Close();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Addsupport for closing alongside the window itself
-            //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            //{
-            //    await ApplicationView.GetForCurrentView().TryConsolidateAsync();
-            //}
-            //else
-            //{
-            propertiesDialog?.Hide();
-            //}
+            this.Close();
         }
 
-        private async void Page_KeyDown(object sender, KeyRoutedEventArgs e)
+        private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key.Equals(VirtualKey.Escape))
             {
-                // TODO: Add support for closing alongside the window itself
-                //if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                //{
-                //    await ApplicationView.GetForCurrentView().TryConsolidateAsync();
-                //}
-                //else
-                //{
-                propertiesDialog?.Hide();
-                //}
+                this.Close();
             }
         }
 
-        private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs displayArgs)
         {
             var navParam = new PropertyNavParam()
             {
@@ -238,18 +134,26 @@ namespace Files.Views
                 AppInstanceArgument = AppInstance
             };
 
-            switch (args.SelectedItemContainer.Tag)
+            switch (displayArgs.SelectedItemContainer.Tag)
             {
                 case "General":
-                    contentFrame.Navigate(typeof(PropertiesGeneral), navParam, args.RecommendedNavigationTransitionInfo);
+                    contentFrame.Navigate(typeof(PropertiesGeneral), navParam, displayArgs.RecommendedNavigationTransitionInfo);
                     break;
 
                 case "Shortcut":
-                    contentFrame.Navigate(typeof(PropertiesShortcut), navParam, args.RecommendedNavigationTransitionInfo);
+                    contentFrame.Navigate(typeof(PropertiesShortcut), navParam, displayArgs.RecommendedNavigationTransitionInfo);
+                    break;
+
+                case "Library":
+                    contentFrame.Navigate(typeof(PropertiesLibrary), navParam, displayArgs.RecommendedNavigationTransitionInfo);
                     break;
 
                 case "Details":
-                    contentFrame.Navigate(typeof(PropertiesDetails), navParam, args.RecommendedNavigationTransitionInfo);
+                    contentFrame.Navigate(typeof(PropertiesDetails), navParam, displayArgs.RecommendedNavigationTransitionInfo);
+                    break;
+
+                case "Security":
+                    contentFrame.Navigate(typeof(PropertiesSecurity), navParam, displayArgs.RecommendedNavigationTransitionInfo);
                     break;
             }
         }
@@ -265,6 +169,20 @@ namespace Files.Views
             public CancellationTokenSource tokenSource;
             public object navParameter;
             public IShellPage AppInstanceArgument { get; set; }
+        }
+
+        private void Page_Loading(FrameworkElement sender, object displayArgs)
+        {
+            // This manually adds the user's theme resources to the page
+            // I was unable to get this to work any other way
+            try
+            {
+                var xaml = XamlReader.Load(App.ExternalResourcesHelper.CurrentThemeResources) as ResourceDictionary;
+                App.Current.Resources.MergedDictionaries.Add(xaml);
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

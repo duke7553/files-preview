@@ -1,4 +1,7 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Files.Dialogs;
+using Files.ViewModels;
+using CommunityToolkit.WinUI.UI;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Files.SettingsPages
 {
@@ -7,6 +10,17 @@ namespace Files.SettingsPages
         public Appearance()
         {
             InitializeComponent();
+        }
+
+        private void ThemesLearnMoreButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            ThemesTeachingTip.IsOpen = true;
+        }
+
+        private void OpenThemesFolderButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            this.FindAscendant<SettingsDialog>()?.Hide();
+            SettingsViewModel.OpenThemesFolder();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using WinRT;
 
 namespace Files.Helpers
 {
@@ -214,7 +215,7 @@ namespace Files.Helpers
                 if (isRunningOnArm == null)
                 {
                     isRunningOnArm = IsArmProcessor();
-                    NLog.LogManager.GetCurrentClassLogger().Info("Running on ARM: {0}", isRunningOnArm);
+                    App.Logger.Info("Running on ARM: {0}", isRunningOnArm);
                 }
                 return isRunningOnArm ?? false;
             }
@@ -232,5 +233,24 @@ namespace Files.Helpers
                     nativeMachine == 0x01c2 ||
                     nativeMachine == 0x01c4);
         }
+
+        // https://www.travelneil.com/wndproc-in-uwp.html
+        [ComImport, Guid("45D64A29-A63E-4CB6-B498-5781D298CB4F")]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        internal interface ICoreWindowInterop
+        {
+            IntPtr WindowHandle { get; }
+            bool MessageHandled { get; }
+        }
+
+        [ComImport]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        [Guid("EECDBF0E-BAE9-4CB6-A68E-9598E1CB57BB")]
+        internal interface IWindowNative
+        {
+            IntPtr WindowHandle { get; }
+        }
+
+        public static IntPtr CoreWindowHandle => App.MainWindow.As<IWindowNative>().WindowHandle;
     }
 }

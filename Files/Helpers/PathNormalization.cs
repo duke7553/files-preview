@@ -1,11 +1,31 @@
-﻿using NLog;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Files.Helpers
 {
-    public class PathNormalization
+    public static class PathNormalization
     {
+        public static string GetPathRoot(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return "";
+            }
+            string rootPath = "";
+            try
+            {
+                rootPath = new Uri(path).GetLeftPart(UriPartial.Authority);
+            }
+            catch (UriFormatException)
+            {
+            }
+            if (string.IsNullOrEmpty(rootPath))
+            {
+                rootPath = Path.GetPathRoot(path);
+            }
+            return rootPath;
+        }
+
         public static string NormalizePath(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -13,6 +33,10 @@ namespace Files.Helpers
                 return path;
             }
             if (path.StartsWith("\\\\"))
+            {
+                return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+            }
+            else if (path.StartsWith("ftp://"))
             {
                 return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
             }
@@ -31,10 +55,25 @@ namespace Files.Helpers
                 }
                 catch (UriFormatException ex)
                 {
-                    LogManager.GetCurrentClassLogger().Error(ex, path);
-                    throw;
+                    App.Logger.Warn(ex, path);
+                    return path;
                 }
             }
+        }
+
+        public static string TrimPath(this string path)
+        {
+            return path?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        }
+
+        public static string GetParentDir(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return string.Empty;
+            }
+            var index = path.LastIndexOf("\\");
+            return path.Substring(0, index != -1 ? index : path.Length);
         }
     }
 }

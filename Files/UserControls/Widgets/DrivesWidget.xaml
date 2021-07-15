@@ -4,21 +4,65 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:extensions="using:CommunityToolkit.WinUI.UI"
     xmlns:local="using:Files.UserControls.Widgets"
-    xmlns:local2="using:Files.Filesystem"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    xmlns:navigationcontrolitems="using:Files.DataModels.NavigationControlItems"
+    Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
     mc:Ignorable="d">
-    <StackPanel Spacing="12">
-        <TextBlock
-            x:Uid="DrivesWidgetDescription"
-            HorizontalAlignment="Left"
-            FontFamily="Segoe UI"
-            FontSize="14"
-            FontWeight="Medium"
-            Opacity=".8"
-            Text="Drives" />
+    <StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                x:Uid="DrivesWidgetDescription"
+                HorizontalAlignment="Left"
+                FontFamily="Segoe UI"
+                FontSize="14"
+                FontWeight="Medium"
+                Opacity=".8"
+                Text="Drives" />
+
+            <!--  Map Drive button  -->
+            <Button
+                x:Uid="DrivesWidgetMoreOptionsButton"
+                Grid.Column="1"
+                Width="36"
+                Height="32"
+                Padding="0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                AutomationProperties.Name="More drives options"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTipService.ToolTip="More options...">
+
+                <FontIcon
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Glyph="&#xe712;" />
+
+                <Button.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem
+                            x:Uid="DrivesWidgetOptionsFlyoutMapNetDriveMenuItem"
+                            Click="MapNetworkDrive_Click"
+                            Text="Map network drive">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE710;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
 
         <muxc:ItemsRepeater
             x:Name="CardsList"
@@ -29,34 +73,13 @@
                 <muxc:UniformGridLayout
                     ItemsStretch="None"
                     MinColumnSpacing="8"
-                    MinItemHeight="90"
+                    MinItemHeight="88"
                     MinRowSpacing="8"
                     Orientation="Horizontal" />
             </muxc:ItemsRepeater.Layout>
             <muxc:ItemsRepeater.ItemTemplate>
-                <DataTemplate x:DataType="local2:DriveItem">
-                    <Grid
-                        Width="270"
-                        PointerEntered="GridScaleUp"
-                        PointerExited="GridScaleNormal">
-                        <animations:Implicit.Animations>
-                            <animations:ScaleAnimation Duration="0:0:0.5" />
-                        </animations:Implicit.Animations>
-                        <Grid.Resources>
-                            <ResourceDictionary>
-                                <ResourceDictionary.ThemeDictionaries>
-                                    <ResourceDictionary x:Name="Light">
-                                        <SolidColorBrush x:Key="YourHomeCardBackgroundColor" Color="#f3f1ef" />
-                                    </ResourceDictionary>
-                                    <ResourceDictionary x:Name="Dark">
-                                        <SolidColorBrush x:Key="YourHomeCardBackgroundColor" Color="#161514" />
-                                    </ResourceDictionary>
-                                    <ResourceDictionary x:Name="HighContrast">
-                                        <SolidColorBrush x:Key="YourHomeCardBackgroundColor" Color="{ThemeResource SystemColorButtonFaceColor}" />
-                                    </ResourceDictionary>
-                                </ResourceDictionary.ThemeDictionaries>
-                            </ResourceDictionary>
-                        </Grid.Resources>
+                <DataTemplate x:DataType="navigationcontrolitems:DriveItem">
+                    <Grid Width="280">
                         <Button
                             Padding="0"
                             HorizontalAlignment="Stretch"
@@ -64,11 +87,9 @@
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
                             AutomationProperties.Name="{x:Bind Text, Mode=OneWay}"
-                            Background="{ThemeResource YourHomeCardBackgroundColor}"
-                            BorderThickness="1"
                             Click="Button_Click"
-                            CornerRadius="4"
-                            Style="{StaticResource ButtonRevealStyle}"
+                            CornerRadius="{StaticResource ControlCornerRadius}"
+                            PointerPressed="Button_PointerPressed"
                             Tag="{x:Bind Path}"
                             ToolTipService.ToolTip="{x:Bind Text, Mode=OneWay}">
                             <Button.ContextFlyout>
@@ -82,7 +103,7 @@
                                             Text="Open in new pane"
                                             Visibility="Collapsed">
                                             <MenuFlyoutItem.Icon>
-                                                <FontIcon FontFamily="{StaticResource FluentUIGlyphs}" Glyph="&#xEA2F;" />
+                                                <FontIcon FontFamily="{StaticResource CustomGlyph}" Glyph="&#xF117;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
                                         <MenuFlyoutItem
@@ -92,7 +113,7 @@
                                             DataContext="{x:Bind}"
                                             Text="Open in new tab">
                                             <MenuFlyoutItem.Icon>
-                                                <FontIcon FontFamily="{StaticResource CustomGlyph}" Glyph="&#xF106;" />
+                                                <FontIcon FontFamily="{StaticResource CustomGlyph}" Glyph="&#xF113;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
                                         <MenuFlyoutItem
@@ -102,7 +123,7 @@
                                             DataContext="{x:Bind}"
                                             Text="Open in new window">
                                             <MenuFlyoutItem.Icon>
-                                                <FontIcon FontFamily="{StaticResource CustomGlyph}" Glyph="&#xF107;" />
+                                                <FontIcon Glyph="&#xE737;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
                                         <MenuFlyoutItem
@@ -112,7 +133,7 @@
                                             DataContext="{x:Bind}"
                                             Text="Properties">
                                             <MenuFlyoutItem.Icon>
-                                                <FontIcon FontFamily="{StaticResource FluentUIGlyphs}" Glyph="&#xea8d;" />
+                                                <FontIcon Glyph="&#xE946;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
                                         <MenuFlyoutItem
@@ -123,7 +144,18 @@
                                             DataContext="{x:Bind}"
                                             Text="Eject">
                                             <MenuFlyoutItem.Icon>
-                                                <FontIcon FontFamily="{StaticResource CustomGlyph}" Glyph="&#xF10B;" />
+                                                <FontIcon Glyph="&#xF847;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem
+                                            x:Name="DisconnectNetworkDrive"
+                                            x:Uid="SideBarDisconnectNetworkDrive"
+                                            x:Load="{x:Bind IsNetwork, Mode=OneWay}"
+                                            Click="DisconnectNetworkDrive_Click"
+                                            DataContext="{x:Bind}"
+                                            Text="Disconnect">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xF847;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
                                     </MenuFlyout.Items>
@@ -132,45 +164,88 @@
                             <Grid
                                 Margin="12"
                                 HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch">
+                                VerticalAlignment="Stretch"
+                                ColumnSpacing="12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <FontIcon
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Image
+                                    Grid.RowSpan="3"
                                     Grid.Column="0"
+                                    Width="40"
+                                    Height="40"
+                                    HorizontalAlignment="Center"
                                     x:Phase="1"
-                                    FontFamily="{StaticResource FluentUIGlyphs}"
-                                    FontSize="28"
-                                    Glyph="{x:Bind Glyph}" />
-                                <StackPanel
+                                    Source="{x:Bind Icon, Mode=OneWay}" />
+
+                                <TextBlock
+                                    x:Name="ItemLocationName"
+                                    Grid.Row="0"
                                     Grid.Column="1"
-                                    Margin="12,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Orientation="Vertical">
-                                    <TextBlock
-                                        x:Name="ItemLocationName"
-                                        Margin="0,0,0,8"
-                                        VerticalAlignment="Center"
-                                        FontSize="14"
-                                        FontWeight="Medium"
-                                        Text="{x:Bind Text, Mode=OneWay}"
-                                        TextWrapping="NoWrap" />
+                                    VerticalAlignment="Stretch"
+                                    FontSize="14"
+                                    FontWeight="Medium"
+                                    Text="{x:Bind Text, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+
+                                <Grid
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="8"
+                                    VerticalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
                                     <muxc:ProgressBar
-                                        Margin="0,0,0,8"
+                                        Grid.Column="0"
                                         AutomationProperties.AccessibilityView="Raw"
                                         Maximum="{x:Bind MaxSpace.GigaBytes, Mode=OneWay}"
                                         Visibility="{x:Bind ShowDriveDetails, Mode=OneWay}"
                                         Value="{x:Bind SpaceUsed.GigaBytes, Mode=OneWay}" />
-                                    <TextBlock
-                                        x:Phase="1"
-                                        FontSize="12"
-                                        MaxLines="2"
-                                        Text="{x:Bind SpaceText, Mode=OneWay}"
-                                        TextWrapping="Wrap"
-                                        ToolTipService.ToolTip="{x:Bind SpaceText, Mode=OneWay}"
-                                        Visibility="{x:Bind ShowDriveDetails, Mode=OneWay}" />
-                                </StackPanel>
+
+                                    <Button
+                                        x:Name="GoToStorageSense"
+                                        x:Uid="DrivesWidgetOpenStorageSenseButton"
+                                        Grid.Column="1"
+                                        Width="28"
+                                        Height="28"
+                                        Margin="4,0,0,0"
+                                        Padding="0"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalContentAlignment="Center"
+                                        x:Load="{x:Bind ShowStorageSense}"
+                                        AutomationProperties.Name="Open Storage Sense"
+                                        Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        Click="GoToStorageSense_Click"
+                                        ToolTipService.ToolTip="Open Storage Sense">
+                                        <FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="14"
+                                            Glyph="&#xE946;" />
+                                    </Button>
+                                </Grid>
+
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    VerticalAlignment="Bottom"
+                                    x:Phase="1"
+                                    FontSize="12"
+                                    Text="{x:Bind SpaceText, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap"
+                                    ToolTipService.ToolTip="{x:Bind SpaceText, Mode=OneWay}"
+                                    Visibility="{x:Bind ShowDriveDetails, Mode=OneWay}" />
                             </Grid>
                         </Button>
                     </Grid>

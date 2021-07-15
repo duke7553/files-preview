@@ -1,0 +1,293 @@
+﻿using Files.Common;
+using Files.DataModels;
+using Files.DataModels.NavigationControlItems;
+using Files.Extensions;
+using Files.Helpers;
+using Files.UserControls;
+using Files.ViewModels;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
+
+namespace Files.Filesystem
+{
+    public class LibraryManager : ObservableObject, IDisposable
+    {
+        public MainViewModel MainViewModel => App.MainViewModel;
+
+        private LocationItem librarySection;
+
+        public BulkConcurrentObservableCollection<LibraryLocationItem> Libraries { get; } = new BulkConcurrentObservableCollection<LibraryLocationItem>();
+
+        public LibraryManager()
+        {
+            Libraries.CollectionChanged += Libraries_CollectionChanged;
+        }
+
+        private async void Libraries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (!App.AppSettings.ShowLibrarySection)
+            {
+                return;
+            }
+
+            await DispatcherQueue.GetForCurrentThread().EnqueueAsync(async () =>
+            {
+                await SidebarControl.SideBarItemsSemaphore.WaitAsync();
+                try
+                {
+                    switch (e.Action)
+                    {
+                        case NotifyCollectionChangedAction.Replace:
+                        case NotifyCollectionChangedAction.Remove:
+                            foreach (var lib in e.OldItems.Cast<LibraryLocationItem>())
+                            {
+                                librarySection.ChildItems.Remove(lib);
+                            }
+                            if (e.Action == NotifyCollectionChangedAction.Replace)
+                            {
+                                goto case NotifyCollectionChangedAction.Add;
+                            }
+                            break;
+
+                        case NotifyCollectionChangedAction.Reset:
+                            foreach (var lib in Libraries.Where(IsLibraryOnSidebar))
+                            {
+                                if (!librarySection.ChildItems.Any(x => x.Path == lib.Path))
+                                {
+                                    if (await lib.CheckDefaultSaveFolderAccess())
+                                    {
+                                        lib.Font = MainViewModel.FontName;
+                                        librarySection.ChildItems.AddSorted(lib);
+                                        this.LoadLibraryIcon(lib);
+                                    }
+                                }
+                            }
+                            foreach (var lib in librarySection.ChildItems.ToList())
+                            {
+                                if (!Libraries.Any(x => x.Path == lib.Path))
+                                {
+                                    librarySection.ChildItems.Remove(lib);
+                                }
+                            }
+                            break;
+
+                        case NotifyCollectionChangedAction.Add:
+                            foreach (var lib in e.NewItems.Cast<LibraryLocationItem>().Where(IsLibraryOnSidebar))
+                            {
+                                if (await lib.CheckDefaultSaveFolderAccess())
+                                {
+                                    lib.Font = MainViewModel.FontName;
+                                    librarySection.ChildItems.AddSorted(lib);
+                                    this.LoadLibraryIcon(lib);
+                                }
+                            }
+                            break;
+                    }
+                }
+                finally
+                {
+                    SidebarControl.SideBarItemsSemaphore.Release();
+                }
+            });
+        }
+
+        private static bool IsLibraryOnSidebar(LibraryLocationItem item) => item != null && !item.IsEmpty && item.IsDefaultLocation;
+
+        private async void LoadLibraryIcon(LibraryLocationItem lib)
+        {
+            lib.IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(lib.Path, 24u);
+            if (lib.IconData != null)
+            {
+                lib.Icon = await lib.IconData.ToBitmapAsync();
+            }
+        }
+
+        public void Dispose()
+        {
+            Libraries.CollectionChanged -= Libraries_CollectionChanged;
+        }
+
+        public async Task EnumerateLibrariesAsync()
+        {
+            try
+            {
+                await SyncLibrarySideBarItemsUI();
+            }
+            catch (Exception) // UI Thread not ready yet, so we defer the pervious operation until it is.
+            {
+                System.Diagnostics.Debug.WriteLine($"RefreshUI Exception");
+                // Defer because UI-thread is not ready yet (and DriveItem requires it?)
+                App.MainWindow.Activated += EnumerateLibrariesAsync;
+            }
+        }
+
+        private void RemoveLibrariesSideBarSection()
+        {
+            try
+            {
+                var item = (from n in SidebarControl.SideBarItems where n.Text.Equals("SidebarLibraries".GetLocalized()) select n).FirstOrDefault();
+                if (!App.AppSettings.ShowLibrarySection && item != null)
+                {
+                    SidebarControl.SideBarItems.Remove(item);
+                }
+            }
+            catch (Exception)
+            { }
+        }
+
+        public async void UpdateLibrariesSectionVisibility()
+        {
+            if (App.AppSettings.ShowLibrarySection)
+            {
+                await EnumerateLibrariesAsync();
+            }
+            else
+            {
+                RemoveLibrariesSideBarSection();
+            }
+        }
+
+        private async void EnumerateLibrariesAsync(object sender, WindowActivatedEventArgs args)
+        {
+            await SyncLibrarySideBarItemsUI();
+            App.MainWindow.Activated -= EnumerateLibrariesAsync;
+        }
+
+        public async Task HandleWin32LibraryEvent(ShellLibraryItem library, string oldPath)
+        {
+            string path = oldPath;
+            if (string.IsNullOrEmpty(oldPath))
+            {
+                path = library?.FullPath;
+            }
+            await DispatcherQueue.GetForCurrentThread().EnqueueAsync(() =>
+            {
+                var changedLibrary = Libraries.FirstOrDefault(l => string.Equals(l.Path, path, StringComparison.OrdinalIgnoreCase));
+                if (changedLibrary != null)
+                {
+                    Libraries.Remove(changedLibrary);
+                }
+                // library is null in case it was deleted
+                if (library != null)
+                {
+                    Libraries.AddSorted(new LibraryLocationItem(library));
+                }
+            });
+        }
+
+        private async Task SyncLibrarySideBarItemsUI()
+        {
+            await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+            {
+                await SidebarControl.SideBarItemsSemaphore.WaitAsync();
+                try
+                {
+                    var section = SidebarControl.SideBarItems.FirstOrDefault(x => x.Text == "SidebarLibraries".GetLocalized()) as LocationItem;
+                    if (App.AppSettings.ShowLibrarySection && section == null)
+                    {
+                        librarySection = new LocationItem
+                        {
+                            Text = "SidebarLibraries".GetLocalized(),
+                            Section = SectionType.Library,
+                            SelectsOnInvoked = false,
+                            Icon = UIHelpers.GetImageForIconOrNull(SidebarPinnedModel.IconResources?.FirstOrDefault(x => x.Index == Constants.ImageRes.Libraries)?.Image ?? new BitmapImage()),
+                            ChildItems = new ObservableCollection<INavigationControlItem>()
+                        };
+                        var index = SidebarControl.SideBarItems.Any(item => item.Section == SectionType.Favorites) ? 1 : 0; // After favorites section
+                        SidebarControl.SideBarItems.Insert(Math.Min(index, SidebarControl.SideBarItems.Count), librarySection);
+                    }
+                }
+                finally
+                {
+                    SidebarControl.SideBarItemsSemaphore.Release();
+                }
+
+                Libraries.BeginBulkOperation();
+                Libraries.Clear();
+                var libs = await LibraryHelper.ListUserLibraries();
+                if (libs != null)
+                {
+                    libs.Sort();
+                    Libraries.AddRange(libs);
+                }
+                Libraries.EndBulkOperation();
+            });
+        }
+
+        public bool TryGetLibrary(string path, out LibraryLocationItem library)
+        {
+            if (string.IsNullOrWhiteSpace(path) || !path.ToLower().EndsWith(ShellLibraryItem.EXTENSION))
+            {
+                library = null;
+                return false;
+            }
+            library = Libraries.FirstOrDefault(l => string.Equals(path, l.Path, StringComparison.OrdinalIgnoreCase));
+            return library != null;
+        }
+
+        public bool IsLibraryPath(string path) => TryGetLibrary(path, out _);
+
+        public async Task<bool> CreateNewLibrary(string name)
+        {
+            if (!CanCreateLibrary(name).result)
+            {
+                return false;
+            }
+            var newLib = await LibraryHelper.CreateLibrary(name);
+            if (newLib != null)
+            {
+                Libraries.AddSorted(newLib);
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<LibraryLocationItem> UpdateLibrary(string libraryPath, string defaultSaveFolder = null, string[] folders = null, bool? isPinned = null)
+        {
+            var newLib = await LibraryHelper.UpdateLibrary(libraryPath, defaultSaveFolder, folders, isPinned);
+            if (newLib != null)
+            {
+                var libItem = Libraries.FirstOrDefault(l => string.Equals(l.Path, libraryPath, StringComparison.OrdinalIgnoreCase));
+                if (libItem != null)
+                {
+                    Libraries[Libraries.IndexOf(libItem)] = libItem;
+                }
+                return newLib;
+            }
+            return null;
+        }
+
+        public (bool result, string reason) CanCreateLibrary(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return (false, "CreateLibraryErrorInputEmpty".GetLocalized());
+            }
+            if (FilesystemHelpers.ContainsRestrictedCharacters(name))
+            {
+                return (false, "ErrorNameInputRestrictedCharacters".GetLocalized());
+            }
+            if (FilesystemHelpers.ContainsRestrictedFileName(name))
+            {
+                return (false, "ErrorNameInputRestricted".GetLocalized());
+            }
+            if (Libraries.Any((item) => string.Equals(name, item.Text, StringComparison.OrdinalIgnoreCase) || string.Equals(name, Path.GetFileNameWithoutExtension(item.Path), StringComparison.OrdinalIgnoreCase)))
+            {
+                return (false, "CreateLibraryErrorAlreadyExists".GetLocalized());
+            }
+            else
+            {
+                return (true, string.Empty);
+            }
+        }
+    }
+}

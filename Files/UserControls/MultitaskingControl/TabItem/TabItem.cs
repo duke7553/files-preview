@@ -1,7 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Files.ViewModels;
+using Files.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Files.UserControls.MultitaskingControl
 {
@@ -55,6 +60,7 @@ namespace Files.UserControls.MultitaskingControl
 
         public void Unload()
         {
+            Control.ContentChanged -= MainPageViewModel.Control_ContentChanged;
             tabItemArguments = Control?.NavigationArguments;
             Dispose();
         }
@@ -72,17 +78,46 @@ namespace Files.UserControls.MultitaskingControl
 
     public class TabItemArguments
     {
+        static KnownTypesBinder TypesBinder = new KnownTypesBinder
+        {
+            KnownTypes = new List<Type> { typeof(PaneNavigationArguments) }
+        };
         public Type InitialPageType { get; set; }
         public object NavigationArg { get; set; }
 
         public string Serialize() => JsonConvert.SerializeObject(this, new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
+            SerializationBinder = TypesBinder
         });
 
         public static TabItemArguments Deserialize(string obj) => JsonConvert.DeserializeObject<TabItemArguments>(obj, new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
+            SerializationBinder = TypesBinder
         });
+    }
+
+    public class KnownTypesBinder : ISerializationBinder
+    {
+        public IList<Type> KnownTypes { get; set; }
+
+        public Type BindToType(string assemblyName, string typeName)
+        {
+            if (!KnownTypes.Any(x => x.Name == typeName))
+            {
+                throw new ArgumentException();
+            }
+            else
+            {
+                return KnownTypes.SingleOrDefault(t => t.Name == typeName);
+            }
+        }
+
+        public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        {
+            assemblyName = null;
+            typeName = serializedType.Name;
+        }
     }
 }

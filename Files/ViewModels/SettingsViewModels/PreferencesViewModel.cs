@@ -1,6 +1,9 @@
 ﻿using Files.DataModels;
+using Files.Enums;
+using Files.Filesystem;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,15 +15,39 @@ namespace Files.ViewModels.SettingsViewModels
     public class PreferencesViewModel : ObservableObject
     {
         private int selectedLanguageIndex = App.AppSettings.DefaultLanguages.IndexOf(App.AppSettings.DefaultLanguage);
-        private bool showRestartDialog;
+        private bool showRestartControl;
         private Terminal selectedTerminal = App.AppSettings.TerminalController.Model.GetDefaultTerminal();
-        private bool pinRecycleBinToSideBar = App.AppSettings.PinRecycleBinToSideBar;
         private bool showConfirmDeleteDialog = App.AppSettings.ShowConfirmDeleteDialog;
+        private bool openFoldersNewTab = App.AppSettings.OpenFoldersNewTab;
+        private int selectedDateFormatIndex = (int)Enum.Parse(typeof(TimeStyle), App.AppSettings.DisplayedTimeStyle.ToString());
 
         public PreferencesViewModel()
         {
             DefaultLanguages = App.AppSettings.DefaultLanguages;
             Terminals = App.AppSettings.TerminalController.Model.Terminals;
+
+            DateFormats = new List<string>
+            {
+                "ApplicationTimeStye".GetLocalized(),
+                "SystemTimeStye".GetLocalized()
+            };
+        }
+
+        public List<string> DateFormats { get; set; }
+
+        public int SelectedDateFormatIndex
+        {
+            get
+            {
+                return selectedDateFormatIndex;
+            }
+            set
+            {
+                if (SetProperty(ref selectedDateFormatIndex, value))
+                {
+                    App.AppSettings.DisplayedTimeStyle = (TimeStyle)value;
+                }
+            }
         }
 
         public ObservableCollection<DefaultLanguageModel> DefaultLanguages { get; set; }
@@ -36,20 +63,20 @@ namespace Files.ViewModels.SettingsViewModels
 
                     if (App.AppSettings.CurrentLanguage.ID != DefaultLanguages[value].ID)
                     {
-                        ShowRestartDialog = true;
+                        ShowRestartControl = true;
                     }
                     else
                     {
-                        ShowRestartDialog = false;
+                        ShowRestartControl = false;
                     }
                 }
             }
         }
 
-        public bool ShowRestartDialog
+        public bool ShowRestartControl
         {
-            get => showRestartDialog;
-            set => SetProperty(ref showRestartDialog, value);
+            get => showRestartControl;
+            set => SetProperty(ref showRestartControl, value);
         }
 
         public List<Terminal> Terminals { get; set; }
@@ -69,21 +96,6 @@ namespace Files.ViewModels.SettingsViewModels
 
         public RelayCommand EditTerminalApplicationsCommand => new RelayCommand(() => LaunchTerminalsConfigFile());
 
-        public bool PinRecycleBinToSideBar
-        {
-            get
-            {
-                return pinRecycleBinToSideBar;
-            }
-            set
-            {
-                if (SetProperty(ref pinRecycleBinToSideBar, value))
-                {
-                    App.AppSettings.PinRecycleBinToSideBar = value;
-                }
-            }
-        }
-
         public bool ShowConfirmDeleteDialog
         {
             get
@@ -99,16 +111,17 @@ namespace Files.ViewModels.SettingsViewModels
             }
         }
 
-        private bool enableAdaptivePreviewPane = App.AppSettings.EnableAdaptivePreviewPane;
-
-        public bool EnableAdaptivePreviewPane
+        public bool OpenFoldersNewTab
         {
-            get => enableAdaptivePreviewPane;
+            get
+            {
+                return openFoldersNewTab;
+            }
             set
             {
-                if (SetProperty(ref enableAdaptivePreviewPane, value))
+                if (SetProperty(ref openFoldersNewTab, value))
                 {
-                    App.AppSettings.EnableAdaptivePreviewPane = value;
+                    App.AppSettings.OpenFoldersNewTab = value;
                 }
             }
         }

@@ -22,6 +22,12 @@ namespace Files.Common
             }
         }
 
+        public static async Task<IEnumerable<T>> WhereAsync<T>(this IEnumerable<T> source, Func<T, Task<bool>> predicate)
+        {
+            var results = await Task.WhenAll(source.Select(async x => (x, await predicate(x))));
+            return results.Where(x => x.Item2).Select(x => x.Item1);
+        }
+
         public static IEnumerable<TSource> IntersectBy<TSource, TKey>(
             this IEnumerable<TSource> source,
             IEnumerable<TSource> other,
@@ -32,6 +38,12 @@ namespace Files.Common
 
         public static TOut Get<TOut, TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TOut defaultValue = default)
         {
+            // If dictionary is null or key is invalid, return default.
+            if (dictionary == null || key == null)
+            {
+                return defaultValue;
+            }
+
             // If setting doesn't exist, create it.
             if (!dictionary.ContainsKey(key))
             {

@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Services.Store;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Files.Helpers
 {
@@ -15,7 +15,6 @@ namespace Files.Helpers
 
         public AppUpdater()
         {
-            context = StoreContext.GetDefault();
         }
 
         public async void CheckForUpdatesAsync(bool mandantoryOnly = true)

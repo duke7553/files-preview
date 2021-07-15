@@ -10,8 +10,7 @@
 
     <Grid>
         <ScrollViewer>
-            <!--<controls:MarkdownTextBlock Text="{x:Bind ViewModel.TextValue, Mode=OneWay}" />-->
-            <TextBlock Text="ERROR: MarkdownTextBlock is unsupported in WinUI"/>
+            <controls:MarkdownTextBlock Text="{x:Bind ViewModel.TextValue, Mode=OneWay}" />
         </ScrollViewer>
     </Grid>
 </UserControl>

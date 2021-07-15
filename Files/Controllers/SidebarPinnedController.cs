@@ -10,15 +10,15 @@ namespace Files.Controllers
     public class SidebarPinnedController : IJson
     {
         private StorageFolder Folder { get; set; }
-
         private StorageFile JsonFile { get; set; }
 
-        public SidebarPinnedModel Model { get; set; } = new SidebarPinnedModel();
-
+        public SidebarPinnedModel Model { get; set; }
         public string JsonFileName { get; } = "PinnedItems.json";
 
         private SidebarPinnedController()
         {
+            Model = new SidebarPinnedModel();
+            Model.SetController(this);
         }
 
         public static Task<SidebarPinnedController> CreateInstance()
@@ -51,9 +51,9 @@ namespace Files.Controllers
 
                     foreach (var line in oldPinnedItems)
                     {
-                        if (!Model.Items.Contains(line))
+                        if (!Model.FavoriteItems.Contains(line))
                         {
-                            Model.Items.Add(line);
+                            Model.FavoriteItems.Add(line);
                         }
                     }
                 }
@@ -71,18 +71,20 @@ namespace Files.Controllers
                 Model = JsonConvert.DeserializeObject<SidebarPinnedModel>(await FileIO.ReadTextAsync(JsonFile));
                 if (Model == null)
                 {
-                    Model = new SidebarPinnedModel();
                     throw new Exception($"{JsonFileName} is empty, regenerating...");
                 }
+                Model.SetController(this);
             }
             catch (Exception)
             {
                 await JsonFile.DeleteAsync();
+                Model = new SidebarPinnedModel();
+                Model.SetController(this);
                 Model.AddDefaultItems();
                 Model.Save();
             }
 
-            Model.AddAllItemsToSidebar();
+            await Model.AddAllItemsToSidebar();
         }
 
         public void SaveModel()

@@ -1,19 +1,30 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml.Controls;
+using CommunityToolkit.WinUI.Helpers;
 using System;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Files.ViewModels.SettingsViewModels
 {
     public class AboutViewModel : ObservableObject
     {
         public RelayCommand OpenLogLocationCommand => new RelayCommand(() => SettingsViewModel.OpenLogLocation());
+        public RelayCommand CopyVersionInfoCommand => new RelayCommand(() => CopyVersionInfo());
 
         public RelayCommand<ItemClickEventArgs> ClickAboutFeedbackItemCommand =>
             new RelayCommand<ItemClickEventArgs>(ClickAboutFeedbackItem);
+
+        public void CopyVersionInfo()
+        {
+            DataPackage dataPackage = new DataPackage();
+            dataPackage.RequestedOperation = DataPackageOperation.Copy;
+            dataPackage.SetText(Version + "\nOS Version: " + SystemInformation.Instance.OperatingSystemVersion);
+            Clipboard.SetContent(dataPackage);
+        }
 
         public string Version
         {
@@ -21,6 +32,14 @@ namespace Files.ViewModels.SettingsViewModels
             {
                 var version = Package.Current.Id.Version;
                 return string.Format($"{"SettingsAboutVersionTitle".GetLocalized()} {version.Major}.{version.Minor}.{version.Build}.{version.Revision}");
+            }
+        }
+
+        public string AppName
+        {
+            get
+            {
+                return Package.Current.DisplayName;
             }
         }
 
@@ -34,7 +53,7 @@ namespace Files.ViewModels.SettingsViewModels
                     break;
 
                 case "ReleaseNotes":
-                    await Launcher.LaunchUriAsync(new Uri(@"https://github.com/files-community/files-uwp/releases"));
+                    await Launcher.LaunchUriAsync(new Uri(@"https://github.com/files-community/Files/releases"));
                     break;
 
                 case "Documentation":
@@ -42,7 +61,11 @@ namespace Files.ViewModels.SettingsViewModels
                     break;
 
                 case "Contributors":
-                    await Launcher.LaunchUriAsync(new Uri(@"https://github.com/files-community/files-uwp/graphs/contributors"));
+                    await Launcher.LaunchUriAsync(new Uri(@"https://github.com/files-community/Files/graphs/contributors"));
+                    break;
+
+                case "PrivacyPolicy":
+                    await Launcher.LaunchUriAsync(new Uri(@"https://github.com/files-community/Files/blob/main/Privacy.md"));
                     break;
 
                 case "SupportUs":

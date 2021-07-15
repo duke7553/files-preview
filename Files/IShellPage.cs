@@ -1,41 +1,78 @@
 ﻿using Files.Filesystem;
-using Files.Interacts;
-using Files.UserControls;
+using Files.Helpers;
 using Files.UserControls.MultitaskingControl;
 using Files.ViewModels;
-using Microsoft.UI.Xaml.Controls;
+using Files.Views;
 using System;
-using Windows.ApplicationModel.AppService;
+using System.ComponentModel;
 
 namespace Files
 {
     public interface IShellPage : ITabItemContent, IMultiPaneInfo, IDisposable
     {
-        public StatusBarControl BottomStatusStripControl { get; }
-        public Frame ContentFrame { get; }
-        public Interaction InteractionOperations { get; }
-        public ItemViewModel FilesystemViewModel { get; }
-        public CurrentInstanceViewModel InstanceViewModel { get; }
-        public AppServiceConnection ServiceConnection { get; }
-        public BaseLayout ContentPage { get; }
-        public Control OperationsControl { get; }
-        public Type CurrentPageType { get; }
-        public IFilesystemHelpers FilesystemHelpers { get; }
-        public INavigationToolbar NavigationToolbar { get; }
+        ItemViewModel FilesystemViewModel { get; }
 
-        public abstract void Refresh_Click();
+        CurrentInstanceViewModel InstanceViewModel { get; }
+
+        NamedPipeAsAppServiceConnection ServiceConnection { get; }
+
+        IBaseLayout SlimContentPage { get; }
+
+        Type CurrentPageType { get; }
+
+        IFilesystemHelpers FilesystemHelpers { get; }
+
+        NavToolbarViewModel NavToolbarViewModel { get; }
+
+        bool CanNavigateBackward { get; }
+
+        bool CanNavigateForward { get; }
+
+        void Refresh_Click();
+
+        void UpdatePathUIToWorkingDirectory(string newWorkingDir, string singleItemOverride = null);
+
+        void NavigateToPath(string navigationPath, Type sourcePageType, NavigationArguments navArgs = null);
+
+        /// <summary>
+        /// Gets the layout mode for the specified path then navigates to it
+        /// </summary>
+        /// <param name="navigationPath"></param>
+        /// <param name="navArgs"></param>
+        public void NavigateToPath(string navigationPath, NavigationArguments navArgs = null);
+
+        /// <summary>
+        /// Navigates to the home page
+        /// </summary>
+        public void NavigateHome();
+
+        void NavigateWithArguments(Type sourcePageType, NavigationArguments navArgs);
+
+        void RemoveLastPageFromBackStack();
+
+        void SubmitSearch(string query, bool searchUnindexedItems);
     }
 
-    public interface IPaneHolder : IDisposable
+    public interface IPaneHolder : IDisposable, INotifyPropertyChanged
     {
+        public IShellPage ActivePane { get; set; }
+        public IFilesystemHelpers FilesystemHelpers { get; }
+        public TabItemArguments TabItemArguments { get; set; }
+
         public void OpenPathInNewPane(string path);
+
+        public void CloseActivePane();
+
+        public bool IsLeftPaneActive { get; }
+        public bool IsRightPaneActive { get; }
+
+        public bool IsMultiPaneActive { get; } // Another pane is shown
+        public bool IsMultiPaneEnabled { get; } // Multi pane is enabled
     }
 
     public interface IMultiPaneInfo
     {
         public bool IsPageMainPane { get; } // The instance is the left (or only) pane
-        public bool IsMultiPaneActive { get; } // Another pane is shown
-        public bool IsMultiPaneEnabled { get; } // Multi pane is enabled
         public IPaneHolder PaneHolder { get; }
     }
 }

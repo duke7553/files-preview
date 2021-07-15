@@ -1,10 +1,10 @@
 ﻿using Files.DataModels;
 using Files.Helpers;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.ObjectModel;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Files.Dialogs
 {

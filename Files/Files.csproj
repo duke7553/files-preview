@@ -1,41 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net5.0-windows10.0.19041</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Files</RootNamespace>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <NeutralLanguage>en-US</NeutralLanguage>
     <UseWinUI>true</UseWinUI>
+    <StartupObject>Files.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="MainWindow.xaml" />
+    <None Remove="C:\Users\lukeb\.nuget\packages\nlog.schema\4.7.10\contentFiles\any\any\NLog.xsd" />
+    <None Remove="ResourceDictionaries\Common_themeresources_any.xaml" />
     <None Remove="Resources\AppCenterKey.txt" />
     <None Remove="Resources\BingMapsKey.txt" />
   </ItemGroup>
@@ -54,14 +55,15 @@
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.3.0" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="5.0.7" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="5.0.8" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-    <PackageReference Include="Microsoft.ProjectReunion" Version="0.8.0" />
+    <PackageReference Include="Microsoft.ProjectReunion" Version="0.8.1" />
     <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.7" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.7.10" />
     <PackageReference Include="NLog.Schema" Version="4.7.10" />
+    <PackageReference Include="SharpZipLib" Version="1.3.2" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.0.4" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
@@ -73,10 +75,7 @@
     <None Update="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="MainWindow.xaml">
+    <Page Update="ResourceDictionaries\Common_themeresources_any.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -127,8 +126,14 @@
     <Page Update="ResourceDictionaries\PropertiesStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="ResourceDictionaries\TabViewItem_shared.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
     <Page Update="ResourceDictionaries\TabView_themeresources.xaml">
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Update="ResourceDictionaries\TabView_vertical.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Update="ResourceDictionaries\ToolbarButtonStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -258,10 +263,10 @@
     </Page>
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <PRIResource Include="Strings\**\*.resw" />
-    <!-- Strings may be changed to other folder you use, or just **\*.resw -->
-  </ItemGroup>
+    --><!-- Strings may be changed to other folder you use, or just **\*.resw --><!--
+  </ItemGroup>-->
 
   <ItemGroup>
     <Content Remove="Assets\terminal\terminal.json" />

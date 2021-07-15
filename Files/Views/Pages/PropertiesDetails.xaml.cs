@@ -1,10 +1,12 @@
 ﻿using Files.Dialogs;
+using Files.Enums;
+using Files.Filesystem;
+using Files.Helpers;
 using Files.ViewModels.Properties;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
 
 namespace Files.Views
 {
@@ -28,15 +30,11 @@ namespace Files.Views
             }
         }
 
-        /// <summary>
-        /// Tries to save changed properties to file.
-        /// </summary>
-        /// <returns>Returns true if properties have been saved successfully.</returns>
-        public async Task<bool> SaveChangesAsync()
+        public override async Task<bool> SaveChangesAsync(ListedItem item)
         {
             while (true)
             {
-                var dialog = new PropertySaveError();
+                using DynamicDialog dialog = DynamicDialogFactory.GetFor_PropertySaveErrorDialog();
                 try
                 {
                     await (BaseProperties as FileProperties).SyncPropertyChangesAsync();
@@ -44,24 +42,25 @@ namespace Files.Views
                 }
                 catch
                 {
-                    switch (await dialog.ShowAsync())
+                    // Attempting to open more than one ContentDialog
+                    // at a time will throw an error)
+                    if (UIHelpers.IsAnyContentDialogOpen())
                     {
-                        case ContentDialogResult.Primary:
+                        return false;
+                    }
+                    await dialog.ShowAsync();
+                    switch (dialog.DynamicResult)
+                    {
+                        case DynamicDialogResult.Primary:
                             break;
 
-                        case ContentDialogResult.Secondary:
+                        case DynamicDialogResult.Secondary:
                             return true;
 
-                        default:
+                        case DynamicDialogResult.Cancel:
                             return false;
                     }
                 }
-
-                // Wait for the current dialog to be closed before continuing the loop
-                // and opening another dialog (attempting to open more than one ContentDialog
-                // at a time will throw an error)
-                while (dialog.IsLoaded)
-                { }
             }
         }
 
@@ -69,6 +68,10 @@ namespace Files.Views
         {
             ClearPropertiesFlyout.Hide();
             await (BaseProperties as FileProperties).ClearPropertiesAsync();
+        }
+
+        public override void Dispose()
+        {
         }
     }
 }

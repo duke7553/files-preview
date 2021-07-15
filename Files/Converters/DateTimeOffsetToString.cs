@@ -1,5 +1,7 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿using Files.Enums;
 using System;
+using Windows.Storage;
+using Microsoft.UI.Xaml.Data;
 
 namespace Files.Converters
 {
@@ -9,7 +11,9 @@ namespace Files.Converters
         {
             if (value != null)
             {
-                return ((DateTimeOffset)value).ToLocalTime().ToString("D");
+                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+                string returnformat = Enum.Parse<TimeStyle>(localSettings.Values[Constants.LocalSettings.DateTimeFormat].ToString()) == TimeStyle.Application ? "D" : "g";
+                return (Extensions.DateTimeExtensions.GetFriendlyDateFromFormat((DateTimeOffset)value, returnformat, true));
             }
 
             return "";
@@ -21,7 +25,7 @@ namespace Files.Converters
             {
                 return DateTimeOffset.Parse(value as string);
             }
-            catch (FormatException e)
+            catch (FormatException)
             {
                 return null;
             }

@@ -22,6 +22,5 @@
                     IsZoomButtonVisible="False" />
             </MediaPlayerElement.TransportControls>
         </MediaPlayerElement>-->
-        <TextBlock Text="ERROR: MediaPlayer for preview is unsupported in WinUI"/>
     </Grid>
 </UserControl>

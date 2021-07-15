@@ -37,15 +37,15 @@ namespace Files.ViewModels.Previews
 
         public static async Task<TextPreview> TryLoadAsTextAsync(ListedItem item)
         {
-            if (ExcludedExtensions.Contains(item.FileExtension.ToLower()))
+            if (ExcludedExtensions.Contains(item.FileExtension?.ToLower()) || item.FileSizeBytes > Constants.PreviewPane.TryLoadAsTextSizeLimit || item.FileSizeBytes == 0)
             {
                 return null;
             }
 
             try
             {
-                var file = await StorageFile.GetFileFromPathAsync(item.ItemPath);
-                var text = await FileIO.ReadTextAsync(file);
+                item.ItemFile = await StorageFile.GetFileFromPathAsync(item.ItemPath);
+                var text = await FileIO.ReadTextAsync(item.ItemFile);
 
                 // Check if file is binary
                 if (text.Contains("\0\0\0\0"))
@@ -56,8 +56,9 @@ namespace Files.ViewModels.Previews
                 var model = new TextPreviewViewModel(item)
                 {
                     TextValue = text,
-                    ItemFile = file,
                 };
+
+                await model.LoadAsync();
 
                 return new TextPreview(model);
             }
@@ -67,22 +68,24 @@ namespace Files.ViewModels.Previews
             }
         }
 
-        public async override void LoadPreviewAndDetails()
+        public async override Task<List<FileProperty>> LoadPreviewAndDetails()
         {
+            var details = new List<FileProperty>();
+
             try
             {
-                var text = TextValue ?? await FileIO.ReadTextAsync(ItemFile);
+                var text = TextValue ?? await FileIO.ReadTextAsync(Item.ItemFile);
 
-                Item.FileDetails.Add(new FileProperty()
+                details.Add(new FileProperty()
                 {
                     NameResource = "PropertyLineCount",
                     Value = text.Split("\n").Length,
                 });
 
-                Item.FileDetails.Add(new FileProperty()
+                details.Add(new FileProperty()
                 {
                     NameResource = "PropertyWordCount",
-                    Value = text.Split(" ").Length,
+                    Value = text.Split(new[] { " ", "\n" }, StringSplitOptions.RemoveEmptyEntries).Length,
                 });
 
                 var displayText = text.Length < Constants.PreviewPane.TextCharacterLimit ? text : text.Remove(Constants.PreviewPane.TextCharacterLimit);
@@ -93,7 +96,7 @@ namespace Files.ViewModels.Previews
                 Debug.WriteLine(e);
             }
 
-            base.LoadSystemFileProperties();
+            return details;
         }
     }
 }

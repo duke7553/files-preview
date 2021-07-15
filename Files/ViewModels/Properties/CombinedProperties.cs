@@ -2,9 +2,7 @@
 using Files.Extensions;
 using Files.Filesystem;
 using Files.Helpers;
-using Microsoft.UI.Dispatching;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
+using Microsoft.UI.Xaml;
+
 namespace Files.ViewModels.Properties
 {
     internal class CombinedProperties : BaseProperties
@@ -20,11 +20,10 @@ namespace Files.ViewModels.Properties
         public List<ListedItem> List { get; }
 
         public CombinedProperties(SelectedItemsPropertiesViewModel viewModel, CancellationTokenSource tokenSource,
-            DispatcherQueue coreDispatcher, List<ListedItem> listedItems, IShellPage instance)
+            List<ListedItem> listedItems, IShellPage instance)
         {
             ViewModel = viewModel;
             TokenSource = tokenSource;
-            Dispatcher = coreDispatcher;
             List = listedItems;
             AppInstance = instance;
             GetBaseProperties();
@@ -87,7 +86,7 @@ namespace Files.ViewModels.Properties
                     }
                     catch (Exception ex)
                     {
-                        NLog.LogManager.GetCurrentClassLogger().Error(ex, ex.Message);
+                        App.Logger.Warn(ex, ex.Message);
                     }
                 }
             }

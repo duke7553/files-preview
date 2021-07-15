@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
 using System.Collections.Generic;
+using Microsoft.UI.Xaml;
 
 namespace Files.ViewModels.Properties
 {
