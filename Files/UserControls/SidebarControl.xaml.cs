@@ -76,7 +76,7 @@ namespace Files.UserControls
 
         private Microsoft.UI.Dispatching.DispatcherQueueTimer dragOverSectionTimer, dragOverItemTimer;
 
-        public SidebarControl()
+        public SidebarControl() : base()
         {
             this.InitializeComponent();
             this.Loaded += SidebarNavView_Loaded;
@@ -771,8 +771,6 @@ namespace Files.UserControls
         {
             var settings = (Microsoft.UI.Xaml.Controls.NavigationViewItem)this.SettingsItem;
             settings.SelectsOnInvoked = false;
-
-            (this.FindDescendant("TabContentBorder") as Border).Child = TabContent;
         }
 
         private void Border_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -877,6 +875,11 @@ namespace Files.UserControls
         {
             var item = (sender as MenuFlyoutItem).DataContext;
             SidebarItemNewPaneInvoked?.Invoke(this, new SidebarItemNewPaneInvokedEventArgs(item));
+        }
+
+        private void TabContentBorder_Loaded(object sender, RoutedEventArgs e)
+        {
+            (sender as Border).Child = TabContent;
         }
 
         private void DragArea_Loaded(object sender, RoutedEventArgs e)
